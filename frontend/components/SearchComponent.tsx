@@ -23,7 +23,7 @@ export const SearchComponent = () => {
   const [sportTyp, setSportTyp] = React.useState<string>("Alle");
 
   return (
-    <div className="w-[60%] max-w-6xl mx-auto mb-5">
+    <div className="w-[60%] max-w-6xl mx-auto mb-5 min-w-[750px]">
       <div className="flex items-center gap-2 p-2 bg-white rounded-full shadow-lg">
         <div className="flex-1 px-3 ml-1">
           <div className="text-sm font-medium ml-1">Wohin</div>

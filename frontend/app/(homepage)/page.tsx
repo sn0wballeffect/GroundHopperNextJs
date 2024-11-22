@@ -1,9 +1,9 @@
-import { SearchComponent } from "../../components/SearchComponent";
+import { SearchComponentHome } from "./_components/SearchComponentHome";
 
 export default function HomePage() {
   return (
     <div className="flex items-center justify-center h-full w-full ">
-      <SearchComponent />
+      <SearchComponentHome />
     </div>
   );
 }

@@ -1,7 +1,7 @@
+import { NavBar } from "@/components/NavBar";
 import { Footer } from "../../components/Footer";
-import { NavBar } from "../../components/NavBar";
 
-export default function RootLayout({
+export default function SearchLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (

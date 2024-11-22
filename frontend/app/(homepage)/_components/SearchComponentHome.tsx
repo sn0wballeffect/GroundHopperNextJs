@@ -13,15 +13,24 @@ import { addDays, format } from "date-fns";
 import { CalendarIcon, Search } from "lucide-react";
 import React from "react";
 import { DateRange } from "react-day-picker";
+import { useRouter } from "next/navigation";
 
-export const SearchComponent = () => {
+export const SearchComponentHome = () => {
+  const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 7),
   });
   const [distance, setDistance] = React.useState<number>(10);
   const [sportTyp, setSportTyp] = React.useState<string>("Alle");
+  const [searchQuery, setSearchQuery] = React.useState<string>("");
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+  const handleButtonClick = () => {
+    router.push("/search");
+  };
   return (
     <div className="w-[60%] max-w-6xl mx-auto mb-5 min-w-[750px]">
       <div className="flex items-center gap-2 p-2 bg-white rounded-full shadow-lg">
@@ -31,6 +40,8 @@ export const SearchComponent = () => {
             type="text"
             placeholder="Standort"
             className="border-0 p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
+            value={searchQuery}
+            onChange={handleInputChange}
           />
         </div>
         <div className="h-8 w-[1px] bg-border" />
@@ -155,7 +166,11 @@ export const SearchComponent = () => {
           </PopoverContent>
         </Popover>
         <div className="h-8 w-[1px] bg-border" />
-        <Button size="icon" className="rounded-full ml-2">
+        <Button
+          size="icon"
+          className="rounded-full ml-2 "
+          onClick={handleButtonClick}
+        >
           <Search className="h-6 w-6" />
           <span className="sr-only">Suchen</span>
         </Button>

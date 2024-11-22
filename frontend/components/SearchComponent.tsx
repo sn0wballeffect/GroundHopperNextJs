@@ -15,7 +15,7 @@ import React from "react";
 import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
 
-export const SearchComponentHome = () => {
+export const SearchComponent = () => {
   const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
@@ -79,7 +79,7 @@ export const SearchComponentHome = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4 ",
+                "justify-start text-left font-normal px-4 min-w-[9rem]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -111,7 +111,7 @@ export const SearchComponentHome = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4",
+                "justify-start text-left font-normal px-4 min-w-[9rem]",
                 !date && "text-muted-foreground"
               )}
             >

@@ -9,7 +9,7 @@ import { GoogleMap } from "@react-google-maps/api";
 const defaultMapContainerStyle = {
   width: "100%",
   height: "100%",
-  borderRadius: "15px 0px 0px 15px",
+  borderRadius: "12px 12px 12px 12px",
 };
 
 //K2's coordinates

@@ -43,7 +43,7 @@ export const SearchComponent = () => {
           <Input
             type="text"
             placeholder="Standort"
-            className="border-0 p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
+            className="border-0 shadow-none p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
             value={searchQuery}
             onChange={handleInputChange}
           />

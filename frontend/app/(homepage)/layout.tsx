@@ -1,6 +1,6 @@
 import { Footer } from "../../components/Footer";
 import { NavBar } from "../../components/NavBar";
-import AnimatedText from "./_components/animatedBackground";
+import AnimatedText from "./_components/animatedText";
 
 export default function RootLayout({
   children,

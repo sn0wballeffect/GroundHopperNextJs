@@ -23,7 +23,7 @@ export const SearchResults = () => {
         </CardContent>
         <CardFooter className="flex flex-row justify-between ml-1">
           <p>📍 5 km entfernt</p>
-          <Button size="icon" className="rounded-full ml-2 ">
+          <Button size="icon" className="rounded-full">
             <LuArrowRight />
           </Button>
         </CardFooter>

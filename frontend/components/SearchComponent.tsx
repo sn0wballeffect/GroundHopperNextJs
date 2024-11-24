@@ -13,10 +13,12 @@ import { addDays, format } from "date-fns";
 import { CalendarIcon, Search } from "lucide-react";
 import React from "react";
 import { DateRange } from "react-day-picker";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export const SearchComponent = () => {
+  const pathname = usePathname();
   const router = useRouter();
+  const isSearchPage = pathname === "/search";
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(),
     to: addDays(new Date(), 7),
@@ -29,7 +31,9 @@ export const SearchComponent = () => {
     setSearchQuery(event.target.value);
   };
   const handleButtonClick = () => {
-    router.push("/search");
+    if (!isSearchPage) {
+      router.push("/search");
+    }
   };
   return (
     <div className="w-[60%] max-w-6xl mx-auto mb-5 min-w-[750px]">

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 
-const poppins_init = Poppins({
+const inter_init = Inter({
   subsets: ["latin"],
   weight: ["100", "400", "700", "500"],
-  variable: "--font-poppins",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${poppins_init.variable} antialiased font-poppins  bg-background`}
+        className={`${inter_init.variable} antialiased font-poppins  bg-background`}
       >
         {children}
       </body>

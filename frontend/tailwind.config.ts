@@ -14,7 +14,7 @@ export default {
         "spin-slow": "spin 10s linear infinite",
       },
       fontFamily: {
-        poppins: ["var(--font-inter)", ...fontFamily.sans],
+        inter: ["var(--font-inter)", ...fontFamily.sans],
       },
       colors: {
         background: "hsl(var(--background))",

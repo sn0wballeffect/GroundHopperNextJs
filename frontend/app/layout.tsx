@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter_init.variable} antialiased font-poppins  bg-background`}
+        className={`${inter_init.variable} antialiased font-inter  bg-background`}
       >
         {children}
       </body>

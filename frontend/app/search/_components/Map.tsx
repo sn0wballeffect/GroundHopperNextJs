@@ -2,7 +2,7 @@
 we need to make this component client rendered as well*/
 "use client";
 
-//Map component Component from library
+import { useStore } from "@/lib/store";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 
 //Map's styling
@@ -29,6 +29,13 @@ const defaultMapOptions = {
 };
 
 const MapComponent = () => {
+  const userLocation = useStore((state) => state.userLocation);
+
+  const markerPosition =
+    userLocation.lat && userLocation.lng
+      ? { lat: userLocation.lat, lng: userLocation.lng }
+      : null;
+
   return (
     <div className="w-full h-full">
       <GoogleMap
@@ -37,7 +44,7 @@ const MapComponent = () => {
         zoom={defaultMapZoom}
         options={defaultMapOptions}
       >
-        <Marker position={defaultMapCenter} />
+        {markerPosition && <Marker position={markerPosition} />}
       </GoogleMap>
     </div>
   );

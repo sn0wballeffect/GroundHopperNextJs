@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
 import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
 import React, { useState } from "react";
-import { DateRange } from "react-day-picker";
 import { useRouter, usePathname } from "next/navigation";
+import { useStore } from "@/lib/store";
 
 interface UserLocation {
   lat: number | null;
@@ -23,22 +23,26 @@ export const SearchComponent = () => {
   const pathname = usePathname();
   const router = useRouter();
   const isSearchPage = pathname === "/search";
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(),
-    to: addDays(new Date(), 7),
-  });
-  const [distance, setDistance] = React.useState<number>(10);
-  const [sportTyp, setSportTyp] = React.useState<string>("Alle");
-  const [searchQuery, setSearchQuery] = React.useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [userLocation, setUserLocation] = useState<UserLocation>({
-    lat: null,
-    lng: null,
-  });
 
+  // Replace local state with global store
+  const date = useStore((state) => state.date);
+  const setDate = useStore((state) => state.setDate);
+  const distance = useStore((state) => state.distance);
+  const setDistance = useStore((state) => state.setDistance);
+  const sportTyp = useStore((state) => state.sportTyp);
+  const setSportTyp = useStore((state) => state.setSportTyp);
+  const searchQuery = useStore((state) => state.searchQuery);
+  const setSearchQuery = useStore((state) => state.setSearchQuery);
+  const userLocation = useStore((state) => state.userLocation);
+  const setUserLocation = useStore((state) => state.setUserLocation);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Update handler to use global state
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
+
   const handleButtonClick = () => {
     if (!isSearchPage) {
       router.push("/search");
@@ -62,7 +66,6 @@ export const SearchComponent = () => {
           lng: longitude,
         });
         setIsLoading(false);
-        console.log({ UserLocation: userLocation });
       },
       (error) => {
         console.error("Error getting location:", error);

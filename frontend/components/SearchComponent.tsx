@@ -169,7 +169,6 @@ export const SearchComponent = () => {
             </div>
           </PopoverContent>
         </Popover>
-        <div className="h-8 w-[1px] bg-border" />
         <Button
           size="icon"
           className="rounded-full ml-2 "

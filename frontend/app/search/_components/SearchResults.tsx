@@ -10,7 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LuArrowRight } from "react-icons/lu";
+import { CalendarDays, MapPin, ArrowRight, Navigation } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const SearchResults = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -31,19 +32,27 @@ export const SearchResults = () => {
             position: isFlipped ? "absolute" : "relative",
           }}
         >
-          <Card className="mb-2 shadow-md">
-            <CardHeader>
+          <Card className="mb-3 shadow-md">
+            <CardHeader className="flex flex-row justify-between items-start">
               <CardTitle className="text-lg font-bold">
                 Bayern München vs Werden Bremen
               </CardTitle>
+              <Badge className={`bg-black hover:bg-black pointer-events-none`}>
+                Fußball
+              </Badge>
             </CardHeader>
-            <CardContent>
-              <p>🕒 23.11.2024, 19:00Uhr</p>
+            <CardContent className="flex flex-row items-center">
+              <CalendarDays className="h-4 w-4 mr-2" />
+              <p> 23.11.2024, 19:00Uhr</p>
             </CardContent>
-            <CardFooter className="flex flex-row justify-between ml-1">
-              <p>📍 5 km entfernt</p>
-              <Button size="icon" className="rounded-full">
-                <LuArrowRight />
+            <CardFooter className="flex flex-row items-center">
+              <MapPin className="h-4 w-4 mr-2" />
+              <p>Allianz Arena, München</p>
+              <div className="h-6 w-[1px] bg-border mx-3" />
+              <Navigation className="h-4 w-4 mr-2" />
+              <p>5 km entfernt</p>
+              <Button className="rounded-full ml-auto h-9 w-9">
+                <ArrowRight />
               </Button>
             </CardFooter>
           </Card>
@@ -65,7 +74,7 @@ export const SearchResults = () => {
               <p>Detailed information goes here...</p>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => setIsFlipped(false)}>Back</Button>
+              <Button onClick={() => setIsFlipped(false)}>Zurück</Button>
             </CardFooter>
           </Card>
         </motion.div>

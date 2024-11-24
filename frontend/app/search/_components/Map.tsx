@@ -3,7 +3,7 @@ we need to make this component client rendered as well*/
 "use client";
 
 //Map component Component from library
-import { GoogleMap } from "@react-google-maps/api";
+import { GoogleMap, Marker } from "@react-google-maps/api";
 
 //Map's styling
 const defaultMapContainerStyle = {
@@ -36,7 +36,9 @@ const MapComponent = () => {
         center={defaultMapCenter}
         zoom={defaultMapZoom}
         options={defaultMapOptions}
-      ></GoogleMap>
+      >
+        <Marker position={defaultMapCenter} />
+      </GoogleMap>
     </div>
   );
 };

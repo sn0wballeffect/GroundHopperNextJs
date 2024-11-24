@@ -1,6 +1,6 @@
 import { SearchComponent } from "../../components/SearchComponent";
 import { MapProvider } from "../providers/map-provider";
-import { MapComponent } from "./_components/map";
+import { MapComponent } from "./_components/Map";
 import { SearchResults } from "./_components/SearchResults";
 
 export default function SearchPage() {

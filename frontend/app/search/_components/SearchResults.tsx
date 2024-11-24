@@ -37,9 +37,6 @@ export const SearchResults = () => {
               <CardTitle className="text-lg font-bold">
                 Bayern München vs Werden Bremen
               </CardTitle>
-              <Badge className={`bg-black hover:bg-black pointer-events-none`}>
-                Fußball
-              </Badge>
             </CardHeader>
             <CardContent className="flex flex-row items-center">
               <CalendarDays className="h-4 w-4 mr-2" />

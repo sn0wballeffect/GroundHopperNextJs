@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      animation: {
+        "spin-slow": "spin 10s linear infinite",
+      },
       fontFamily: {
         poppins: ["var(--font-inter)", ...fontFamily.sans],
       },

@@ -1,5 +1,4 @@
 "use client";
-import { SlLocationPin } from "react-icons/sl";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -10,10 +9,15 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { addDays, format } from "date-fns";
-import { CalendarIcon, Search } from "lucide-react";
-import React from "react";
+import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
+import React, { useState } from "react";
 import { DateRange } from "react-day-picker";
 import { useRouter, usePathname } from "next/navigation";
+
+interface UserLocation {
+  lat: number | null;
+  lng: number | null;
+}
 
 export const SearchComponent = () => {
   const pathname = usePathname();
@@ -26,6 +30,11 @@ export const SearchComponent = () => {
   const [distance, setDistance] = React.useState<number>(10);
   const [sportTyp, setSportTyp] = React.useState<string>("Alle");
   const [searchQuery, setSearchQuery] = React.useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [userLocation, setUserLocation] = useState<UserLocation>({
+    lat: null,
+    lng: null,
+  });
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -35,19 +44,65 @@ export const SearchComponent = () => {
       router.push("/search");
     }
   };
+
+  const handleGetLocation = () => {
+    setIsLoading(true);
+
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      setIsLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({
+          lat: latitude,
+          lng: longitude,
+        });
+        setIsLoading(false);
+        console.log({ UserLocation: userLocation });
+      },
+      (error) => {
+        console.error("Error getting location:", error);
+        alert("Unable to retrieve your location");
+        setIsLoading(false);
+      }
+    );
+  };
+
   return (
     <div className="w-[60%] max-w-6xl mx-auto mb-5 min-w-[750px]">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
         <div className="flex-1 px-3 ml-1">
-          <div className="text-sm font-medium ml-1">Wohin</div>
+          <div className="text-sm font-medium ml-1">Suche</div>
           <Input
             type="text"
-            placeholder="Standort"
+            placeholder={
+              userLocation.lat && userLocation.lng
+                ? `${userLocation.lat.toFixed(2)}°N, ${userLocation.lng.toFixed(
+                    2
+                  )}°E`
+                : "Suchen..."
+            }
             className="border-0 shadow-none p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
             value={searchQuery}
             onChange={handleInputChange}
           />
         </div>
+        <LocateFixed
+          className={`h-6 w-6 mr-3 ${
+            isLoading
+              ? "animate-spin text-gray-400"
+              : userLocation.lat && userLocation.lng
+              ? "text-red-600"
+              : "text-gray-400"
+          }`}
+          onClick={handleGetLocation}
+          role="button"
+          aria-label="Get current location"
+        />
         <div className="h-8 w-[1px] bg-border" />
         <Popover>
           <PopoverTrigger asChild>
@@ -55,7 +110,7 @@ export const SearchComponent = () => {
               variant="ghost"
               className="justify-start text-left font-normal px-4"
             >
-              <SlLocationPin className="mr-2 h-4 w-4" />
+              <MapPin className="mr-2 h-4 w-4" />
               <div>
                 <div className="text-sm font-medium">Umkreis</div>
                 <span className="text-sm">{distance} km</span>

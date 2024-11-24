@@ -79,3 +79,7 @@ body {
 .custom-scrollbar-hidden::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
+
+.poppins {
+  font-family: var(--font-poppins);
+}

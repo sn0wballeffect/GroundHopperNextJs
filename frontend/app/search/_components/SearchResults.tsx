@@ -11,7 +11,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarDays, MapPin, ArrowRight, Navigation } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export const SearchResults = () => {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -22,7 +21,6 @@ export const SearchResults = () => {
         className="relative cursor-pointer"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         transition={{ duration: 0.6, type: "spring" }}
-        onClick={() => setIsFlipped(!isFlipped)}
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Front Card */}
@@ -48,7 +46,10 @@ export const SearchResults = () => {
               <div className="h-6 w-[1px] bg-border mx-3" />
               <Navigation className="h-4 w-4 mr-2" />
               <p>5 km entfernt</p>
-              <Button className="rounded-full ml-auto h-9 w-9">
+              <Button
+                className="rounded-full ml-auto h-9 w-9"
+                onClick={() => setIsFlipped(!isFlipped)}
+              >
                 <ArrowRight />
               </Button>
             </CardFooter>

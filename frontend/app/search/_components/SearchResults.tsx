@@ -47,10 +47,10 @@ export const SearchResults = () => {
               <Navigation className="h-4 w-4 mr-2" />
               <p>5 km entfernt</p>
               <Button
-                className="rounded-full ml-auto h-9 w-9"
+                className="rounded-full ml-auto h-9 w-9 hidden lg:flex items-center justify-center"
                 onClick={() => setIsFlipped(!isFlipped)}
               >
-                <ArrowRight />
+                <ArrowRight className="h-4 w-4" />
               </Button>
             </CardFooter>
           </Card>

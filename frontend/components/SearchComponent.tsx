@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
 import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -76,7 +76,7 @@ export const SearchComponent = () => {
   };
 
   return (
-    <div className="w-[60%] mb-5 min-w-[800px] mx-auto">
+    <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
         <div className="flex-1 px-3 ml-1">
           <div className="text-sm font-medium ml-1">Standort</div>
@@ -141,7 +141,7 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4 min-w-[9rem] flex-[0.5]",
+                "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -173,7 +173,7 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4 min-w-[9rem] flex-[0.5]",
+                "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -183,7 +183,7 @@ export const SearchComponent = () => {
                 {date?.to ? (
                   format(date.to, "dd.MM.yyyy")
                 ) : (
-                  <span className="text-sm">Datum hinzufügen</span>
+                  <span className="text-sm ">Datum hinzufügen</span>
                 )}
               </div>
             </Button>
@@ -204,7 +204,7 @@ export const SearchComponent = () => {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="justify-start text-left font-normal px-4 min-w-[7rem] flex-[0.5]"
+              className="justify-start text-left font-normal min-w-[5rem] flex-[0.5]"
             >
               <div>
                 <div className="text-sm font-medium">Sportart</div>

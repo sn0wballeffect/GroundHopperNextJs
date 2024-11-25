@@ -7,14 +7,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div>
-      <div className="flex flex-col h-screen">
-        <NavBar />
-        <main className="flex-1 flex flex-col md:overflow-hidden">
-          <div>
-            <AnimatedText />
-            {children}
-          </div>
-        </main>
+      <div className="flex flex-col h-screen w-full">
+        <div className="hidden lg:block">
+          <NavBar />
+        </div>
+        <main className="md:overflow-hidden">{children}</main>
         <Footer />
       </div>
     </div>

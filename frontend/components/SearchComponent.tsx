@@ -76,7 +76,7 @@ export const SearchComponent = () => {
   };
 
   return (
-    <div className="w-[60%] max-w-6xl mx-auto mb-5 min-w-[750px]">
+    <div className="w-[60%] mb-5 min-w-[800px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
         <div className="flex-1 px-3 ml-1">
           <div className="text-sm font-medium ml-1">Standort</div>
@@ -106,12 +106,12 @@ export const SearchComponent = () => {
           role="button"
           aria-label="Get current location"
         />
-        <div className="h-8 w-[1px] bg-border" />
+        <div className="h-8 w-[1px] bg-border " />
         <Popover>
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="justify-start text-left font-normal px-4"
+              className="justify-start text-left font-normal px-4 flex-[0.5]"
             >
               <MapPin className="mr-2 h-4 w-4" />
               <div>
@@ -141,7 +141,7 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4 min-w-[9rem]",
+                "justify-start text-left font-normal px-4 min-w-[9rem] flex-[0.5]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -173,7 +173,7 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className={cn(
-                "justify-start text-left font-normal px-4 min-w-[9rem]",
+                "justify-start text-left font-normal px-4 min-w-[9rem] flex-[0.5]",
                 !date && "text-muted-foreground"
               )}
             >
@@ -204,7 +204,7 @@ export const SearchComponent = () => {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="justify-start text-left font-normal px-4 min-w-[8rem]"
+              className="justify-start text-left font-normal px-4 min-w-[7rem] flex-[0.5]"
             >
               <div>
                 <div className="text-sm font-medium">Sportart</div>
@@ -229,7 +229,7 @@ export const SearchComponent = () => {
         </Popover>
         <Button
           size="icon"
-          className="rounded-full ml-2 "
+          className="rounded-full ml-2"
           onClick={handleButtonClick}
         >
           <Search className="h-6 w-6" />

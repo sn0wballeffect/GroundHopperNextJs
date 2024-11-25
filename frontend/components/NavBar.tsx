@@ -6,7 +6,7 @@ import Image from "next/image";
 export function NavBar() {
   return (
     <header className="flex items-center justify-between px-4 py-3 bg-transparent w-full">
-      <Link href="/" className="">
+      <Link href="/">
         <Image
           src={grasshopper}
           alt="Grasshopper Logo"

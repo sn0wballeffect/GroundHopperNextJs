@@ -31,7 +31,7 @@ export const SearchResults = () => {
             position: isFlipped ? "absolute" : "relative",
           }}
         >
-          <Card className="mb-3 shadow-md max-w-[90%] mx-auto">
+          <Card className="mb-2 shadow-md mx-auto">
             <CardHeader className="flex flex-row justify-between items-start">
               <CardTitle className="text-lg font-bold">
                 Bayern München vs Werden Bremen

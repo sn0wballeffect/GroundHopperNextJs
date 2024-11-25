@@ -20,9 +20,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+      </head>
       <body
-        className={`${inter_init.variable} antialiased font-inter  bg-background`}
+        className={`${inter_init.variable} antialiased font-inter bg-background`}
       >
         {children}
       </body>

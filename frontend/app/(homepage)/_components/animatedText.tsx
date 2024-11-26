@@ -17,8 +17,8 @@ export default function AnimatedText() {
   const characters = Array.from(text);
 
   return (
-    <div className="my-2 md:my-2">
-      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl 2xl:text-7xl font-bold text-center whitespace-nowrap">
+    <div className="my-10 md:my-2">
+      <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl 2xl:text-7xl font-bold text-center tracking-tight break-words">
         {characters.map((char, index) => (
           <motion.span
             key={index}

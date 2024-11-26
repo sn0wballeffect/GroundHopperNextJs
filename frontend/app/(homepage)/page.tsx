@@ -1,10 +1,11 @@
+import { SearchComponentMobile } from "@/components/SearchComponentMobile";
 import { SearchComponent } from "../../components/SearchComponent";
 
 import AnimatedText from "./_components/animatedText";
 
 export default function HomePage() {
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative h-[100svh] w-full">
       <div className="absolute top-[5%] w-full px-4 sm:px-6 md:px-8">
         <AnimatedText />
       </div>
@@ -12,6 +13,9 @@ export default function HomePage() {
         {/* Hide on medium and smaller screens */}
         <div className="hidden md:block">
           <SearchComponent />
+        </div>
+        <div className="block md:hidden">
+          <SearchComponentMobile />
         </div>
       </div>
     </div>

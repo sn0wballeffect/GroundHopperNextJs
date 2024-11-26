@@ -6,12 +6,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div>
-      <div className="flex flex-col h-screen w-full">
+      <div className="flex flex-col h-[100svh] w-full">
         <div className="hidden md:block">
           <NavBar />
         </div>
         <main className="md:overflow-hidden">{children}</main>
-        <Footer />
+        <div className="hidden md:block">
+          <Footer />
+        </div>
       </div>
     </div>
   );

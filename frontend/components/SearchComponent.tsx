@@ -108,7 +108,7 @@ export const SearchComponent = () => {
               variant="ghost"
               className="justify-start text-left font-normal px-4 flex-[0.5]"
             >
-              <MapPin className="mr-2 h-4 w-4" />
+              <MapPin className="h-4 w-4" />
               <div>
                 <div className="text-sm font-medium">Umkreis</div>
                 <span className="text-sm">{distance} km</span>

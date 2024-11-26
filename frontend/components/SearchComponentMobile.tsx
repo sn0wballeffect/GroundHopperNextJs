@@ -98,7 +98,7 @@ export const SearchComponentMobile = () => {
   };
 
   return (
-    <div className="w-[90%] mx-auto min-w-0 flex flex-col">
+    <div className="w-[95%] mx-auto min-w-0 flex flex-col">
       <div className="flex flex-col p-3 bg-white rounded-3xl shadow-lg">
         {/* Location section */}
         <div className="flex items-center gap-2">
@@ -131,6 +131,15 @@ export const SearchComponentMobile = () => {
             role="button"
             aria-label="Get current location"
           />
+          <div className="h-8 w-[1px] bg-border " />
+          <Button
+            size="icon"
+            className="rounded-full ml-2"
+            onClick={handleButtonClick}
+          >
+            <Search className="h-6 w-6" />
+            <span className="sr-only">Suchen</span>
+          </Button>
         </div>
 
         <AnimatePresence>
@@ -176,7 +185,7 @@ export const SearchComponentMobile = () => {
                     />
                   </PopoverContent>
                 </Popover>
-
+                <div className="h-8 w-[1px] bg-border " />
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -211,7 +220,6 @@ export const SearchComponentMobile = () => {
                   </PopoverContent>
                 </Popover>
               </div>
-              <div className="w-[60%] h-[1px] bg-border mx-auto mb-5" />
               {/* Filters */}
               <div className="flex justify-center items-center w-full mb-5 space-x-4">
                 {/* Umkreis Filter */}
@@ -250,7 +258,7 @@ export const SearchComponentMobile = () => {
                 </Popover>
 
                 {/* Divider */}
-
+                <div className="h-8 w-[1px] bg-border " />
                 {/* Sportart Filter */}
                 <Popover>
                   <PopoverTrigger asChild>

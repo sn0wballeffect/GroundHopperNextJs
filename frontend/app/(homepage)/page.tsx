@@ -5,7 +5,7 @@ import AnimatedText from "./_components/animatedText";
 
 export default function HomePage() {
   return (
-    <div className="relative h-[100svh] w-full">
+    <div className="relative h-[100lvh] w-full min-h-[100lvh]">
       <div className="absolute top-[5%] w-full px-4 sm:px-6 md:px-8">
         <AnimatedText />
       </div>

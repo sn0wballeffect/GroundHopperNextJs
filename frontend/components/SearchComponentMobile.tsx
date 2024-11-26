@@ -92,9 +92,8 @@ export const SearchComponentMobile = () => {
       setTimeout(() => {
         window.scrollTo({
           top: 0,
-          behavior: "smooth",
         });
-      }, 150);
+      }, 0);
     }
   };
 
@@ -149,7 +148,7 @@ export const SearchComponentMobile = () => {
               <div className="flex justify-center w-full mb-5 space-x-4">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="ghost" className="flex-1 flex space-x-2 ">
+                    <Button variant="ghost" className="flex-1 flex space-x-2">
                       <CalendarIcon className="h-4 w-4 flex-shrink-0" />
                       <div className="flex flex-col items-start">
                         <span className="text-sm font-medium">Von</span>
@@ -165,6 +164,7 @@ export const SearchComponentMobile = () => {
                     className="w-auto p-0"
                     align="start"
                     side="bottom"
+                    avoidCollisions={false}
                   >
                     <Calendar
                       initialFocus
@@ -198,6 +198,7 @@ export const SearchComponentMobile = () => {
                     className="w-auto p-0"
                     align="end"
                     side="bottom"
+                    avoidCollisions={false}
                   >
                     <Calendar
                       initialFocus
@@ -231,6 +232,7 @@ export const SearchComponentMobile = () => {
                     className="w-40 p-2"
                     align="start"
                     side="bottom"
+                    avoidCollisions={false}
                   >
                     <div className="flex flex-col gap-2">
                       {[2, 5, 10, 50].map((km) => (
@@ -267,6 +269,7 @@ export const SearchComponentMobile = () => {
                     className="w-40 p-2"
                     align="end"
                     side="bottom"
+                    avoidCollisions={false}
                   >
                     <div className="flex flex-col gap-2">
                       {["Alle", "Fußball", "Basketball", "Eishockey"].map(

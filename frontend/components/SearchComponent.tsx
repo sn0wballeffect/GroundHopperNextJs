@@ -14,11 +14,6 @@ import React, { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
 
-interface UserLocation {
-  lat: number | null;
-  lng: number | null;
-}
-
 export const SearchComponent = () => {
   const pathname = usePathname();
   const router = useRouter();

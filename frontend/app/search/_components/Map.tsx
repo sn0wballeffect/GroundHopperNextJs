@@ -24,6 +24,7 @@ const defaultMapOptions = {
   mapId: "c43642982b9e74e2",
   mapTypeControl: false,
   streetViewControl: false,
+  minZoom: 3,
 };
 
 const circleOptions = {
@@ -44,7 +45,8 @@ const getZoomLevel = (distance: number): number => {
   if (distance <= 5) return 12;
   if (distance <= 10) return 11;
   if (distance <= 50) return 9;
-  return 6;
+  if (distance <= 500) return 6;
+  return 3;
 };
 
 const MapComponent = () => {

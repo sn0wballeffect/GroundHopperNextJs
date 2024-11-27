@@ -16,9 +16,6 @@ const defaultMapContainerStyle = {
 //K2's coordinates
 const defaultMapCenter = { lat: 51.1333, lng: 10.4167 };
 
-//Default zoom level, can be adjusted
-const defaultMapZoom = 6;
-
 //Map options
 const defaultMapOptions = {
   zoomControl: true,

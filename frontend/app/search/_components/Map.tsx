@@ -43,12 +43,11 @@ const circleOptions = {
 };
 
 const getZoomLevel = (distance: number): number => {
-  // These values are approximated for Google Maps
-  if (distance <= 2) return 13; // 2km
-  if (distance <= 5) return 12; // 5km
-  if (distance <= 10) return 11; // 10km
-  if (distance <= 50) return 9; // 50km
-  return 6; // default zoom
+  if (distance <= 2) return 13;
+  if (distance <= 5) return 12;
+  if (distance <= 10) return 11;
+  if (distance <= 50) return 9;
+  return 6;
 };
 
 const MapComponent = () => {
@@ -98,7 +97,7 @@ const MapComponent = () => {
       <GoogleMap
         mapContainerStyle={defaultMapContainerStyle}
         center={markerPosition || defaultMapCenter}
-        zoom={getZoomLevel(distance)}
+        zoom={markerPosition ? getZoomLevel(distance) : 6}
         options={defaultMapOptions}
         onLoad={onLoad}
       >

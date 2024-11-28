@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
+import SupabaseProvider from "./providers/supabase-provider";
 
 const inter_init = Inter({
   subsets: ["latin"],
@@ -29,7 +30,7 @@ export default function RootLayout({
       <body
         className={`${inter_init.variable} antialiased font-inter bg-background`}
       >
-        {children}
+        <SupabaseProvider>{children}</SupabaseProvider>
       </body>
     </html>
   );

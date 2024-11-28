@@ -98,7 +98,7 @@ export const SearchComponentMobile = () => {
   };
 
   return (
-    <div className="w-[95%] mx-auto min-w-0 flex flex-col">
+    <div className="w-[95%] mx-auto min-w-0 flex flex-col max-w-[360px]">
       <div className="flex flex-col p-3 bg-white rounded-3xl shadow-lg">
         {/* Location section */}
         <div className="flex items-center gap-2">

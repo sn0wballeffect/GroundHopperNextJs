@@ -7,9 +7,7 @@ export default function RootLayout({
   return (
     <div>
       <div className="flex flex-col h-[100svh] w-full">
-        <div className="hidden md:block">
-          <NavBar />
-        </div>
+        <NavBar />
         <main className="md:overflow-hidden">{children}</main>
         <div className="hidden md:block">
           <Footer />

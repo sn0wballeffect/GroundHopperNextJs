@@ -5,6 +5,7 @@ we need to make this component client rendered as well*/
 import { useStore } from "@/lib/store";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useRef, useEffect, useState } from "react";
+import stadiumData from "@/data/stadium_data.json";
 
 //Map's styling
 const defaultMapContainerStyle = {
@@ -101,6 +102,19 @@ const MapComponent = () => {
         onLoad={onLoad}
       >
         {markerPosition && <Marker position={markerPosition} />}
+        {stadiumData.slice(0, 50).map((stadium, index) => {
+          const stadiumName = Object.keys(stadium)[0];
+          const coordinates = stadium[stadiumName].Coordinates;
+          const link = stadium.Link;
+          return (
+            <Marker
+              key={index}
+              position={{ lat: coordinates[0], lng: coordinates[1] }}
+              title={stadiumName}
+              onClick={() => window.open(link, "_blank")}
+            />
+          );
+        })}
       </GoogleMap>
     </div>
   );

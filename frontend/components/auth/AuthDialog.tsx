@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { FcGoogle } from "react-icons/fc"; // Install: npm i react-icons
-import { Eye, EyeOff } from "lucide-react"; // Add lucide-react icons
+import { FcGoogle } from "react-icons/fc";
+import { Eye, EyeOff } from "lucide-react";
 
 interface AuthDialogProps {
   mode: "signin" | "signup";

@@ -11,9 +11,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CalendarDays, MapPin, ArrowRight, Navigation } from "lucide-react";
+import { useRouteStore } from "@/lib/routeStore";
 
 export const SearchResults = () => {
   const [isFlipped, setIsFlipped] = useState(false);
+  const addRoute = useRouteStore((state) => state.addRoute);
+
+  const handleAddToRoute = () => {
+    addRoute({
+      id: Math.random().toString(),
+      title: "Bayern München vs Werden Bremen",
+      date: "23.11.2024, 19:00Uhr",
+      location: "Allianz Arena, München",
+      distance: "5 km",
+    });
+  };
 
   return (
     <div style={{ perspective: "1000px" }}>
@@ -31,10 +43,11 @@ export const SearchResults = () => {
           }}
         >
           <Card className="mb-3 shadow-md">
-            <CardHeader className="flex flex-row justify-between items-start">
+            <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle className="text-lg font-bold">
                 Bayern München vs Werden Bremen
               </CardTitle>
+              <Button onClick={handleAddToRoute}>Zur Route Hinzufügen</Button>
             </CardHeader>
             <CardContent className="flex flex-row items-center">
               <CalendarDays className="h-4 w-4 mr-2" />
@@ -49,6 +62,7 @@ export const SearchResults = () => {
               <Button
                 className="rounded-full ml-auto h-9 w-9 hidden lg:flex items-center justify-center"
                 onClick={() => setIsFlipped(!isFlipped)}
+                variant={"ghost"}
               >
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -72,7 +86,9 @@ export const SearchResults = () => {
               <p>Detailed information goes here...</p>
             </CardContent>
             <CardFooter>
-              <Button onClick={() => setIsFlipped(false)}>Zurück</Button>
+              <Button variant={"ghost"} onClick={() => setIsFlipped(false)}>
+                Zurück
+              </Button>
             </CardFooter>
           </Card>
         </motion.div>

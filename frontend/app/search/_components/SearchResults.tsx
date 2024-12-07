@@ -9,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CalendarDays, MapPin, ArrowRight, Navigation } from "lucide-react";
+import { CalendarDays, MapPin, Navigation } from "lucide-react";
 import { useRouteStore } from "@/lib/routeStore";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
@@ -22,7 +22,7 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2,
+      staggerChildren: 0.3,
     },
   },
 };
@@ -34,7 +34,6 @@ const itemVariants = {
 };
 
 export const SearchResults = () => {
-  const [isFlipped, setIsFlipped] = useState(false);
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -95,7 +94,6 @@ export const SearchResults = () => {
       distance: "calculating...",
     });
   };
-
   if (loading) {
     return <div> </div>;
   }
@@ -114,68 +112,53 @@ export const SearchResults = () => {
               key={match.id}
               variants={itemVariants}
               transition={{ duration: 0.5 }}
-              style={{ perspective: "1000px" }}
             >
-              <motion.div
-                className="relative cursor-pointer"
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.6, type: "spring" }}
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                <motion.div
-                  style={{
-                    backfaceVisibility: "hidden",
-                    position: isFlipped ? "absolute" : "relative",
-                  }}
-                >
-                  <Card className="mb-3 shadow-md">
-                    <CardHeader className="flex flex-row justify-between items-center">
-                      <CardTitle className="text-lg font-bold">
-                        {match.home_team} vs {match.away_team}
-                      </CardTitle>
-                      <Button onClick={() => handleAddToRoute(match)}>
-                        Zur Route Hinzufügen
-                      </Button>
-                    </CardHeader>
-                    <CardContent className="flex flex-row items-center">
-                      <CalendarDays className="h-4 w-4 mr-2" />
+              <Card className="mb-3 shadow-md">
+                <CardHeader className="flex flex-row justify-between items-center">
+                  <CardTitle className="text-lg font-bold">
+                    {match.home_team} vs {match.away_team}
+                  </CardTitle>
+                  <Button onClick={() => handleAddToRoute(match)}>
+                    Zur Route Hinzufügen
+                  </Button>
+                </CardHeader>
+                <CardContent className="flex flex-row items-center">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  <p>
+                    {match.date_string}
+                    {", "}
+                    {match.event_time
+                      ? `${match.event_time.substring(11, 16)} Uhr`
+                      : "Time unavailable"}{" "}
+                  </p>
+                </CardContent>
+                <CardFooter className="flex flex-row items-center">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <p>{match.stadium}</p>
+                  {userLocation?.lat && userLocation?.lng && (
+                    <>
+                      <div className="h-6 w-[1px] bg-border mx-3" />
+                      <Navigation className="h-4 w-4 mr-2" />
                       <p>
-                        {match.date_string}
-                        {", "}
-                        {match.event_time
-                          ? `${match.event_time.substring(11, 16)} Uhr`
-                          : "Time unavailable"}{" "}
+                        {match.latitude && match.longitude
+                          ? `${(
+                              getDistance(
+                                {
+                                  latitude: userLocation.lat,
+                                  longitude: userLocation.lng,
+                                },
+                                {
+                                  latitude: match.latitude,
+                                  longitude: match.longitude,
+                                }
+                              ) / 1000
+                            ).toFixed(1)} km`
+                          : "Distance unavailable"}
                       </p>
-                    </CardContent>
-                    <CardFooter className="flex flex-row items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      <p>{match.stadium}</p>
-                      {userLocation?.lat && userLocation?.lng && (
-                        <>
-                          <div className="h-6 w-[1px] bg-border mx-3" />
-                          <Navigation className="h-4 w-4 mr-2" />
-                          <p>
-                            {match.latitude && match.longitude
-                              ? `${(
-                                  getDistance(
-                                    {
-                                      latitude: userLocation.lat,
-                                      longitude: userLocation.lng,
-                                    },
-                                    {
-                                      latitude: match.latitude,
-                                      longitude: match.longitude,
-                                    }
-                                  ) / 1000
-                                ).toFixed(1)} km`
-                              : "Distance unavailable"}
-                          </p>
-                        </>
-                      )}
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              </motion.div>
+                    </>
+                  )}
+                </CardFooter>
+              </Card>
             </motion.div>
           ))}
         </AnimatePresence>

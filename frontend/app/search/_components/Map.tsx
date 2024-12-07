@@ -4,7 +4,7 @@ we need to make this component client rendered as well*/
 
 import { useStore } from "@/lib/store";
 import { GoogleMap, Marker } from "@react-google-maps/api";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react"; // Added useMemo
 
 // Map's styling
 const defaultMapContainerStyle = {
@@ -56,10 +56,13 @@ const MapComponent = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const circleRef = useRef<google.maps.Circle | null>(null);
 
-  const markerPosition =
-    userLocation?.lat && userLocation?.lng
-      ? { lat: userLocation.lat, lng: userLocation.lng }
-      : null;
+  const markerPosition = useMemo(
+    () =>
+      userLocation?.lat && userLocation?.lng
+        ? { lat: userLocation.lat, lng: userLocation.lng }
+        : null,
+    [userLocation?.lat, userLocation?.lng]
+  );
 
   useEffect(() => {
     // Cleanup previous circle

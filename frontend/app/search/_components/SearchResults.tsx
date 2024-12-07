@@ -165,27 +165,31 @@ export const SearchResults = () => {
                     <CardFooter className="flex flex-row items-center">
                       <MapPin className="h-4 w-4 mr-2" />
                       <p>{match.stadium}</p>
-                      <div className="h-6 w-[1px] bg-border mx-3" />
-                      <Navigation className="h-4 w-4 mr-2" />
-                      <p>
-                        {userLocation?.lat &&
-                        userLocation?.lng &&
-                        match.latitude &&
-                        match.longitude
-                          ? `${(
-                              getDistance(
-                                {
-                                  latitude: userLocation.lat ?? undefined,
-                                  longitude: userLocation.lng ?? undefined,
-                                },
-                                {
-                                  latitude: match.latitude,
-                                  longitude: match.longitude,
-                                }
-                              ) / 1000
-                            ).toFixed(1)} km`
-                          : "Distance unavailable"}
-                      </p>
+                      {userLocation?.lat && userLocation?.lng && (
+                        <>
+                          <div className="h-6 w-[1px] bg-border mx-3" />
+                          <Navigation className="h-4 w-4 mr-2" />
+                          <p>
+                            {userLocation?.lat &&
+                            userLocation?.lng &&
+                            match.latitude &&
+                            match.longitude
+                              ? `${(
+                                  getDistance(
+                                    {
+                                      latitude: userLocation.lat ?? undefined,
+                                      longitude: userLocation.lng ?? undefined,
+                                    },
+                                    {
+                                      latitude: match.latitude,
+                                      longitude: match.longitude,
+                                    }
+                                  ) / 1000
+                                ).toFixed(1)} km`
+                              : "Distance unavailable"}
+                          </p>
+                        </>
+                      )}
                     </CardFooter>
                   </Card>
                 </motion.div>

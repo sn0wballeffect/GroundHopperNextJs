@@ -214,7 +214,9 @@ export const SearchComponent = () => {
                   key={sport}
                   variant={sportTyp === sport ? "default" : "ghost"}
                   className="justify-start"
-                  onClick={() => setSportTyp(sport)}
+                  onClick={() => {
+                    setSportTyp(sport);
+                  }}
                 >
                   {sport}
                 </Button>

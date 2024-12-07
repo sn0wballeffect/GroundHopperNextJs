@@ -6,24 +6,18 @@ import { SearchResults } from "./_components/SearchResults";
 
 export default function SearchPage() {
   return (
-    <div className="flex flex-col justify-center h-lvh w-full min-h-[lvh]">
+    <div className="flex flex-col h-full">
       <div className="hidden md:block">
         <SearchComponent />
       </div>
       <div className="block md:hidden">
         <SearchComponentMobile />
       </div>
-      <div className="grid grid-cols-1 gap-2 p-2 md:grid-cols-5 h-[calc(100vh-64px)] overflow-hidden ">
-        <div className="col-span-2 overflow-auto custom-scrollbar-hidden">
-          <SearchResults />
-          <SearchResults />
-          <SearchResults />
-          <SearchResults />
-          <SearchResults />
-          <SearchResults />
+      <div className="grid flex-1 grid-cols-1 gap-2 p-2 md:grid-cols-5 overflow-hidden">
+        <div className="col-span-2 h-full overflow-y-auto custom-scrollbar-hidden">
           <SearchResults />
         </div>
-        <div className="col-span-3 hidden md:block h-full ">
+        <div className="col-span-3 hidden md:block h-full">
           <MapProvider>
             <MapComponent />
           </MapProvider>

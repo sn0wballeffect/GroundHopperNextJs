@@ -1,8 +1,7 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,87 +11,109 @@ import {
 } from "@/components/ui/card";
 import { CalendarDays, MapPin, ArrowRight, Navigation } from "lucide-react";
 import { useRouteStore } from "@/lib/routeStore";
+import { fetchMatches } from "@/lib/api";
+import { Match } from "@/lib/types";
+import { useStore } from "@/lib/store";
 
 export const SearchResults = () => {
   const [isFlipped, setIsFlipped] = useState(false);
-  const addRoute = useRouteStore((state) => state.addRoute);
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddToRoute = () => {
+  // Get global state
+  const date = useStore((state) => state.date);
+  const distance = useStore((state) => state.distance);
+  const userLocation = useStore((state) => state.userLocation);
+  const sportTyp = useStore((state) => state.sportTyp);
+  const addRoute = useRouteStore((state) => state.addRoute);
+  const sportTypeMapping: { [key: string]: string } = {
+    Fußball: "football",
+    Basketball: "basketball",
+    Eishockey: "ice_hockey",
+  };
+  console.log(date);
+  useEffect(() => {
+    const loadMatches = async () => {
+      setLoading(true);
+      const filters = {
+        sport: sportTyp === "Alle" ? undefined : sportTypeMapping[sportTyp],
+        dateFrom:
+          date?.from instanceof Date
+            ? new Date(date.from.setHours(0, 0, 0, 0)).toISOString() // Start of day
+            : undefined,
+        dateTo:
+          date?.to instanceof Date
+            ? new Date(date.to.setHours(23, 59, 59, 999)).toISOString() // End of day
+            : undefined,
+        distance: distance,
+        lat: userLocation?.lat,
+        lng: userLocation?.lng,
+      };
+
+      const data = await fetchMatches(filters);
+      setMatches(data);
+      setLoading(false);
+    };
+
+    loadMatches();
+  }, [date, distance, userLocation, sportTyp]);
+
+  const handleAddToRoute = (match: Match) => {
     addRoute({
-      id: Math.random().toString(),
-      title: "Bayern München vs Werden Bremen",
-      date: "23.11.2024, 19:00Uhr",
-      location: "Allianz Arena, München",
-      distance: "5 km",
+      id: match.id.toString(),
+      title: `${match.home_team} vs ${match.away_team}`,
+      date: match.date_string || "",
+      location: match.stadium || "",
+      distance: "calculating...", // You could calculate this based on user location
     });
   };
 
-  return (
-    <div style={{ perspective: "1000px" }}>
-      <motion.div
-        className="relative cursor-pointer"
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring" }}
-        style={{ transformStyle: "preserve-3d" }}
-      >
-        {/* Front Card */}
-        <motion.div
-          style={{
-            backfaceVisibility: "hidden",
-            position: isFlipped ? "absolute" : "relative",
-          }}
-        >
-          <Card className="mb-3 shadow-md">
-            <CardHeader className="flex flex-row justify-between items-center">
-              <CardTitle className="text-lg font-bold">
-                Bayern München vs Werden Bremen
-              </CardTitle>
-              <Button onClick={handleAddToRoute}>Zur Route Hinzufügen</Button>
-            </CardHeader>
-            <CardContent className="flex flex-row items-center">
-              <CalendarDays className="h-4 w-4 mr-2" />
-              <p> 23.11.2024, 19:00Uhr</p>
-            </CardContent>
-            <CardFooter className="flex flex-row items-center">
-              <MapPin className="h-4 w-4 mr-2" />
-              <p>Allianz Arena, München</p>
-              <div className="h-6 w-[1px] bg-border mx-3" />
-              <Navigation className="h-4 w-4 mr-2" />
-              <p>5 km entfernt</p>
-              <Button
-                className="rounded-full ml-auto h-9 w-9 hidden lg:flex items-center justify-center"
-                onClick={() => setIsFlipped(!isFlipped)}
-                variant={"ghost"}
-              >
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        </motion.div>
+  if (loading) {
+    return <div>Loading matches...</div>;
+  }
 
-        {/* Back Card */}
-        <motion.div
-          style={{
-            backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-            position: isFlipped ? "relative" : "absolute",
-          }}
-        >
-          <Card className="mb-2 shadow-md">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Detailed information goes here...</p>
-            </CardContent>
-            <CardFooter>
-              <Button variant={"ghost"} onClick={() => setIsFlipped(false)}>
-                Zurück
-              </Button>
-            </CardFooter>
-          </Card>
-        </motion.div>
-      </motion.div>
+  return (
+    <div>
+      {matches.map((match) => (
+        <div key={match.id} style={{ perspective: "1000px" }}>
+          <motion.div
+            className="relative cursor-pointer"
+            animate={{ rotateY: isFlipped ? 180 : 0 }}
+            transition={{ duration: 0.6, type: "spring" }}
+            style={{ transformStyle: "preserve-3d" }}
+          >
+            <motion.div
+              style={{
+                backfaceVisibility: "hidden",
+                position: isFlipped ? "absolute" : "relative",
+              }}
+            >
+              <Card className="mb-3 shadow-md">
+                <CardHeader className="flex flex-row justify-between items-center">
+                  <CardTitle className="text-lg font-bold">
+                    {match.home_team} vs {match.away_team}
+                  </CardTitle>
+                  <Button onClick={() => handleAddToRoute(match)}>
+                    Zur Route Hinzufügen
+                  </Button>
+                </CardHeader>
+                <CardContent className="flex flex-row items-center">
+                  <CalendarDays className="h-4 w-4 mr-2" />
+                  <p>{match.date_string}</p>
+                  <div className="h-6 w-[1px] bg-border mx-3" />
+                </CardContent>
+                <CardFooter className="flex flex-row items-center">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <p>{match.stadium}</p>
+                  <div className="h-6 w-[1px] bg-border mx-3" />
+                  <Navigation className="h-4 w-4 mr-2" />
+                  <p>calculating...</p>
+                </CardFooter>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </div>
+      ))}
     </div>
   );
 };

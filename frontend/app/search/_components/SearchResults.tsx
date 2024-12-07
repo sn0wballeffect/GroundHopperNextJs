@@ -42,11 +42,14 @@ export const SearchResults = () => {
   const userLocation = useStore((state) => state.userLocation);
   const sportTyp = useStore((state) => state.sportTyp);
   const addRoute = useRouteStore((state) => state.addRoute);
+  const routes = useRouteStore((state) => state.routes); // Get current routes
+
   const sportTypeMapping: { [key: string]: string } = {
     Fußball: "football",
     Basketball: "basketball",
     Eishockey: "ice_hockey",
   };
+
   useEffect(() => {
     const loadMatches = async () => {
       setLoading(true);
@@ -67,29 +70,14 @@ export const SearchResults = () => {
 
       let data = await fetchMatches(filters);
 
-      const parseDate = (dateStr: string | null): Date => {
-        return dateStr ? new Date(dateStr) : new Date(0);
-      };
+      // Remove matches already in routes
+      const filteredData = data.filter(
+        (match) => !routes.some((route) => route.id === match.id.toString())
+      );
 
-      data.sort((a, b) => {
-        const dateA = parseDate(a.event_date);
-        const dateB = parseDate(b.event_date);
+      setMatches(filteredData);
 
-        if (dateA < dateB) return -1;
-        if (dateA > dateB) return 1;
-
-        const timeA = a.event_time || "";
-        const timeB = b.event_time || "";
-
-        if (timeA < timeB) return -1;
-        if (timeA > timeB) return 1;
-
-        return 0;
-      });
-
-      setMatches(data);
-
-      const newMarkers = data
+      const newMarkers = filteredData
         .filter((match) => match.latitude !== null && match.longitude !== null)
         .map((match) => ({
           id: match.id.toString(),
@@ -104,7 +92,7 @@ export const SearchResults = () => {
     };
 
     loadMatches();
-  }, [date, distance, userLocation, sportTyp]);
+  }, [date, distance, userLocation, sportTyp, routes]);
 
   const handleAddToRoute = (match: Match) => {
     addRoute({

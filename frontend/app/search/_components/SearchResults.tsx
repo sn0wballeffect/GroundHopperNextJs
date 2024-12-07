@@ -67,17 +67,32 @@ export const SearchResults = () => {
       };
 
       const data = await fetchMatches(filters);
-      setMatches(data);
 
-      const newMarkers = data
-        .filter((match) => match.latitude !== null && match.longitude !== null)
-        .map((match) => ({
-          id: match.id.toString(),
-          position: {
-            lat: match.latitude as number,
-            lng: match.longitude as number,
-          },
-        }));
+      // Limit to 30 unique locations
+      const uniqueLocations = new Map<string, Match>();
+      data.forEach((match) => {
+        if (
+          match.latitude !== null &&
+          match.longitude !== null &&
+          uniqueLocations.size < 50
+        ) {
+          const key = `${match.latitude},${match.longitude}`;
+          if (!uniqueLocations.has(key)) {
+            uniqueLocations.set(key, match);
+          }
+        }
+      });
+
+      setMatches(Array.from(uniqueLocations.values()));
+
+      const newMarkers = Array.from(uniqueLocations.values()).map((match) => ({
+        id: match.id.toString(),
+        position: {
+          lat: match.latitude as number,
+          lng: match.longitude as number,
+        },
+      }));
+
       useStore.getState().setMarkers(newMarkers);
 
       setLoading(false);

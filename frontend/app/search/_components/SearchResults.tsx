@@ -107,60 +107,111 @@ export const SearchResults = () => {
         exit="hidden"
       >
         <AnimatePresence>
-          {matches.map((match) => (
-            <motion.div
-              key={match.id}
-              variants={itemVariants}
-              transition={{ duration: 0.5 }}
-            >
-              <Card className="mb-3 shadow-md">
-                <CardHeader className="flex flex-row justify-between items-center">
-                  <CardTitle className="text-lg font-bold">
-                    {match.home_team} vs {match.away_team}
-                  </CardTitle>
-                  <Button onClick={() => handleAddToRoute(match)}>
-                    Zur Route Hinzufügen
-                  </Button>
-                </CardHeader>
-                <CardContent className="flex flex-row items-center">
-                  <CalendarDays className="h-4 w-4 mr-2" />
-                  <p>
-                    {match.date_string}
-                    {", "}
-                    {match.event_time
-                      ? `${match.event_time.substring(11, 16)} Uhr`
-                      : "Time unavailable"}{" "}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex flex-row items-center">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  <p>{match.stadium}</p>
-                  {userLocation?.lat && userLocation?.lng && (
-                    <>
-                      <div className="h-6 w-[1px] bg-border mx-3" />
-                      <Navigation className="h-4 w-4 mr-2" />
-                      <p>
-                        {match.latitude && match.longitude
-                          ? `${(
-                              getDistance(
-                                {
-                                  latitude: userLocation.lat,
-                                  longitude: userLocation.lng,
-                                },
-                                {
-                                  latitude: match.latitude,
-                                  longitude: match.longitude,
-                                }
-                              ) / 1000
-                            ).toFixed(1)} km`
-                          : "Distance unavailable"}
-                      </p>
-                    </>
-                  )}
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
+          {matches.map((match, index) =>
+            index < 6 ? (
+              <motion.div
+                key={match.id}
+                variants={itemVariants}
+                transition={{ duration: 0.5 }}
+              >
+                <Card className="mb-3 shadow-md">
+                  <CardHeader className="flex flex-row justify-between items-center">
+                    <CardTitle className="text-lg font-bold">
+                      {match.home_team} vs {match.away_team}
+                    </CardTitle>
+                    <Button onClick={() => handleAddToRoute(match)}>
+                      Zur Route Hinzufügen
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="flex flex-row items-center">
+                    <CalendarDays className="h-4 w-4 mr-2" />
+                    <p>
+                      {match.date_string}
+                      {", "}
+                      {match.event_time
+                        ? `${match.event_time.substring(11, 16)} Uhr`
+                        : "Time unavailable"}{" "}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex flex-row items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    <p>{match.stadium}</p>
+                    {userLocation?.lat && userLocation?.lng && (
+                      <>
+                        <div className="h-6 w-[1px] bg-border mx-3" />
+                        <Navigation className="h-4 w-4 mr-2" />
+                        <p>
+                          {match.latitude && match.longitude
+                            ? `${(
+                                getDistance(
+                                  {
+                                    latitude: userLocation.lat,
+                                    longitude: userLocation.lng,
+                                  },
+                                  {
+                                    latitude: match.latitude,
+                                    longitude: match.longitude,
+                                  }
+                                ) / 1000
+                              ).toFixed(1)} km`
+                            : "Distance unavailable"}
+                        </p>
+                      </>
+                    )}
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            ) : (
+              <div key={match.id}>
+                <Card className="mb-3 shadow-md">
+                  <CardHeader className="flex flex-row justify-between items-center">
+                    <CardTitle className="text-lg font-bold">
+                      {match.home_team} vs {match.away_team}
+                    </CardTitle>
+                    <Button onClick={() => handleAddToRoute(match)}>
+                      Zur Route Hinzufügen
+                    </Button>
+                  </CardHeader>
+                  <CardContent className="flex flex-row items-center">
+                    <CalendarDays className="h-4 w-4 mr-2" />
+                    <p>
+                      {match.date_string}
+                      {", "}
+                      {match.event_time
+                        ? `${match.event_time.substring(11, 16)} Uhr`
+                        : "Time unavailable"}{" "}
+                    </p>
+                  </CardContent>
+                  <CardFooter className="flex flex-row items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    <p>{match.stadium}</p>
+                    {userLocation?.lat && userLocation?.lng && (
+                      <>
+                        <div className="h-6 w-[1px] bg-border mx-3" />
+                        <Navigation className="h-4 w-4 mr-2" />
+                        <p>
+                          {match.latitude && match.longitude
+                            ? `${(
+                                getDistance(
+                                  {
+                                    latitude: userLocation.lat,
+                                    longitude: userLocation.lng,
+                                  },
+                                  {
+                                    latitude: match.latitude,
+                                    longitude: match.longitude,
+                                  }
+                                ) / 1000
+                              ).toFixed(1)} km`
+                            : "Distance unavailable"}
+                        </p>
+                      </>
+                    )}
+                  </CardFooter>
+                </Card>
+              </div>
+            )
+          )}
         </AnimatePresence>
       </motion.div>
     </div>

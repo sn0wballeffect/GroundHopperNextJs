@@ -14,6 +14,7 @@ import { useRouteStore } from "@/lib/routeStore";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
 import { useStore } from "@/lib/store";
+import { getDistance } from "geolib";
 
 // Add variants for the container and items
 const containerVariants = {
@@ -134,7 +135,25 @@ export const SearchResults = () => {
                       <p>{match.stadium}</p>
                       <div className="h-6 w-[1px] bg-border mx-3" />
                       <Navigation className="h-4 w-4 mr-2" />
-                      <p>calculating...</p>
+                      <p>
+                        {userLocation?.lat &&
+                        userLocation?.lng &&
+                        match.latitude &&
+                        match.longitude
+                          ? `${(
+                              getDistance(
+                                {
+                                  latitude: userLocation.lat ?? undefined,
+                                  longitude: userLocation.lng ?? undefined,
+                                },
+                                {
+                                  latitude: match.latitude,
+                                  longitude: match.longitude,
+                                }
+                              ) / 1000
+                            ).toFixed(1)} km`
+                          : "Distance unavailable"}
+                      </p>
                     </CardFooter>
                   </Card>
                 </motion.div>

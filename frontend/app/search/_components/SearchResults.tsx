@@ -127,8 +127,13 @@ export const SearchResults = () => {
                     </CardHeader>
                     <CardContent className="flex flex-row items-center">
                       <CalendarDays className="h-4 w-4 mr-2" />
-                      <p>{match.date_string}</p>
-                      <div className="h-6 w-[1px] bg-border mx-3" />
+                      <p>
+                        {match.date_string}
+                        {", "}
+                        {match.event_time
+                          ? `${match.event_time.substring(11, 16)} Uhr`
+                          : "Time unavailable"}{" "}
+                      </p>
                     </CardContent>
                     <CardFooter className="flex flex-row items-center">
                       <MapPin className="h-4 w-4 mr-2" />

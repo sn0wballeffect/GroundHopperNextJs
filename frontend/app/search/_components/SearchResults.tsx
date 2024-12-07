@@ -31,7 +31,6 @@ export const SearchResults = () => {
     Basketball: "basketball",
     Eishockey: "ice_hockey",
   };
-  console.log(date);
   useEffect(() => {
     const loadMatches = async () => {
       setLoading(true);

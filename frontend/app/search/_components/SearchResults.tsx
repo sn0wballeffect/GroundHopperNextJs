@@ -68,6 +68,18 @@ export const SearchResults = () => {
 
       const data = await fetchMatches(filters);
       setMatches(data);
+
+      const newMarkers = data
+        .filter((match) => match.latitude !== null && match.longitude !== null)
+        .map((match) => ({
+          id: match.id.toString(),
+          position: {
+            lat: match.latitude as number,
+            lng: match.longitude as number,
+          },
+        }));
+      useStore.getState().setMarkers(newMarkers);
+
       setLoading(false);
     };
 

@@ -6,17 +6,17 @@ import { useStore } from "@/lib/store";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import { useRef, useEffect, useState } from "react";
 
-//Map's styling
+// Map's styling
 const defaultMapContainerStyle = {
   width: "100%",
   height: "100%",
-  borderRadius: "12px 12px 12px 12px",
+  borderRadius: "12px",
 };
 
-//K2's coordinates
+// K2's coordinates
 const defaultMapCenter = { lat: 51.1333, lng: 10.4167 };
 
-//Map options
+// Map options
 const defaultMapOptions = {
   zoomControl: true,
   tilt: 0,
@@ -52,11 +52,12 @@ const getZoomLevel = (distance: number): number => {
 const MapComponent = () => {
   const userLocation = useStore((state) => state.userLocation);
   const distance = useStore((state) => state.distance);
+  const markers = useStore((state) => state.markers);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const circleRef = useRef<google.maps.Circle | null>(null);
 
   const markerPosition =
-    userLocation.lat && userLocation.lng
+    userLocation?.lat && userLocation?.lng
       ? { lat: userLocation.lat, lng: userLocation.lng }
       : null;
 
@@ -87,8 +88,8 @@ const MapComponent = () => {
     };
   }, [distance, markerPosition, map]);
 
-  const onLoad = (map: google.maps.Map) => {
-    setMap(map);
+  const onLoad = (mapInstance: google.maps.Map) => {
+    setMap(mapInstance);
   };
 
   return (
@@ -101,6 +102,10 @@ const MapComponent = () => {
         onLoad={onLoad}
       >
         {markerPosition && <Marker position={markerPosition} />}
+        {markers &&
+          markers.map((marker) => (
+            <Marker key={marker.id} position={marker.position} />
+          ))}
       </GoogleMap>
     </div>
   );

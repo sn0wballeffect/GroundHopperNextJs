@@ -8,6 +8,11 @@ interface UserLocation {
   lng: number | null;
 }
 
+interface Marker {
+  id: string;
+  position: google.maps.LatLngLiteral;
+}
+
 interface Store {
   // Date
   date: DateRange | undefined;
@@ -28,6 +33,11 @@ interface Store {
   // User Location
   userLocation: UserLocation;
   setUserLocation: (location: UserLocation) => void;
+
+  // Markers
+  markers: Marker[];
+  addMarker: (marker: Marker) => void;
+  setMarkers: (markers: Marker[]) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -53,4 +63,14 @@ export const useStore = create<Store>((set) => ({
   // User Location
   userLocation: { lat: null, lng: null },
   setUserLocation: (location) => set({ userLocation: location }),
+
+  // Markers
+  markers: [],
+  addMarker: (marker) =>
+    set((state) => ({
+      markers: state.markers.some((m) => m.id === marker.id)
+        ? state.markers
+        : [...state.markers, marker],
+    })),
+  setMarkers: (markers) => set({ markers }),
 }));

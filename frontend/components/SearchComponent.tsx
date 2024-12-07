@@ -45,6 +45,12 @@ export const SearchComponent = () => {
   };
 
   const handleGetLocation = () => {
+    if (userLocation && userLocation.lat && userLocation.lng) {
+      // Remove location
+      setUserLocation({ lat: null, lng: null });
+      return;
+    }
+
     setIsLoading(true);
 
     if (!navigator.geolocation) {
@@ -99,7 +105,7 @@ export const SearchComponent = () => {
           }`}
           onClick={handleGetLocation}
           role="button"
-          aria-label="Get current location"
+          aria-label="Toggle location"
         />
         <div className="h-8 w-[1px] bg-border " />
         <Popover>

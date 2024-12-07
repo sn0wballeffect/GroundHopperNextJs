@@ -68,9 +68,20 @@ export const useStore = create<Store>((set) => ({
   markers: [],
   addMarker: (marker) =>
     set((state) => ({
-      markers: state.markers.some((m) => m.id === marker.id)
+      markers: state.markers.find(
+        (m) =>
+          m.position.lat === marker.position.lat &&
+          m.position.lng === marker.position.lng
+      )
         ? state.markers
         : [...state.markers, marker],
     })),
-  setMarkers: (markers) => set({ markers }),
+  setMarkers: (markers) =>
+    set({
+      markers: [
+        ...new Map(
+          markers.map((m) => [`${m.position.lat}-${m.position.lng}`, m])
+        ).values(),
+      ],
+    }),
 }));

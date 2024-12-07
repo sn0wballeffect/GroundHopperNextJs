@@ -65,7 +65,28 @@ export const SearchResults = () => {
         lng: userLocation?.lng,
       };
 
-      const data = await fetchMatches(filters);
+      let data = await fetchMatches(filters);
+
+      const parseDate = (dateStr: string | null): Date => {
+        return dateStr ? new Date(dateStr) : new Date(0);
+      };
+
+      data.sort((a, b) => {
+        const dateA = parseDate(a.event_date);
+        const dateB = parseDate(b.event_date);
+
+        if (dateA < dateB) return -1;
+        if (dateA > dateB) return 1;
+
+        const timeA = a.event_time || "";
+        const timeB = b.event_time || "";
+
+        if (timeA < timeB) return -1;
+        if (timeA > timeB) return 1;
+
+        return 0;
+      });
+
       setMatches(data);
 
       const newMarkers = data

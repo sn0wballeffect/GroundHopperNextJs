@@ -54,6 +54,7 @@ const MapComponent = () => {
   const distance = useStore((state) => state.distance);
   const markers = useStore((state) => state.markers);
   const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [visibleMarkers, setVisibleMarkers] = useState<typeof markers>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
 
   const markerPosition = useMemo(
@@ -63,6 +64,18 @@ const MapComponent = () => {
         : null,
     [userLocation?.lat, userLocation?.lng]
   );
+
+  useEffect(() => {
+    // Sequentially add markers with a smaller delay for smoothness
+    if (markers) {
+      setVisibleMarkers([]);
+      markers.forEach((marker, index) => {
+        setTimeout(() => {
+          setVisibleMarkers((prev) => [...prev, marker]);
+        }, index * 20); // 100ms delay between markers
+      });
+    }
+  }, [markers]);
 
   useEffect(() => {
     // Cleanup previous circle
@@ -104,11 +117,19 @@ const MapComponent = () => {
         options={defaultMapOptions}
         onLoad={onLoad}
       >
-        {markerPosition && <Marker position={markerPosition} />}
-        {markers &&
-          markers.map((marker) => (
-            <Marker key={marker.id} position={marker.position} />
-          ))}
+        {markerPosition && (
+          <Marker
+            position={markerPosition}
+            animation={google.maps.Animation.DROP}
+          />
+        )}
+        {visibleMarkers.map((marker, index) => (
+          <Marker
+            key={`${marker.id}-${index}`}
+            position={marker.position}
+            animation={google.maps.Animation.DROP}
+          />
+        ))}
       </GoogleMap>
     </div>
   );

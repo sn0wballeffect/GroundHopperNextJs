@@ -209,7 +209,7 @@ export const SearchResults = () => {
                           userLocation?.lng &&
                           match.latitude &&
                           match.longitude && (
-                            <span className="text-sm flex items-center mt-1">
+                            <span className="flex items-center">
                               {(
                                 getDistance(
                                   {
@@ -234,7 +234,7 @@ export const SearchResults = () => {
               <div key={match.id}>
                 <Card
                   className={cn(
-                    "mb-6 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(25vh-24px)]", // 25vh for 4 cards, minus some margin
+                    "mb-3 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(25vh-65px)]", // 25vh for 4 cards, minus some margin
                     SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
                   )}
                 >
@@ -282,7 +282,7 @@ export const SearchResults = () => {
                           userLocation?.lng &&
                           match.latitude &&
                           match.longitude && (
-                            <span className="text-sm flex items-center mt-1">
+                            <span className="flex items-center">
                               {(
                                 getDistance(
                                   {

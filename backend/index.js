@@ -71,9 +71,14 @@ app.get("/matches", async (req, res) => {
 
     const matches = await prisma.table.findMany({
       where: whereClause,
-      orderBy: {
-        event_date: "asc",
-      },
+      orderBy: [
+        {
+          event_date: "asc",
+        },
+        {
+          event_time: "asc",
+        },
+      ],
       take: parseInt(limit), // Add limit
     });
 

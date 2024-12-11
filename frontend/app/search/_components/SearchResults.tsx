@@ -68,7 +68,7 @@ export const SearchResults = () => {
         lng: userLocation?.lng,
       };
 
-      let data = await fetchMatches(filters);
+      const data = await fetchMatches(filters);
 
       // Remove matches already in routes
       const filteredData = data.filter(

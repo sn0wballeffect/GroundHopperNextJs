@@ -54,9 +54,11 @@ const getZoomLevel = (distance: number): number => {
 
 const MapComponent = () => {
   const userLocation = useStore((state) => state.userLocation);
+  const setUserLocation = useStore((state) => state.setUserLocation); // Add this
   const distance = useStore((state) => state.distance);
-  const setDistance = useStore((state) => state.setDistance); // Add this
+  const setDistance = useStore((state) => state.setDistance);
   const markers = useStore((state) => state.markers);
+  const setSearchQuery = useStore((state) => state.setSearchQuery); // Add this
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [visibleMarkers, setVisibleMarkers] = useState<typeof markers>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
@@ -96,7 +98,7 @@ const MapComponent = () => {
         radius: distance * 1000,
         ...circleOptions,
         editable: true, // Make circle editable
-        draggable: false,
+        draggable: true, // Make circle draggable
       });
 
       // Add radius change listener
@@ -104,6 +106,18 @@ const MapComponent = () => {
         const newRadius = circle.getRadius();
         const newDistanceKm = Math.round(newRadius / 1000);
         setDistance(newDistanceKm);
+      });
+
+      // Add center change listener
+      google.maps.event.addListener(circle, "center_changed", () => {
+        const newCenter = circle.getCenter();
+        if (newCenter) {
+          setUserLocation({
+            lat: newCenter.lat(),
+            lng: newCenter.lng(),
+          });
+          setSearchQuery(""); // Clear search query when circle is dragged
+        }
       });
 
       circleRef.current = circle;
@@ -116,7 +130,14 @@ const MapComponent = () => {
         circleRef.current = null;
       }
     };
-  }, [distance, markerPosition, map, setDistance]);
+  }, [
+    distance,
+    markerPosition,
+    map,
+    setDistance,
+    setUserLocation,
+    setSearchQuery,
+  ]);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);

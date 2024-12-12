@@ -79,6 +79,7 @@ export const SearchComponent = () => {
     if (userLocation && userLocation.lat && userLocation.lng) {
       // Remove location
       setUserLocation({ lat: null, lng: null });
+      setSearchQuery("");
       return;
     }
 

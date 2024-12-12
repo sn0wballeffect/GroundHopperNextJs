@@ -111,10 +111,10 @@ export const SearchComponent = () => {
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
         <div className="relative flex-1 px-3 ml-1">
-          <div className="text-sm font-medium ml-1">Stadt</div>
+          <div className="text-sm font-medium ml-1">Ort</div>
           <Input
             type="text"
-            placeholder="Stadt suchen..."
+            placeholder="Ort suchen..."
             className="border-0 shadow-none p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
             value={searchQuery}
             onChange={handleInputChange}
@@ -171,7 +171,7 @@ export const SearchComponent = () => {
           </PopoverTrigger>
           <PopoverContent className="w-40 p-2" align="start">
             <div className="flex flex-col gap-2">
-              {[2, 5, 10, 50].map((km) => (
+              {[5, 10, 25, 50].map((km) => (
                 <Button
                   key={km}
                   variant={distance === km ? "default" : "ghost"}

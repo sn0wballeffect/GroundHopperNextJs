@@ -44,6 +44,7 @@ const getZoomLevel = (distance: number): number => {
   if (distance <= 2) return 13;
   if (distance <= 5) return 12;
   if (distance <= 10) return 11;
+  if (distance <= 25) return 10;
   if (distance <= 50) return 9;
   if (distance <= 500) return 6;
   return 3;

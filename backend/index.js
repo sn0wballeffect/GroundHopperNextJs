@@ -10,6 +10,21 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
+// Add Haversine distance helper function
+function haversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 // Routes
 app.get("/matches", async (req, res) => {
   try {
@@ -40,35 +55,53 @@ app.get("/matches", async (req, res) => {
 
     // Location and distance filter
     if (lat && lng && distance) {
-      whereClause.AND = [
-        { latitude: { not: null } },
-        { longitude: { not: null } },
-      ];
-
       const radius = parseFloat(distance);
       const latVal = parseFloat(lat);
       const lngVal = parseFloat(lng);
 
-      whereClause.OR = [
+      // Create bounding box for initial filtering
+      const latRadius = radius / 111.32;
+      const lonRadius = radius / (111.32 * Math.cos((latVal * Math.PI) / 180));
+
+      whereClause.AND = [
+        { latitude: { not: null } },
+        { longitude: { not: null } },
         {
-          AND: [
-            {
-              latitude: {
-                gte: latVal - radius / 111.32,
-                lte: latVal + radius / 111.32,
-              },
-            },
-            {
-              longitude: {
-                gte: lngVal - radius / 111.32,
-                lte: lngVal + radius / 111.32,
-              },
-            },
-          ],
+          latitude: {
+            gte: latVal - latRadius,
+            lte: latVal + latRadius,
+          },
+        },
+        {
+          longitude: {
+            gte: lngVal - lonRadius,
+            lte: lngVal + lonRadius,
+          },
         },
       ];
+
+      // Get matches within bounding box
+      let matches = await prisma.table.findMany({
+        where: whereClause,
+        orderBy: [{ event_date: "asc" }, { event_time: "asc" }],
+        take: parseInt(limit),
+      });
+
+      // Apply precise Haversine filter
+      matches = matches.filter((match) => {
+        const dist = haversineDistance(
+          latVal,
+          lngVal,
+          match.latitude,
+          match.longitude
+        );
+        return dist <= radius;
+      });
+
+      return res.json(matches);
     }
 
+    // Handle non-location based queries
     const matches = await prisma.table.findMany({
       where: whereClause,
       orderBy: [

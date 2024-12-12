@@ -3,7 +3,7 @@ we need to make this component client rendered as well*/
 "use client";
 
 import { useStore } from "@/lib/store";
-import { GoogleMap, Marker } from "@react-google-maps/api";
+import { GoogleMap, MarkerF } from "@react-google-maps/api";
 import { useRef, useEffect, useState, useMemo } from "react"; // Added useMemo
 
 // Map's styling
@@ -118,13 +118,13 @@ const MapComponent = () => {
         onLoad={onLoad}
       >
         {markerPosition && (
-          <Marker
+          <MarkerF
             position={markerPosition}
             animation={google.maps.Animation.DROP}
           />
         )}
         {visibleMarkers.map((marker, index) => (
-          <Marker
+          <MarkerF
             key={`${marker.id}-${index}`}
             position={marker.position}
             animation={google.maps.Animation.DROP}

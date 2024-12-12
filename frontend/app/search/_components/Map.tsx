@@ -205,7 +205,7 @@ const MapComponent = () => {
         options={defaultMapOptions}
         onLoad={onLoad}
       >
-        {markerPosition && window.google && (
+        {markerPosition && window.google ? (
           <div
             ref={(el) => {
               if (el && window.google) {
@@ -227,6 +227,7 @@ const MapComponent = () => {
                     map,
                     content: userPinElement.element,
                     gmpDraggable: true,
+                    zIndex: 100,
                   }
                 );
 
@@ -258,6 +259,9 @@ const MapComponent = () => {
               }
             }}
           />
+        ) : (
+          // Cleanup when markerPosition is null
+          userMarkerRef.current?.map && (userMarkerRef.current.map = null)
         )}
       </GoogleMap>
     </div>

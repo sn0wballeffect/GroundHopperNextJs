@@ -46,6 +46,8 @@ const getZoomLevel = (distance: number): number => {
   if (distance <= 10) return 11;
   if (distance <= 25) return 10;
   if (distance <= 50) return 9;
+  if (distance <= 100) return 8;
+  if (distance <= 250) return 7;
   if (distance <= 500) return 6;
   return 3;
 };
@@ -53,6 +55,7 @@ const getZoomLevel = (distance: number): number => {
 const MapComponent = () => {
   const userLocation = useStore((state) => state.userLocation);
   const distance = useStore((state) => state.distance);
+  const setDistance = useStore((state) => state.setDistance); // Add this
   const markers = useStore((state) => state.markers);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [visibleMarkers, setVisibleMarkers] = useState<typeof markers>([]);
@@ -92,7 +95,17 @@ const MapComponent = () => {
         center: markerPosition,
         radius: distance * 1000,
         ...circleOptions,
+        editable: true, // Make circle editable
+        draggable: false,
       });
+
+      // Add radius change listener
+      google.maps.event.addListener(circle, "radius_changed", () => {
+        const newRadius = circle.getRadius();
+        const newDistanceKm = Math.round(newRadius / 1000);
+        setDistance(newDistanceKm);
+      });
+
       circleRef.current = circle;
     }
 
@@ -103,7 +116,7 @@ const MapComponent = () => {
         circleRef.current = null;
       }
     };
-  }, [distance, markerPosition, map]);
+  }, [distance, markerPosition, map, setDistance]);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);

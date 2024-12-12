@@ -11,6 +11,7 @@ interface UserLocation {
 interface Marker {
   id: string;
   position: google.maps.LatLngLiteral;
+  sport: string;
 }
 
 interface Store {

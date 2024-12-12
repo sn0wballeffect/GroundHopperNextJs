@@ -40,6 +40,32 @@ const circleOptions = {
   zIndex: 1,
 };
 
+const SPORT_COLORS = {
+  football: "#4ade80", // green-400
+  basketball: "#fb923c", // orange-400
+  ice_hockey: "#60a5fa", // blue-400
+  handball: "#facc15", // yellow-400
+  volleyball: "#c084fc", // purple-400
+  tennis: "#f87171", // red-400
+};
+
+const SPORT_ICONS = {
+  football: "⚽",
+  basketball: "🏀",
+  ice_hockey: "🏒",
+  handball: "🤾",
+  volleyball: "🏐",
+  tennis: "🎾",
+};
+
+const getMarkerColor = (sport: keyof typeof SPORT_COLORS): string => {
+  return SPORT_COLORS[sport] || "#d1d5db"; // gray-300 as default
+};
+
+const getGlyphForSport = (sport: keyof typeof SPORT_ICONS): string => {
+  return SPORT_ICONS[sport] || "🎯";
+};
+
 const getZoomLevel = (distance: number): number => {
   if (distance <= 2) return 13;
   if (distance <= 5) return 12;
@@ -83,11 +109,22 @@ const MapComponent = () => {
     markersRef.current = [];
 
     // Create new advanced markers
+
     const newMarkers = markers.map((marker) => {
+      const sport = marker.sport as keyof typeof SPORT_COLORS;
+      const pinElement = new google.maps.marker.PinElement({
+        background: getMarkerColor(sport),
+        borderColor: "#000000",
+        scale: 1.2,
+        glyph: getGlyphForSport(marker.sport as keyof typeof SPORT_ICONS),
+        glyphColor: "rgba(0, 0, 0, 0.8)", // Add contrast
+      });
+
       const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
         map,
         position: marker.position,
         title: marker.id,
+        content: pinElement.element,
       });
       return advancedMarker;
     });

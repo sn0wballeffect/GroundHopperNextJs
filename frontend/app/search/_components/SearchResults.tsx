@@ -112,6 +112,7 @@ export const SearchResults = () => {
             lat: match.latitude as number,
             lng: match.longitude as number,
           },
+          sport: match.sport,
         }));
       useStore.getState().setMarkers(newMarkers);
 

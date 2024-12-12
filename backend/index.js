@@ -89,6 +89,50 @@ app.get("/matches", async (req, res) => {
   }
 });
 
+app.get("/cities", async (req, res) => {
+  try {
+    const { search } = req.query;
+
+    if (!search || search.length < 2) {
+      return res.json([]);
+    }
+
+    const cities = await prisma.cities.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              startsWith: search,
+            },
+          },
+          {
+            ascii_name: {
+              startsWith: search,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+        name: true,
+        ascii_name: true,
+        latitude: true,
+        longitude: true,
+        population: true,
+      },
+      orderBy: {
+        population: "desc",
+      },
+      take: 5,
+    });
+
+    res.json(cities);
+  } catch (error) {
+    console.error("Error searching cities:", error);
+    res.status(500).json({ error: "Failed to search cities" });
+  }
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

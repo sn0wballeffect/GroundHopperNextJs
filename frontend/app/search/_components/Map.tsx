@@ -215,10 +215,17 @@ const MapComponent = () => {
                 }
 
                 // Create new marker
+                const userPinElement = new google.maps.marker.PinElement({
+                  scale: 1.3,
+                  glyph: "🏃", // User icon
+                  glyphColor: "#ffffff",
+                });
+
                 const userMarker = new google.maps.marker.AdvancedMarkerElement(
                   {
                     position: markerPosition,
                     map,
+                    content: userPinElement.element,
                     gmpDraggable: true,
                   }
                 );

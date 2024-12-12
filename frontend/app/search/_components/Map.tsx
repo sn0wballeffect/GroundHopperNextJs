@@ -30,7 +30,7 @@ const defaultMapOptions = {
 const circleOptions = {
   strokeColor: "#FF0000",
   strokeOpacity: 0.8,
-  strokeWeight: 1,
+  strokeWeight: 2,
   fillColor: "#FF0000",
   fillOpacity: 0.1,
   clickable: false,

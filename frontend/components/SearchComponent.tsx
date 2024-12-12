@@ -131,10 +131,6 @@ export const SearchComponent = () => {
                     >
                       <MapPin className="h-4 w-4" />
                       <span>{city.name}</span>
-                      <span className="text-sm text-gray-500">
-                        ({city.latitude.toFixed(2)}°,{" "}
-                        {city.longitude.toFixed(2)}°)
-                      </span>
                     </CommandItem>
                   ))}
                 </CommandList>

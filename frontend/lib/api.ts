@@ -1,4 +1,4 @@
-import { Match } from "./types";
+import { Match, City } from "./types";
 
 // lib/api.ts
 interface FilterParams {
@@ -37,6 +37,24 @@ export const fetchMatches = async (
     return await response.json();
   } catch (error) {
     console.error("Error fetching matches:", error);
+    return [];
+  }
+};
+
+export const searchCities = async (query: string): Promise<City[]> => {
+  try {
+    const url = `http://localhost:3000/cities?search=${encodeURIComponent(
+      query
+    )}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error searching cities:", error);
     return [];
   }
 };

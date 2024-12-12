@@ -11,3 +11,12 @@ export interface Match {
   longitude: number | null;
   date_string: string | null;
 }
+
+export interface City {
+  id: number;
+  name: string;
+  ascii_name: string;
+  latitude: number;
+  longitude: number;
+  population: number;
+}

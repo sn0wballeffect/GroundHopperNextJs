@@ -4,7 +4,8 @@ we need to make this component client rendered as well*/
 
 import { useStore } from "@/lib/store";
 import { GoogleMap, MarkerF } from "@react-google-maps/api";
-import { useRef, useEffect, useState, useMemo } from "react"; // Added useMemo
+import { useRef, useEffect, useState, useMemo } from "react";
+import UserMarker from "@/assets/UserMarker.svg"; // Added useMemo
 
 // Map's styling
 const defaultMapContainerStyle = {
@@ -62,7 +63,19 @@ const MapComponent = () => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [visibleMarkers, setVisibleMarkers] = useState<typeof markers>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
-
+  const userMarkerIcon = useMemo(
+    () => ({
+      path: "M30.336,12.097c6.627,0,11.997,5.409,11.997,12.097S36.963,36.291,30.336,36.291s-11.997-5.409-11.997-12.097 S23.709,12.097,30.336,12.097z M35.64,30.079H25.031c-7.021,0-12.714,5.739-12.714,12.821v17.771h36.037V42.9 C48.354,35.818,42.661,30.079,35.64,30.079z",
+      fillColor: "#4285F4",
+      fillOpacity: 1,
+      strokeWeight: 1,
+      strokeColor: "#FFFFFF",
+      scale: 0.7,
+      anchor: google?.maps ? new google.maps.Point(30, 80) : null,
+      rotation: 0,
+    }),
+    []
+  );
   const markerPosition = useMemo(
     () =>
       userLocation?.lat && userLocation?.lng
@@ -157,6 +170,7 @@ const MapComponent = () => {
             position={markerPosition}
             animation={google.maps.Animation.DROP}
             draggable={true}
+            icon={userMarkerIcon}
             onDragEnd={(e) => {
               if (e.latLng) {
                 const newPosition = {

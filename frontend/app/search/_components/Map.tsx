@@ -156,6 +156,22 @@ const MapComponent = () => {
           <MarkerF
             position={markerPosition}
             animation={google.maps.Animation.DROP}
+            draggable={true}
+            onDragEnd={(e) => {
+              if (e.latLng) {
+                const newPosition = {
+                  lat: e.latLng.lat(),
+                  lng: e.latLng.lng(),
+                };
+                setUserLocation(newPosition);
+                setSearchQuery(""); // Clear search query when marker is dragged
+
+                // Update circle position if it exists
+                if (circleRef.current) {
+                  circleRef.current.setCenter(e.latLng);
+                }
+              }
+            }}
           />
         )}
         {visibleMarkers.map((marker, index) => (

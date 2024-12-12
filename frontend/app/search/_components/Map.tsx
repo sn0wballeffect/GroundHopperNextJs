@@ -3,9 +3,8 @@ we need to make this component client rendered as well*/
 "use client";
 
 import { useStore } from "@/lib/store";
-import { GoogleMap, MarkerF } from "@react-google-maps/api";
+import { GoogleMap } from "@react-google-maps/api";
 import { useRef, useEffect, useState, useMemo } from "react";
-import UserMarker from "@/assets/UserMarker.svg"; // Added useMemo
 
 // Map's styling
 const defaultMapContainerStyle = {
@@ -55,14 +54,17 @@ const getZoomLevel = (distance: number): number => {
 
 const MapComponent = () => {
   const userLocation = useStore((state) => state.userLocation);
-  const setUserLocation = useStore((state) => state.setUserLocation); // Add this
+  const setUserLocation = useStore((state) => state.setUserLocation);
   const distance = useStore((state) => state.distance);
   const setDistance = useStore((state) => state.setDistance);
   const markers = useStore((state) => state.markers);
-  const setSearchQuery = useStore((state) => state.setSearchQuery); // Add this
+  const setSearchQuery = useStore((state) => state.setSearchQuery);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [visibleMarkers, setVisibleMarkers] = useState<typeof markers>([]);
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
+  const userMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(
+    null
+  );
 
   const markerPosition = useMemo(
     () =>
@@ -72,17 +74,30 @@ const MapComponent = () => {
     [userLocation?.lat, userLocation?.lng]
   );
 
+  // Handle markers update
   useEffect(() => {
-    // Sequentially add markers with a smaller delay for smoothness
-    if (markers) {
-      setVisibleMarkers([]);
-      markers.forEach((marker, index) => {
-        setTimeout(() => {
-          setVisibleMarkers((prev) => [...prev, marker]);
-        }, index * 20); // 100ms delay between markers
+    if (!map || !window.google) return;
+
+    // Clear existing markers
+    markersRef.current.forEach((marker) => (marker.map = null));
+    markersRef.current = [];
+
+    // Create new advanced markers
+    const newMarkers = markers.map((marker) => {
+      const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+        map,
+        position: marker.position,
+        title: marker.id,
       });
-    }
-  }, [markers]);
+      return advancedMarker;
+    });
+
+    markersRef.current = newMarkers;
+
+    return () => {
+      markersRef.current.forEach((marker) => (marker.map = null));
+    };
+  }, [markers, map]);
 
   useEffect(() => {
     // Cleanup previous circle
@@ -153,35 +168,53 @@ const MapComponent = () => {
         options={defaultMapOptions}
         onLoad={onLoad}
       >
-        {markerPosition && (
-          <MarkerF
-            position={markerPosition}
-            animation={google.maps.Animation.DROP}
-            draggable={true}
-            onDragEnd={(e) => {
-              if (e.latLng) {
-                const newPosition = {
-                  lat: e.latLng.lat(),
-                  lng: e.latLng.lng(),
-                };
-                setUserLocation(newPosition);
-                setSearchQuery(""); // Clear search query when marker is dragged
-
-                // Update circle position if it exists
-                if (circleRef.current) {
-                  circleRef.current.setCenter(e.latLng);
+        {markerPosition && window.google && (
+          <div
+            ref={(el) => {
+              if (el && window.google) {
+                // Clean up previous marker
+                if (userMarkerRef.current) {
+                  userMarkerRef.current.map = null;
                 }
+
+                // Create new marker
+                const userMarker = new google.maps.marker.AdvancedMarkerElement(
+                  {
+                    position: markerPosition,
+                    map,
+                    gmpDraggable: true,
+                  }
+                );
+
+                // Store reference to marker
+                userMarkerRef.current = userMarker;
+
+                userMarker.addListener("dragend", () => {
+                  const position = userMarker.position;
+                  if (position) {
+                    const newPosition = {
+                      lat:
+                        typeof position.lat === "function"
+                          ? position.lat()
+                          : position.lat,
+                      lng:
+                        typeof position.lng === "function"
+                          ? position.lng()
+                          : position.lng,
+                    };
+                    setUserLocation(newPosition);
+                    setSearchQuery("");
+                    if (circleRef.current) {
+                      circleRef.current.setCenter(
+                        new google.maps.LatLng(newPosition.lat, newPosition.lng)
+                      );
+                    }
+                  }
+                });
               }
             }}
           />
         )}
-        {visibleMarkers.map((marker, index) => (
-          <MarkerF
-            key={`${marker.id}-${index}`}
-            position={marker.position}
-            animation={google.maps.Animation.DROP}
-          />
-        ))}
       </GoogleMap>
     </div>
   );

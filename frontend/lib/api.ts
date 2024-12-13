@@ -11,6 +11,9 @@ interface FilterParams {
   limit?: number;
 }
 
+// Add an environment variable for the API URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export const fetchMatches = async (
   filters: FilterParams = {}
 ): Promise<Match[]> => {
@@ -27,7 +30,7 @@ export const fetchMatches = async (
     if (filters.lat) params.append("lat", filters.lat?.toString() || "");
     if (filters.lng) params.append("lng", filters.lng?.toString() || "");
 
-    const url = `http://localhost:5000/matches?${params.toString()}`;
+    const url = `${API_URL}/matches?${params.toString()}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -43,9 +46,7 @@ export const fetchMatches = async (
 
 export const searchCities = async (query: string): Promise<City[]> => {
   try {
-    const url = `http://localhost:5000/cities?search=${encodeURIComponent(
-      query
-    )}`;
+    const url = `${API_URL}/cities?search=${encodeURIComponent(query)}`;
     const response = await fetch(url);
 
     if (!response.ok) {

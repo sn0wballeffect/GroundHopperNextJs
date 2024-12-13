@@ -98,17 +98,6 @@ const MapComponent = () => {
       map: google.maps.Map
     ) => {
       if (marker.position) {
-        const position = {
-          lat:
-            typeof marker.position.lat === "function"
-              ? marker.position.lat()
-              : marker.position.lat || 0,
-          lng:
-            typeof marker.position.lng === "function"
-              ? marker.position.lng()
-              : marker.position.lng || 0,
-        };
-
         useStore.getState().setSelectedLocation({
           lat:
             typeof marker.position?.lat === "function"
@@ -119,8 +108,16 @@ const MapComponent = () => {
               ? marker.position.lng()
               : marker.position?.lng || null,
         });
-
-        animateMapToLocation(map, position, () => {});
+        animateMapToLocation(map, {
+          lat:
+            typeof marker.position.lat === "function"
+              ? marker.position.lat()
+              : marker.position.lat || 0,
+          lng:
+            typeof marker.position.lng === "function"
+              ? marker.position.lng()
+              : marker.position.lng || 0,
+        });
       }
     },
     []
@@ -306,16 +303,11 @@ const MapComponent = () => {
   useEffect(() => {
     if (!map) return;
 
-    const dragListener = map.addListener("dragstart", () => {
-      useStore.getState().setSelectedLocation({ lat: null, lng: null });
-    });
-
     const clickListener = map.addListener("click", () => {
       useStore.getState().setSelectedLocation({ lat: null, lng: null });
     });
 
     return () => {
-      google.maps.event.removeListener(dragListener);
       google.maps.event.removeListener(clickListener);
     };
   }, [map]);

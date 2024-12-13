@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
@@ -18,15 +18,27 @@ const containerVariants = {
     transition: {
       delayChildren: 0.1,
       staggerChildren: 0.05,
-      duration: 0.2,
+      duration: 0.6,
+      ease: [0.25, 0.1, 0.25, 1.0], // Custom cubic bezier for smoother motion
     },
   },
 };
 
-// Only animate items in viewport
 const itemVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
+  hidden: {
+    opacity: 0,
+    y: 30,
+    scale: 0.98,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.25, 0.1, 0.25, 1.0],
+    },
+  },
 };
 
 // Define type for sport icons mapping
@@ -133,18 +145,35 @@ export const SearchResults = () => {
     );
   }, [matches, selectedLocation]);
 
-  const handleCardClick = (match: Match) => {
-    if (!map || !match.latitude || !match.longitude) return;
+  const handleMouseEnter = useCallback(
+    (match: Match) => {
+      if (match.latitude && match.longitude) {
+        setHoveredCoords({
+          lat: match.latitude,
+          lng: match.longitude,
+        });
+      }
+    },
+    [setHoveredCoords]
+  );
 
-    const position = {
-      lat: match.latitude,
-      lng: match.longitude,
-    };
+  const handleMouseLeave = useCallback(() => {
+    setHoveredCoords({ lat: null, lng: null });
+  }, [setHoveredCoords]);
 
-    animateMapToLocation(map, position, () => {
-      useStore.getState().setSelectedLocation(position);
-    });
-  };
+  const handleCardClick = useCallback(
+    (match: Match) => {
+      if (!map || !match.latitude || !match.longitude) return;
+      const position = {
+        lat: match.latitude,
+        lng: match.longitude,
+      };
+      animateMapToLocation(map, position, () => {
+        useStore.getState().setSelectedLocation(position);
+      });
+    },
+    [map]
+  );
 
   if (loading) {
     return <div> </div>;
@@ -155,26 +184,18 @@ export const SearchResults = () => {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="visible"
-        exit="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
       >
         <AnimatePresence>
           {filteredMatches.map((match) => (
             <motion.div
               key={match.id}
               variants={itemVariants}
-              transition={{ duration: 0.5 }}
-              onMouseEnter={() => {
-                if (match.latitude && match.longitude) {
-                  setHoveredCoords({
-                    lat: match.latitude,
-                    lng: match.longitude,
-                  });
-                }
-              }}
-              onMouseLeave={() => {
-                setHoveredCoords({ lat: null, lng: null });
-              }}
+              viewport={{ once: true }}
+              onMouseEnter={() => handleMouseEnter(match)}
+              onMouseLeave={handleMouseLeave}
+              onClick={() => handleCardClick(match)}
             >
               <Card
                 className={cn(

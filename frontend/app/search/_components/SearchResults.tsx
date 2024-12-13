@@ -154,7 +154,7 @@ export const SearchResults = () => {
               >
                 <Card
                   className={cn(
-                    "mb-3 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(25vh-65px)]",
+                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)]",
                     "will-change-transform",
                     SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
                   )}
@@ -233,7 +233,8 @@ export const SearchResults = () => {
               >
                 <Card
                   className={cn(
-                    "mb-3 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(25vh-65px)]",
+                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)]",
+                    "will-change-transform",
                     SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
                   )}
                 >

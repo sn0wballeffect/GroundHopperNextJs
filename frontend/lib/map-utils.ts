@@ -10,7 +10,7 @@ export const animateMapToLocation = (
 
   // Fixed duration in milliseconds
   const duration = 1000;
-  const fps = 60;
+  const fps = 30;
   const totalFrames = Math.floor(duration / (1000 / fps));
 
   let frame = 0;

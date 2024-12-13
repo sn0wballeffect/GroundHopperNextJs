@@ -127,6 +127,14 @@ const MapComponent = () => {
         title: marker.id,
         content: pinElement.element,
       });
+
+      // Add click handler
+      advancedMarker.addListener("click", () => {
+        map.setCenter(marker.position);
+        map.setZoom(15);
+        useStore.getState().setSelectedLocation(marker.position);
+      });
+
       return advancedMarker;
     });
 
@@ -284,6 +292,24 @@ const MapComponent = () => {
 
     userMarkerRef.current.position = markerPosition;
   }, [markerPosition]);
+
+  // Add click handler to map to clear selection
+  useEffect(() => {
+    if (!map) return;
+
+    const dragListener = map.addListener("dragstart", () => {
+      useStore.getState().setSelectedLocation({ lat: null, lng: null });
+    });
+
+    const clickListener = map.addListener("click", () => {
+      useStore.getState().setSelectedLocation({ lat: null, lng: null });
+    });
+
+    return () => {
+      google.maps.event.removeListener(dragListener);
+      google.maps.event.removeListener(clickListener);
+    };
+  }, [map]);
 
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);

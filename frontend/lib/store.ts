@@ -46,6 +46,12 @@ interface Store {
     lat: number | null;
     lng: number | null;
   }) => void;
+
+  selectedLocation: { lat: number | null; lng: number | null };
+  setSelectedLocation: (location: {
+    lat: number | null;
+    lng: number | null;
+  }) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -96,4 +102,7 @@ export const useStore = create<Store>((set) => ({
   // Hovered Coordinates
   hoveredCoords: { lat: null, lng: null },
   setHoveredCoords: (coords) => set({ hoveredCoords: coords }),
+
+  selectedLocation: { lat: null, lng: null },
+  setSelectedLocation: (location) => set({ selectedLocation: location }),
 }));

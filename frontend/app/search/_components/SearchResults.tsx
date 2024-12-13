@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
@@ -69,6 +69,7 @@ export const SearchResults = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
   const setHoveredCoords = useStore((state) => state.setHoveredCoords);
+  const selectedLocation = useStore((state) => state.selectedLocation);
 
   const date = useStore((state) => state.date);
   const distance = useStore((state) => state.distance);
@@ -121,6 +122,18 @@ export const SearchResults = () => {
     loadMatches();
   }, [date, distance, userLocation, sportTyp]);
 
+  const filteredMatches = useMemo(() => {
+    if (!selectedLocation.lat || !selectedLocation.lng) {
+      return matches;
+    }
+
+    return matches.filter(
+      (match) =>
+        match.latitude === selectedLocation.lat &&
+        match.longitude === selectedLocation.lng
+    );
+  }, [matches, selectedLocation]);
+
   if (loading) {
     return <div> </div>;
   }
@@ -134,7 +147,7 @@ export const SearchResults = () => {
         exit="hidden"
       >
         <AnimatePresence>
-          {matches.map((match, index) =>
+          {filteredMatches.map((match, index) =>
             index < 6 ? (
               <motion.div
                 key={match.id}

@@ -8,6 +8,7 @@ import { Match } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { getDistance } from "geolib";
 import { cn } from "@/lib/utils";
+import { animateMapToLocation } from "@/lib/map-utils";
 
 // Add variants for the container and items
 const containerVariants = {
@@ -75,6 +76,7 @@ export const SearchResults = () => {
   const distance = useStore((state) => state.distance);
   const userLocation = useStore((state) => state.userLocation);
   const sportTyp = useStore((state) => state.sportTyp);
+  const map = useStore((state) => state.map);
 
   const sportTypeMapping: { [key: string]: string } = {
     Fußball: "football",
@@ -134,6 +136,19 @@ export const SearchResults = () => {
     );
   }, [matches, selectedLocation]);
 
+  const handleCardClick = (match: Match) => {
+    if (!map || !match.latitude || !match.longitude) return;
+
+    const position = {
+      lat: match.latitude,
+      lng: match.longitude,
+    };
+
+    animateMapToLocation(map, position, () => {
+      useStore.getState().setSelectedLocation(position);
+    });
+  };
+
   if (loading) {
     return <div> </div>;
   }
@@ -167,10 +182,11 @@ export const SearchResults = () => {
               >
                 <Card
                   className={cn(
-                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)]",
+                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)] cursor-pointer",
                     "will-change-transform",
                     SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
                   )}
+                  onClick={() => handleCardClick(match)}
                 >
                   <CardHeader className="flex flex-row items-center justify-between pb-2 h-1/3">
                     <CardTitle className="flex flex-row items-center space-x-3">
@@ -246,10 +262,11 @@ export const SearchResults = () => {
               >
                 <Card
                   className={cn(
-                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)]",
+                    "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)] cursor-pointer",
                     "will-change-transform",
                     SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
                   )}
+                  onClick={() => handleCardClick(match)}
                 >
                   <CardHeader className="flex flex-row items-center justify-between pb-2 h-1/3">
                     <CardTitle className="flex flex-row items-center space-x-3">

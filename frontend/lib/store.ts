@@ -52,6 +52,8 @@ interface Store {
     lat: number | null;
     lng: number | null;
   }) => void;
+  map: google.maps.Map | null;
+  setMap: (map: google.maps.Map | null) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -105,4 +107,7 @@ export const useStore = create<Store>((set) => ({
 
   selectedLocation: { lat: null, lng: null },
   setSelectedLocation: (location) => set({ selectedLocation: location }),
+
+  map: null,
+  setMap: (map) => set({ map }),
 }));

@@ -13,6 +13,7 @@ import {
   getGlyphForSport,
   getZoomLevel,
 } from "@/constants/map-constants";
+import { animateMapToLocation } from "@/lib/map-utils";
 
 const MapComponent = () => {
   const {
@@ -97,34 +98,32 @@ const MapComponent = () => {
       map: google.maps.Map
     ) => {
       if (marker.position) {
-        map.panTo(marker.position);
-      }
-      const currentZoom = map.getZoom() || 0;
-      const targetZoom = 13;
-
-      // Use requestAnimationFrame for smoother animation
-      const animate = (startTime: number) => {
-        const progress = Math.min(1, (performance.now() - startTime) / 500);
-        const newZoom = currentZoom + (targetZoom - currentZoom) * progress;
-        map.setZoom(newZoom);
-
-        if (progress < 1) {
-          requestAnimationFrame(() => animate(startTime));
-        } else {
-          useStore.getState().setSelectedLocation({
+        animateMapToLocation(
+          map,
+          {
             lat:
-              typeof marker.position?.lat === "function"
+              typeof marker.position.lat === "function"
                 ? marker.position.lat()
-                : marker.position?.lat || null,
+                : marker.position.lat || 0,
             lng:
-              typeof marker.position?.lng === "function"
+              typeof marker.position.lng === "function"
                 ? marker.position.lng()
-                : marker.position?.lng || null,
-          });
-        }
-      };
-
-      requestAnimationFrame((timestamp) => animate(timestamp));
+                : marker.position.lng || 0,
+          },
+          () => {
+            useStore.getState().setSelectedLocation({
+              lat:
+                typeof marker.position?.lat === "function"
+                  ? marker.position.lat()
+                  : marker.position?.lat || null,
+              lng:
+                typeof marker.position?.lng === "function"
+                  ? marker.position.lng()
+                  : marker.position?.lng || null,
+            });
+          }
+        );
+      }
     },
     []
   );

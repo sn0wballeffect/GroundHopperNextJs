@@ -7,20 +7,30 @@ export const animateMapToLocation = (
   map.panTo(position);
   const currentZoom = map.getZoom() || 0;
   const targetZoom = 13;
-  const zoomDifference = Math.abs(targetZoom - currentZoom);
-  const steps = Math.max(24, Math.min(100, Math.floor(zoomDifference * 12)));
 
-  let count = 0;
+  // Fixed duration in milliseconds
+  const duration = 1000;
+  const fps = 60;
+  const totalFrames = Math.floor(duration / (1000 / fps));
+
+  let frame = 0;
+
+  const easeInOutQuad = (t: number): number => {
+    return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  };
+
   const interval = setInterval(() => {
-    count++;
-    const progress = count / steps;
-    const newZoom = currentZoom + (targetZoom - currentZoom) * progress;
+    frame++;
+    const progress = frame / totalFrames;
+    const easedProgress = easeInOutQuad(progress);
+    const newZoom = currentZoom + (targetZoom - currentZoom) * easedProgress;
 
     map.setZoom(newZoom);
 
-    if (count >= steps) {
+    if (frame >= totalFrames) {
       clearInterval(interval);
+      map.setZoom(targetZoom); // Ensure we end exactly at target
       if (onAnimationComplete) onAnimationComplete();
     }
-  }, 16);
+  }, 1000 / fps);
 };

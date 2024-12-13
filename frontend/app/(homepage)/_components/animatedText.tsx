@@ -4,7 +4,7 @@ import { motion, useAnimationControls } from "framer-motion";
 import { useEffect } from "react";
 
 export default function AnimatedText() {
-  const text = "Finde Sportevents in deiner Nähe.";
+  const text = "Finde Sportevents in deiner Nähe";
   const controls = useAnimationControls();
 
   useEffect(() => {

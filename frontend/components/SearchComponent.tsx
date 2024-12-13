@@ -10,9 +10,13 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
+import { searchCities } from "@/lib/api";
+import { City } from "@/lib/types";
+import { Command, CommandList, CommandItem } from "./ui/command";
+import { debounce } from "lodash";
 
 export const SearchComponent = () => {
   const pathname = usePathname();
@@ -30,12 +34,39 @@ export const SearchComponent = () => {
   const setSearchQuery = useStore((state) => state.setSearchQuery);
   const userLocation = useStore((state) => state.userLocation);
   const setUserLocation = useStore((state) => state.setUserLocation);
+  const [cities, setCities] = useState<City[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
+      if (query.length < 2) {
+        setCities([]);
+        return;
+      }
+      setIsSearching(true);
+      const results = await searchCities(query);
+      setCities(results);
+      setIsSearching(false);
+    }, 200),
+    [setCities, setIsSearching]
+  );
+
   // Update handler to use global state
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
+    const value = event.target.value;
+    setSearchQuery(value);
+    debouncedSearch(value);
+  };
+
+  const handleCitySelect = (city: City) => {
+    setSearchQuery(city.name);
+    setUserLocation({
+      lat: city.latitude,
+      lng: city.longitude,
+    });
+    setCities([]);
   };
 
   const handleButtonClick = () => {
@@ -48,6 +79,7 @@ export const SearchComponent = () => {
     if (userLocation && userLocation.lat && userLocation.lng) {
       // Remove location
       setUserLocation({ lat: null, lng: null });
+      setSearchQuery("");
       return;
     }
 
@@ -79,21 +111,38 @@ export const SearchComponent = () => {
   return (
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
-        <div className="flex-1 px-3 ml-1">
-          <div className="text-sm font-medium ml-1">Standort</div>
+        <div className="relative flex-1 px-3 ml-1">
+          <div className="text-sm font-medium ml-1">Ort</div>
           <Input
             type="text"
-            placeholder={
-              userLocation.lat && userLocation.lng
-                ? `${userLocation.lat.toFixed(2)}°N, ${userLocation.lng.toFixed(
-                    2
-                  )}°E`
-                : "Suchen..."
-            }
+            placeholder="Ort suchen..."
             className="border-0 shadow-none p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
             value={searchQuery}
             onChange={handleInputChange}
           />
+          {cities.length > 0 && (
+            <div className="absolute w-full z-50 bg-white rounded-md shadow-xl mt-1">
+              <Command>
+                <CommandList>
+                  {cities.map((city) => (
+                    <CommandItem
+                      key={city.id}
+                      onSelect={() => handleCitySelect(city)}
+                      className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      <span>{city.name}</span>
+                    </CommandItem>
+                  ))}
+                </CommandList>
+              </Command>
+            </div>
+          )}
+          {isSearching && (
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              <span className="animate-spin">⌛</span>
+            </div>
+          )}
         </div>
         <LocateFixed
           className={`h-6 w-6 mr-3 ${
@@ -123,7 +172,7 @@ export const SearchComponent = () => {
           </PopoverTrigger>
           <PopoverContent className="w-40 p-2" align="start">
             <div className="flex flex-col gap-2">
-              {[2, 5, 10, 50].map((km) => (
+              {[5, 10, 25, 50].map((km) => (
                 <Button
                   key={km}
                   variant={distance === km ? "default" : "ghost"}

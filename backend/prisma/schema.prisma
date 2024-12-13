@@ -22,3 +22,14 @@ model table {
 
   @@index([event_date, latitude, longitude, sport], map: "idx_table")
 }
+
+model cities {
+  id         Int     @id @default(autoincrement())
+  name       String? @db.VarChar(255)
+  ascii_name String? @db.VarChar(255)
+  latitude   Float?
+  longitude  Float?
+  population Int?
+
+  @@index([name, ascii_name, latitude, longitude, population], map: "idx_cities")
+}

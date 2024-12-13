@@ -11,6 +11,7 @@ interface UserLocation {
 interface Marker {
   id: string;
   position: google.maps.LatLngLiteral;
+  sport: string;
 }
 
 interface Store {
@@ -38,6 +39,13 @@ interface Store {
   markers: Marker[];
   addMarker: (marker: Marker) => void;
   setMarkers: (markers: Marker[]) => void;
+
+  // Hovered Coordinates
+  hoveredCoords: { lat: number | null; lng: number | null };
+  setHoveredCoords: (coords: {
+    lat: number | null;
+    lng: number | null;
+  }) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -68,9 +76,24 @@ export const useStore = create<Store>((set) => ({
   markers: [],
   addMarker: (marker) =>
     set((state) => ({
-      markers: state.markers.some((m) => m.id === marker.id)
+      markers: state.markers.find(
+        (m) =>
+          m.position.lat === marker.position.lat &&
+          m.position.lng === marker.position.lng
+      )
         ? state.markers
         : [...state.markers, marker],
     })),
-  setMarkers: (markers) => set({ markers }),
+  setMarkers: (markers) =>
+    set({
+      markers: [
+        ...new Map(
+          markers.map((m) => [`${m.position.lat}-${m.position.lng}`, m])
+        ).values(),
+      ],
+    }),
+
+  // Hovered Coordinates
+  hoveredCoords: { lat: null, lng: null },
+  setHoveredCoords: (coords) => set({ hoveredCoords: coords }),
 }));

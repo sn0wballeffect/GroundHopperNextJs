@@ -1,8 +1,8 @@
 import { SearchComponentMobile } from "@/components/SearchComponentMobile";
 import { SearchComponent } from "../../components/SearchComponent";
 import { MapProvider } from "../providers/map-provider";
-import { MapComponent } from "./_components/Map";
 import { SearchResults } from "./_components/SearchResults";
+import { MapComponent } from "./_components/Map";
 
 export default function SearchPage() {
   return (

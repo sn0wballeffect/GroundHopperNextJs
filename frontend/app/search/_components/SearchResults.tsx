@@ -70,6 +70,7 @@ const getSportIcon = (sport: string): string => {
 export const SearchResults = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
+  const setHoveredCoords = useStore((state) => state.setHoveredCoords);
 
   const date = useStore((state) => state.date);
   const distance = useStore((state) => state.distance);
@@ -141,6 +142,17 @@ export const SearchResults = () => {
                 key={match.id}
                 variants={itemVariants}
                 transition={{ duration: 0.5 }}
+                onMouseEnter={() => {
+                  if (match.latitude && match.longitude) {
+                    setHoveredCoords({
+                      lat: match.latitude,
+                      lng: match.longitude,
+                    });
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredCoords({ lat: null, lng: null });
+                }}
               >
                 <Card
                   className={cn(
@@ -206,7 +218,20 @@ export const SearchResults = () => {
                 </Card>
               </motion.div>
             ) : (
-              <div key={match.id}>
+              <div
+                key={match.id}
+                onMouseEnter={() => {
+                  if (match.latitude && match.longitude) {
+                    setHoveredCoords({
+                      lat: match.latitude,
+                      lng: match.longitude,
+                    });
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredCoords({ lat: null, lng: null });
+                }}
+              >
                 <Card
                   className={cn(
                     "mb-3 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(25vh-65px)]",

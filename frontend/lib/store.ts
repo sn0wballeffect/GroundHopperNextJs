@@ -39,6 +39,13 @@ interface Store {
   markers: Marker[];
   addMarker: (marker: Marker) => void;
   setMarkers: (markers: Marker[]) => void;
+
+  // Hovered Coordinates
+  hoveredCoords: { lat: number | null; lng: number | null };
+  setHoveredCoords: (coords: {
+    lat: number | null;
+    lng: number | null;
+  }) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -85,4 +92,8 @@ export const useStore = create<Store>((set) => ({
         ).values(),
       ],
     }),
+
+  // Hovered Coordinates
+  hoveredCoords: { lat: null, lng: null },
+  setHoveredCoords: (coords) => set({ hoveredCoords: coords }),
 }));

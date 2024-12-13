@@ -85,6 +85,7 @@ const MapComponent = () => {
   const setDistance = useStore((state) => state.setDistance);
   const markers = useStore((state) => state.markers);
   const setSearchQuery = useStore((state) => state.setSearchQuery);
+  const hoveredCoords = useStore((state) => state.hoveredCoords);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
@@ -100,7 +101,7 @@ const MapComponent = () => {
     [userLocation?.lat, userLocation?.lng]
   );
 
-  // Handle markers update
+  // First effect to handle initial marker creation
   useEffect(() => {
     if (!map || !window.google) return;
 
@@ -109,15 +110,15 @@ const MapComponent = () => {
     markersRef.current = [];
 
     // Create new advanced markers
-
     const newMarkers = markers.map((marker) => {
       const sport = marker.sport as keyof typeof SPORT_COLORS;
+
       const pinElement = new google.maps.marker.PinElement({
         background: getMarkerColor(sport),
         borderColor: "#000000",
         scale: 1.2,
         glyph: getGlyphForSport(marker.sport as keyof typeof SPORT_ICONS),
-        glyphColor: "rgba(0, 0, 0, 0.8)", // Add contrast
+        glyphColor: "rgba(0, 0, 0, 0.8)",
       });
 
       const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
@@ -134,7 +135,33 @@ const MapComponent = () => {
     return () => {
       markersRef.current.forEach((marker) => (marker.map = null));
     };
-  }, [markers, map]);
+  }, [markers, map]); // Remove hoveredCoords from dependencies
+
+  // Second effect to handle hover state changes
+  useEffect(() => {
+    if (!map || !window.google || !markersRef.current.length) return;
+
+    markersRef.current.forEach((marker, index) => {
+      const originalMarker = markers[index];
+      const isHovered =
+        hoveredCoords.lat === originalMarker.position.lat &&
+        hoveredCoords.lng === originalMarker.position.lng;
+
+      const sport = originalMarker.sport as keyof typeof SPORT_COLORS;
+      const pinElement = new google.maps.marker.PinElement({
+        background: getMarkerColor(sport),
+        borderColor: "#000000",
+        scale: isHovered ? 1.5 : 1.2,
+        glyph: getGlyphForSport(
+          originalMarker.sport as keyof typeof SPORT_ICONS
+        ),
+        glyphColor: "rgba(0, 0, 0, 0.8)",
+      });
+
+      marker.content = pinElement.element;
+      marker.zIndex = isHovered ? 1000 : 1;
+    });
+  }, [hoveredCoords, markers, map]);
 
   useEffect(() => {
     // Cleanup previous circle
@@ -192,6 +219,72 @@ const MapComponent = () => {
     setSearchQuery,
   ]);
 
+  // Initial user marker creation
+  useEffect(() => {
+    if (!map || !window.google || !markerPosition) {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.map = null;
+        userMarkerRef.current = null;
+      }
+      return;
+    }
+
+    const userPinElement = new google.maps.marker.PinElement({
+      scale: 1.3,
+      glyph: "🏃",
+      glyphColor: "#ffffff",
+    });
+
+    const userMarker = new google.maps.marker.AdvancedMarkerElement({
+      position: markerPosition,
+      map,
+      content: userPinElement.element,
+      gmpDraggable: true,
+      zIndex: 100,
+    });
+
+    userMarkerRef.current = userMarker;
+
+    userMarker.addListener("dragend", () => {
+      const position = userMarker.position;
+      if (position) {
+        const newPosition = {
+          lat:
+            typeof position.lat === "function" ? position.lat() : position.lat,
+          lng:
+            typeof position.lng === "function" ? position.lng() : position.lng,
+        };
+        setUserLocation(newPosition);
+        setSearchQuery("");
+        if (circleRef.current) {
+          circleRef.current.setCenter(
+            new google.maps.LatLng(newPosition.lat, newPosition.lng)
+          );
+        }
+      }
+    });
+
+    return () => {
+      if (userMarkerRef.current) {
+        userMarkerRef.current.map = null;
+        userMarkerRef.current = null;
+      }
+    };
+  }, [map, markerPosition, setUserLocation, setSearchQuery]); // Added missing dependencies
+
+  // 2. Handle position updates
+  useEffect(() => {
+    if (!userMarkerRef.current) return;
+
+    if (!markerPosition) {
+      userMarkerRef.current.map = null;
+      userMarkerRef.current = null;
+      return;
+    }
+
+    userMarkerRef.current.position = markerPosition;
+  }, [markerPosition]);
+
   const onLoad = (mapInstance: google.maps.Map) => {
     setMap(mapInstance);
   };
@@ -204,66 +297,7 @@ const MapComponent = () => {
         zoom={markerPosition ? getZoomLevel(distance) : 6}
         options={defaultMapOptions}
         onLoad={onLoad}
-      >
-        {markerPosition && window.google ? (
-          <div
-            ref={(el) => {
-              if (el && window.google) {
-                // Clean up previous marker
-                if (userMarkerRef.current) {
-                  userMarkerRef.current.map = null;
-                }
-
-                // Create new marker
-                const userPinElement = new google.maps.marker.PinElement({
-                  scale: 1.3,
-                  glyph: "🏃", // User icon
-                  glyphColor: "#ffffff",
-                });
-
-                const userMarker = new google.maps.marker.AdvancedMarkerElement(
-                  {
-                    position: markerPosition,
-                    map,
-                    content: userPinElement.element,
-                    gmpDraggable: true,
-                    zIndex: 100,
-                  }
-                );
-
-                // Store reference to marker
-                userMarkerRef.current = userMarker;
-
-                userMarker.addListener("dragend", () => {
-                  const position = userMarker.position;
-                  if (position) {
-                    const newPosition = {
-                      lat:
-                        typeof position.lat === "function"
-                          ? position.lat()
-                          : position.lat,
-                      lng:
-                        typeof position.lng === "function"
-                          ? position.lng()
-                          : position.lng,
-                    };
-                    setUserLocation(newPosition);
-                    setSearchQuery("");
-                    if (circleRef.current) {
-                      circleRef.current.setCenter(
-                        new google.maps.LatLng(newPosition.lat, newPosition.lng)
-                      );
-                    }
-                  }
-                });
-              }
-            }}
-          />
-        ) : (
-          // Cleanup when markerPosition is null
-          userMarkerRef.current?.map && (userMarkerRef.current.map = null)
-        )}
-      </GoogleMap>
+      />
     </div>
   );
 };

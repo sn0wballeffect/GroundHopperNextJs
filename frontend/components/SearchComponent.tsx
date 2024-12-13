@@ -49,7 +49,7 @@ export const SearchComponent = () => {
       const results = await searchCities(query);
       setCities(results);
       setIsSearching(false);
-    }, 300),
+    }, 200),
     [setCities, setIsSearching]
   );
 

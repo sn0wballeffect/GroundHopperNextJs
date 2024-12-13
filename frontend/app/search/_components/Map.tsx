@@ -130,9 +130,31 @@ const MapComponent = () => {
 
       // Add click handler
       advancedMarker.addListener("click", () => {
-        map.setCenter(marker.position);
-        map.setZoom(15);
-        useStore.getState().setSelectedLocation(marker.position);
+        map.panTo(marker.position); // Use panTo instead of setCenter for smooth movement
+
+        // Smooth zoom animation
+        const currentZoom = map.getZoom() || 0;
+        const targetZoom = 13;
+        const zoomDifference = Math.abs(targetZoom - currentZoom);
+        const steps = Math.max(
+          24,
+          Math.min(100, Math.floor(zoomDifference * 12))
+        ); // Number of animation steps
+
+        let count = 0;
+        const interval = setInterval(() => {
+          count++;
+          const progress = count / steps;
+          const newZoom = currentZoom + (targetZoom - currentZoom) * progress;
+
+          map.setZoom(newZoom);
+
+          if (count >= steps) {
+            clearInterval(interval);
+            // Set the selected location after animation completes
+            useStore.getState().setSelectedLocation(marker.position);
+          }
+        }, 16); // ~60fps animation
       });
 
       return advancedMarker;

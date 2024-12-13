@@ -98,31 +98,29 @@ const MapComponent = () => {
       map: google.maps.Map
     ) => {
       if (marker.position) {
-        animateMapToLocation(
-          map,
-          {
-            lat:
-              typeof marker.position.lat === "function"
-                ? marker.position.lat()
-                : marker.position.lat || 0,
-            lng:
-              typeof marker.position.lng === "function"
-                ? marker.position.lng()
-                : marker.position.lng || 0,
-          },
-          () => {
-            useStore.getState().setSelectedLocation({
-              lat:
-                typeof marker.position?.lat === "function"
-                  ? marker.position.lat()
-                  : marker.position?.lat || null,
-              lng:
-                typeof marker.position?.lng === "function"
-                  ? marker.position.lng()
-                  : marker.position?.lng || null,
-            });
-          }
-        );
+        const position = {
+          lat:
+            typeof marker.position.lat === "function"
+              ? marker.position.lat()
+              : marker.position.lat || 0,
+          lng:
+            typeof marker.position.lng === "function"
+              ? marker.position.lng()
+              : marker.position.lng || 0,
+        };
+
+        useStore.getState().setSelectedLocation({
+          lat:
+            typeof marker.position?.lat === "function"
+              ? marker.position.lat()
+              : marker.position?.lat || null,
+          lng:
+            typeof marker.position?.lng === "function"
+              ? marker.position.lng()
+              : marker.position?.lng || null,
+        });
+
+        animateMapToLocation(map, position, () => {});
       }
     },
     []

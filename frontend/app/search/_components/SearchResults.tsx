@@ -141,9 +141,9 @@ export const SearchResults = () => {
       lng: match.longitude,
     };
 
-    animateMapToLocation(map, position, () => {
-      useStore.getState().setSelectedLocation(position);
-    });
+    useStore.getState().setSelectedLocation(position);
+
+    animateMapToLocation(map, position, () => {});
   };
 
   if (loading) {

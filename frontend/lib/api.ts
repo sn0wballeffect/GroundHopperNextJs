@@ -1,6 +1,7 @@
 import { Match, City } from "./types";
 
-// lib/api.ts
+const BASE_URL = `http://${process.env.NEXT_PUBLIC_API_URL}`;
+
 interface FilterParams {
   sport?: string;
   dateFrom?: string;
@@ -10,9 +11,6 @@ interface FilterParams {
   lng?: number | null;
   limit?: number;
 }
-
-// Add an environment variable for the API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export const fetchMatches = async (
   filters: FilterParams = {}
@@ -30,7 +28,7 @@ export const fetchMatches = async (
     if (filters.lat) params.append("lat", filters.lat?.toString() || "");
     if (filters.lng) params.append("lng", filters.lng?.toString() || "");
 
-    const url = `${API_URL}/matches?${params.toString()}`;
+    const url = `${BASE_URL}/matches?${params.toString()}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -46,7 +44,7 @@ export const fetchMatches = async (
 
 export const searchCities = async (query: string): Promise<City[]> => {
   try {
-    const url = `${API_URL}/cities?search=${encodeURIComponent(query)}`;
+    const url = `${BASE_URL}/cities?search=${encodeURIComponent(query)}`;
     const response = await fetch(url);
 
     if (!response.ok) {

@@ -1,10 +1,8 @@
-/*Since the map was loaded on client side, 
-we need to make this component client rendered as well*/
 "use client";
 
 import { useStore } from "@/lib/store";
 import { GoogleMap } from "@react-google-maps/api";
-import { useRef, useEffect, useState, useMemo } from "react";
+import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { useMapStore } from "@/hooks/useMapStore";
 import {
   MAP_CONTAINER_STYLE,
@@ -26,7 +24,6 @@ const MapComponent = () => {
     setSearchQuery,
     hoveredCoords,
     setMap,
-    setSelectedLocation,
   } = useMapStore();
   const [map, setMapState] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
@@ -45,22 +42,36 @@ const MapComponent = () => {
     () => (markerPosition ? getZoomLevel(distance) : 6),
     [markerPosition, distance]
   );
-  // First effect to handle initial marker creation
-  useEffect(() => {
-    if (!map || !window.google) {
-      return;
-    }
 
-    // Clear existing markers
-    markersRef.current.forEach((marker) => {
-      marker.map = null;
-    });
-    markersRef.current = [];
+  // Memoize map options
+  const mapOptions = useMemo(
+    () => ({
+      ...MAP_OPTIONS,
+    }),
+    []
+  );
 
-    // Create new advanced markers
-    const newMarkers = markers.map((marker) => {
+  // Memoize circle options
+  const circleOptions = useMemo(
+    () => ({
+      ...CIRCLE_OPTIONS,
+      editable: true,
+      draggable: true,
+    }),
+    []
+  );
+
+  // Memoize marker creation function
+  const createAdvancedMarker = useCallback(
+    (
+      marker: {
+        sport: string;
+        position: google.maps.LatLngLiteral;
+        id: string;
+      },
+      map: google.maps.Map
+    ) => {
       const sport = marker.sport as keyof typeof getMarkerColor;
-
       const pinElement = new google.maps.marker.PinElement({
         background: getMarkerColor(sport),
         borderColor: "#000000",
@@ -69,57 +80,83 @@ const MapComponent = () => {
         glyphColor: "rgba(0, 0, 0, 0.8)",
       });
 
-      const advancedMarker = new google.maps.marker.AdvancedMarkerElement({
+      return new google.maps.marker.AdvancedMarkerElement({
         position: marker.position,
         title: marker.id,
         content: pinElement.element,
+        map,
+      });
+    },
+    []
+  );
+
+  // Memoize click handler
+  const handleMarkerClick = useCallback(
+    (
+      marker: google.maps.marker.AdvancedMarkerElement,
+      map: google.maps.Map
+    ) => {
+      if (marker.position) {
+        map.panTo(marker.position);
+      }
+      const currentZoom = map.getZoom() || 0;
+      const targetZoom = 13;
+
+      // Use requestAnimationFrame for smoother animation
+      const animate = (startTime: number) => {
+        const progress = Math.min(1, (performance.now() - startTime) / 500);
+        const newZoom = currentZoom + (targetZoom - currentZoom) * progress;
+        map.setZoom(newZoom);
+
+        if (progress < 1) {
+          requestAnimationFrame(() => animate(startTime));
+        } else {
+          useStore.getState().setSelectedLocation({
+            lat:
+              typeof marker.position?.lat === "function"
+                ? marker.position.lat()
+                : marker.position?.lat || null,
+            lng:
+              typeof marker.position?.lng === "function"
+                ? marker.position.lng()
+                : marker.position?.lng || null,
+          });
+        }
+      };
+
+      requestAnimationFrame((timestamp) => animate(timestamp));
+    },
+    []
+  );
+
+  // Optimize marker effect with batched updates
+  useEffect(() => {
+    if (!map || !window.google) return;
+
+    const batchUpdate = () => {
+      // Clear existing markers in batch
+      markersRef.current.forEach((marker) => (marker.map = null));
+      markersRef.current = [];
+
+      // Create new markers in batch
+      const newMarkers = markers.map((marker) => {
+        const advancedMarker = createAdvancedMarker(marker, map);
+        advancedMarker.addListener("click", () =>
+          handleMarkerClick(advancedMarker, map)
+        );
+        return advancedMarker;
       });
 
-      // Explicitly set the map
-      advancedMarker.map = map;
+      markersRef.current = newMarkers;
+    };
 
-      // Add click handler
-      advancedMarker.addListener("click", () => {
-        map.panTo(marker.position); // Use panTo instead of setCenter for smooth movement
-
-        // Smooth zoom animation
-        const currentZoom = map.getZoom() || 0;
-        const targetZoom = 13;
-        const zoomDifference = Math.abs(targetZoom - currentZoom);
-        const steps = Math.max(
-          24,
-          Math.min(100, Math.floor(zoomDifference * 12))
-        ); // Number of animation steps
-
-        let count = 0;
-        const interval = setInterval(() => {
-          count++;
-          const progress = count / steps;
-          const newZoom = currentZoom + (targetZoom - currentZoom) * progress;
-
-          map.setZoom(newZoom);
-
-          if (count >= steps) {
-            clearInterval(interval);
-            // Set the selected location after animation completes
-            useStore.getState().setSelectedLocation(marker.position);
-          }
-        }, 16); // ~60fps animation
-      });
-
-      return advancedMarker;
-    });
-
-    markersRef.current = newMarkers;
-    console.log("Markers created:", newMarkers.length); // Debug log
+    requestAnimationFrame(batchUpdate);
 
     return () => {
-      markersRef.current.forEach((marker) => {
-        marker.map = null;
-      });
+      markersRef.current.forEach((marker) => (marker.map = null));
       markersRef.current = [];
     };
-  }, [markers, map]); // Remove hoveredCoords from dependencies
+  }, [markers, map, createAdvancedMarker, handleMarkerClick]);
 
   // Second effect to handle hover state changes
   useEffect(() => {
@@ -160,9 +197,7 @@ const MapComponent = () => {
         map,
         center: markerPosition,
         radius: distance * 1000,
-        ...CIRCLE_OPTIONS,
-        editable: true, // Make circle editable
-        draggable: true, // Make circle draggable
+        ...circleOptions,
       });
 
       // Add radius change listener
@@ -201,6 +236,7 @@ const MapComponent = () => {
     setDistance,
     setUserLocation,
     setSearchQuery,
+    circleOptions,
   ]);
 
   // Initial user marker creation
@@ -287,11 +323,14 @@ const MapComponent = () => {
     };
   }, [map]);
 
-  // First ensure map is properly set in store
-  const onLoad = (mapInstance: google.maps.Map) => {
-    setMapState(mapInstance); // Add this line
-    setMap(mapInstance);
-  };
+  // Memoize map callbacks
+  const onMapLoad = useCallback(
+    (mapInstance: google.maps.Map) => {
+      setMapState(mapInstance);
+      setMap(mapInstance);
+    },
+    [setMap]
+  );
 
   useEffect(() => {
     return () => {
@@ -304,9 +343,9 @@ const MapComponent = () => {
       <GoogleMap
         mapContainerStyle={MAP_CONTAINER_STYLE}
         center={markerPosition || MAP_CENTER}
-        zoom={markerPosition ? getZoomLevel(distance) : 6}
-        options={MAP_OPTIONS}
-        onLoad={onLoad}
+        zoom={zoomLevel}
+        options={mapOptions}
+        onLoad={onMapLoad}
       />
     </div>
   );

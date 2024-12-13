@@ -27,7 +27,7 @@ export const fetchMatches = async (
     if (filters.lat) params.append("lat", filters.lat?.toString() || "");
     if (filters.lng) params.append("lng", filters.lng?.toString() || "");
 
-    const url = `http://localhost:3000/matches?${params.toString()}`;
+    const url = `http://localhost:5000/matches?${params.toString()}`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -43,7 +43,7 @@ export const fetchMatches = async (
 
 export const searchCities = async (query: string): Promise<City[]> => {
   try {
-    const url = `http://localhost:3000/cities?search=${encodeURIComponent(
+    const url = `http://localhost:5000/cities?search=${encodeURIComponent(
       query
     )}`;
     const response = await fetch(url);

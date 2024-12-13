@@ -1,15 +1,8 @@
 "use client";
-import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CalendarDays, MapPin, Navigation } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CalendarDays, MapPin } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
 import { useStore } from "@/lib/store";

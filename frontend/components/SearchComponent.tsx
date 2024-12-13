@@ -50,7 +50,7 @@ export const SearchComponent = () => {
       setCities(results);
       setIsSearching(false);
     }, 300),
-    []
+    [setCities, setIsSearching]
   );
 
   // Update handler to use global state

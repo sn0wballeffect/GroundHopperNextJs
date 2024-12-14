@@ -105,9 +105,12 @@ export const SearchResults = () => {
   // Calculate fixed item height based on viewport
   const itemHeight = useMemo(() => {
     const viewportHeight = dimensions.height - 210; // Reduce header/footer space
+    if (dimensions.width >= 2500) {
+      return Math.floor(viewportHeight / 5); // 5 cards for 4K screens
+    }
     return dimensions.width >= 1024
-      ? Math.floor(viewportHeight / 4) // 3 cards for lg screens
-      : Math.floor(viewportHeight / 3); // 4 cards for smaller screens
+      ? Math.floor(viewportHeight / 4) // 4 cards for lg screens
+      : Math.floor(viewportHeight / 3); // 3 cards for smaller screens
   }, [dimensions]);
 
   useEffect(() => {

@@ -108,7 +108,7 @@ export const SearchResults = () => {
     if (dimensions.width >= 2500) {
       return Math.floor(viewportHeight / 5); // 5 cards for 4K screens
     }
-    return dimensions.width >= 1024
+    return dimensions.width >= 1320
       ? Math.floor(viewportHeight / 4) // 4 cards for lg screens
       : Math.floor(viewportHeight / 3); // 3 cards for smaller screens
   }, [dimensions]);
@@ -190,7 +190,7 @@ export const SearchResults = () => {
       <motion.div
         key={match.id}
         variants={itemVariants}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.2 }}
         onMouseEnter={() => {
           if (match.latitude && match.longitude) {
             setHoveredCoords({

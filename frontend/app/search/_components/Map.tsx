@@ -43,7 +43,6 @@ const MapComponent = () => {
   const userMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(
     null
   );
-  const [isAnimating, setIsAnimating] = useState(false);
   const animationTimeoutRef = useRef<NodeJS.Timeout[]>([]);
   const markerPosition = useMemo(
     () =>
@@ -164,8 +163,6 @@ const MapComponent = () => {
     if (!map || !window.google) return;
 
     const batchUpdate = async () => {
-      setIsAnimating(true);
-
       // Clear existing markers and timeouts
       markersRef.current.forEach((marker) => (marker.map = null));
       markersRef.current = [];
@@ -181,9 +178,6 @@ const MapComponent = () => {
             handleMarkerClick(advancedMarker, map)
           );
           newMarkers.push(advancedMarker);
-          if (i === markers.length - 1) {
-            setIsAnimating(false);
-          }
         }, i * 20);
         animationTimeoutRef.current.push(timeout);
       }
@@ -196,7 +190,6 @@ const MapComponent = () => {
     return () => {
       markersRef.current.forEach((marker) => (marker.map = null));
       animationTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
-      setIsAnimating(false);
     };
   }, [map, markers, handleMarkerClick]);
 

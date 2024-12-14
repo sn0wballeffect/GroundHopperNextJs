@@ -1,7 +1,7 @@
 "use client";
 // Add import for react-window
 import { FixedSizeList as List } from "react-window";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, MapPin } from "lucide-react";

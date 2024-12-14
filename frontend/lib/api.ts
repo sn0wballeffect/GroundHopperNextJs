@@ -18,7 +18,7 @@ export const fetchMatches = async (
   try {
     const params = new URLSearchParams();
 
-    params.append("limit", (filters.limit || 100).toString());
+    params.append("limit", (filters.limit || 1000).toString());
 
     if (filters.sport) params.append("sport", filters.sport);
     if (filters.dateFrom) params.append("dateFrom", filters.dateFrom);

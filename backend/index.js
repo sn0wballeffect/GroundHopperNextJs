@@ -35,7 +35,7 @@ app.get("/matches", async (req, res) => {
       distance,
       lat,
       lng,
-      limit = 100,
+      limit = 1000,
     } = req.query;
 
     let whereClause = {};

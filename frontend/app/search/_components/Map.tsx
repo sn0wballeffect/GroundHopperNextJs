@@ -26,9 +26,6 @@ const DROP_ANIMATION = {
   },
 };
 
-// Add delay helper at the top with other constants
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 const MapComponent = () => {
   const {
     userLocation,

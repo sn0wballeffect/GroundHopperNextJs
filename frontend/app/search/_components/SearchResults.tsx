@@ -106,11 +106,11 @@ export const SearchResults = () => {
   const itemHeight = useMemo(() => {
     const viewportHeight = dimensions.height - 210; // Reduce header/footer space
     if (dimensions.width >= 2500) {
-      return Math.floor(viewportHeight / 5); // 5 cards for 4K screens
+      return Math.floor(viewportHeight / 6); // 5 cards for 4K screens
     }
     return dimensions.width >= 1320
       ? Math.floor(viewportHeight / 4) // 4 cards for lg screens
-      : Math.floor(viewportHeight / 3); // 3 cards for smaller screens
+      : Math.floor(viewportHeight / 2); // 3 cards for smaller screens
   }, [dimensions]);
 
   useEffect(() => {

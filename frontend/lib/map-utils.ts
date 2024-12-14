@@ -4,9 +4,7 @@ export const animateMapToLocation = (
   position: google.maps.LatLngLiteral,
   onAnimationComplete?: () => void
 ) => {
-  map.panTo(position);
-  const currentZoom = map.getZoom() || 0;
-  const targetZoom = 13;
+  const startPos = map.getCenter()?.toJSON() || position;
 
   // Fixed duration in milliseconds
   const duration = 1000;
@@ -23,13 +21,16 @@ export const animateMapToLocation = (
     frame++;
     const progress = frame / totalFrames;
     const easedProgress = easeInOutQuad(progress);
-    const newZoom = currentZoom + (targetZoom - currentZoom) * easedProgress;
 
-    map.setZoom(newZoom);
+    // Interpolate between start and end positions
+    const lat = startPos.lat + (position.lat - startPos.lat) * easedProgress;
+    const lng = startPos.lng + (position.lng - startPos.lng) * easedProgress;
+
+    map.panTo({ lat, lng });
 
     if (frame >= totalFrames) {
       clearInterval(interval);
-      map.setZoom(targetZoom); // Ensure we end exactly at target
+      map.panTo(position); // Ensure we end exactly at target position
       if (onAnimationComplete) onAnimationComplete();
     }
   }, 1000 / fps);

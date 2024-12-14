@@ -173,8 +173,6 @@ export const SearchResults = () => {
       lng: match.longitude,
     };
 
-    useStore.getState().setSelectedLocation(position);
-
     animateMapToLocation(map, position, () => {});
   };
 

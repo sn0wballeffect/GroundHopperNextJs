@@ -21,7 +21,7 @@ const DROP_ANIMATION = {
   animationTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
   transformOrigin: "bottom center",
   "@keyframes markerDrop": {
-    "0%": { transform: "translateY(-100px)" },
+    "0%": { transform: "translateY(-200px)" },
     "100%": { transform: "translateY(0)" },
   },
 };
@@ -111,7 +111,7 @@ const MapComponent = () => {
         style.id = "markerDropKeyframes";
         style.textContent = `
           @keyframes markerDrop {
-            from { transform: translateY(-100px); }
+            from { transform: translateY(-200px); }
             to { transform: translateY(0); }
           }
         `;

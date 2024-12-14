@@ -208,7 +208,7 @@ export const SearchResults = () => {
         <Card
           className={cn(
             "hover:shadow-lg transition-all duration-300 border-l-4",
-            "will-change-transform h-[95%] rounded-[12px]", // Add fixed height
+            "will-change-transform h-[95%] rounded-[12px] cursor-pointer", // Add fixed height
             SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
           )}
           onClick={() => handleCardClick(match)}

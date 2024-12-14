@@ -118,7 +118,6 @@ const MapComponent = () => {
 
       return new google.maps.marker.AdvancedMarkerElement({
         position: marker.position,
-        title: marker.id,
         content: pinElement.element,
         map,
       });

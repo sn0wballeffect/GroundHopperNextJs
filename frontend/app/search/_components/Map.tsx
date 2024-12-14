@@ -46,6 +46,8 @@ const MapComponent = () => {
   const userMarkerRef = useRef<google.maps.marker.AdvancedMarkerElement | null>(
     null
   );
+  const [isAnimating, setIsAnimating] = useState(false);
+  const animationTimeoutRef = useRef<NodeJS.Timeout[]>([]);
   const markerPosition = useMemo(
     () =>
       userLocation?.lat && userLocation?.lng
@@ -165,33 +167,41 @@ const MapComponent = () => {
     if (!map || !window.google) return;
 
     const batchUpdate = async () => {
-      // Clear existing markers
+      setIsAnimating(true);
+
+      // Clear existing markers and timeouts
       markersRef.current.forEach((marker) => (marker.map = null));
       markersRef.current = [];
+      animationTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
+      animationTimeoutRef.current = [];
 
       // Create new markers with animation
-      const newMarkers = [];
+      const newMarkers: google.maps.marker.AdvancedMarkerElement[] = [];
       for (let i = 0; i < markers.length; i++) {
-        await delay(20); // Stagger the animations
-        const advancedMarker = createAdvancedMarker(markers[i], map, true);
-        advancedMarker.addListener("click", () =>
-          handleMarkerClick(advancedMarker, map)
-        );
-        newMarkers.push(advancedMarker);
+        const timeout = setTimeout(async () => {
+          const advancedMarker = createAdvancedMarker(markers[i], map, true);
+          advancedMarker.addListener("click", () =>
+            handleMarkerClick(advancedMarker, map)
+          );
+          newMarkers.push(advancedMarker);
+          if (i === markers.length - 1) {
+            setIsAnimating(false);
+          }
+        }, i * 20);
+        animationTimeoutRef.current.push(timeout);
       }
-
       markersRef.current = newMarkers;
     };
 
-    requestAnimationFrame(() => {
-      batchUpdate();
-    });
+    batchUpdate();
 
+    // Cleanup function
     return () => {
       markersRef.current.forEach((marker) => (marker.map = null));
-      markersRef.current = [];
+      animationTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
+      setIsAnimating(false);
     };
-  }, [markers, map, createAdvancedMarker, handleMarkerClick]);
+  }, [map, markers, handleMarkerClick]);
 
   // Second effect to handle hover state changes
   useEffect(() => {

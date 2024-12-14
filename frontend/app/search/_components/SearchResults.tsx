@@ -207,7 +207,7 @@ export const SearchResults = () => {
         <Card
           className={cn(
             "hover:shadow-lg transition-all duration-300 border-l-4",
-            "will-change-transform h-[95%]", // Add fixed height
+            "will-change-transform h-[95%] rounded-[12px]", // Add fixed height
             SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
           )}
           onClick={() => handleCardClick(match)}
@@ -285,8 +285,8 @@ export const SearchResults = () => {
           itemCount={filteredMatches.length}
           itemSize={itemHeight}
           width="100%"
-          overscanCount={1}
-          className="custom-scrollbar-hidden" // Number of items to render above/below viewport
+          overscanCount={2}
+          className="custom-scrollbar-hidden"
         >
           {Row}
         </List>

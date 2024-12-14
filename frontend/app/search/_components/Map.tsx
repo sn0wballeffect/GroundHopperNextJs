@@ -15,6 +15,20 @@ import {
 } from "@/constants/map-constants";
 import { animateMapToLocation } from "@/lib/map-utils";
 
+const DROP_ANIMATION = {
+  animationName: "markerDrop",
+  animationDuration: "0.5s",
+  animationTimingFunction: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+  transformOrigin: "bottom center",
+  "@keyframes markerDrop": {
+    "0%": { transform: "translateY(-100px)" },
+    "100%": { transform: "translateY(0)" },
+  },
+};
+
+// Add delay helper at the top with other constants
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const MapComponent = () => {
   const {
     userLocation,
@@ -70,7 +84,8 @@ const MapComponent = () => {
         position: google.maps.LatLngLiteral;
         id: string;
       },
-      map: google.maps.Map
+      map: google.maps.Map,
+      shouldAnimate: boolean
     ) => {
       const sport = marker.sport as keyof typeof getMarkerColor;
       const pinElement = new google.maps.marker.PinElement({
@@ -80,6 +95,28 @@ const MapComponent = () => {
         glyph: getGlyphForSport(marker.sport as keyof typeof getMarkerColor),
         glyphColor: "rgba(0, 0, 0, 0.8)",
       });
+
+      // Only apply animation if it's a new marker
+      if (shouldAnimate) {
+        const element = pinElement.element;
+        Object.assign(element.style, {
+          animation: `${DROP_ANIMATION.animationDuration} ${DROP_ANIMATION.animationTimingFunction} markerDrop`,
+          transformOrigin: DROP_ANIMATION.transformOrigin,
+        });
+      }
+
+      // Add keyframes to document if not already present
+      if (!document.querySelector("#markerDropKeyframes")) {
+        const style = document.createElement("style");
+        style.id = "markerDropKeyframes";
+        style.textContent = `
+          @keyframes markerDrop {
+            from { transform: translateY(-100px); }
+            to { transform: translateY(0); }
+          }
+        `;
+        document.head.appendChild(style);
+      }
 
       return new google.maps.marker.AdvancedMarkerElement({
         position: marker.position,
@@ -127,24 +164,28 @@ const MapComponent = () => {
   useEffect(() => {
     if (!map || !window.google) return;
 
-    const batchUpdate = () => {
-      // Clear existing markers in batch
+    const batchUpdate = async () => {
+      // Clear existing markers
       markersRef.current.forEach((marker) => (marker.map = null));
       markersRef.current = [];
 
-      // Create new markers in batch
-      const newMarkers = markers.map((marker) => {
-        const advancedMarker = createAdvancedMarker(marker, map);
+      // Create new markers with animation
+      const newMarkers = [];
+      for (let i = 0; i < markers.length; i++) {
+        await delay(20); // Stagger the animations
+        const advancedMarker = createAdvancedMarker(markers[i], map, true);
         advancedMarker.addListener("click", () =>
           handleMarkerClick(advancedMarker, map)
         );
-        return advancedMarker;
-      });
+        newMarkers.push(advancedMarker);
+      }
 
       markersRef.current = newMarkers;
     };
 
-    requestAnimationFrame(batchUpdate);
+    requestAnimationFrame(() => {
+      batchUpdate();
+    });
 
     return () => {
       markersRef.current.forEach((marker) => (marker.map = null));

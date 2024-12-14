@@ -36,6 +36,7 @@ export const SearchComponent = () => {
   const setUserLocation = useStore((state) => state.setUserLocation);
   const [cities, setCities] = useState<City[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -107,6 +108,14 @@ export const SearchComponent = () => {
       }
     );
   };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && cities.length > 0) {
+      // Select hovered city if exists, otherwise first city
+      const selectedCity =
+        hoveredIndex !== null ? cities[hoveredIndex] : cities[0];
+      handleCitySelect(selectedCity);
+    }
+  };
 
   return (
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
@@ -119,15 +128,18 @@ export const SearchComponent = () => {
             className="border-0 shadow-none p-0 focus-visible:ring-0 text-sm placeholder:text-muted-foreground px-1"
             value={searchQuery}
             onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
           />
           {cities.length > 0 && (
             <div className="absolute w-full z-50 bg-white rounded-md shadow-xl mt-1">
               <Command>
                 <CommandList>
-                  {cities.map((city) => (
+                  {cities.map((city, index) => (
                     <CommandItem
                       key={city.id}
                       onSelect={() => handleCitySelect(city)}
+                      onMouseEnter={() => setHoveredIndex(index)}
+                      onMouseLeave={() => setHoveredIndex(null)}
                       className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer"
                     >
                       <MapPin className="h-4 w-4" />

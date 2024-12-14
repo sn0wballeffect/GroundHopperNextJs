@@ -1,4 +1,6 @@
 "use client";
+// Add import for react-window
+import { FixedSizeList as List } from "react-window";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -81,6 +83,33 @@ export const SearchResults = () => {
     Eishockey: "ice_hockey",
   };
 
+  // Add dimensions state
+  const [dimensions, setDimensions] = useState({
+    width: typeof window !== "undefined" ? window.innerWidth : 0,
+    height: typeof window !== "undefined" ? window.innerHeight : 0,
+  });
+
+  // Add resize listener
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Calculate fixed item height based on viewport
+  const itemHeight = useMemo(() => {
+    const viewportHeight = dimensions.height - 210; // Reduce header/footer space
+    return dimensions.width >= 1024
+      ? Math.floor(viewportHeight / 4) // 3 cards for lg screens
+      : Math.floor(viewportHeight / 3); // 4 cards for smaller screens
+  }, [dimensions]);
+
   useEffect(() => {
     const loadMatches = async () => {
       setLoading(true);
@@ -146,6 +175,99 @@ export const SearchResults = () => {
     animateMapToLocation(map, position, () => {});
   };
 
+  // Row renderer for virtualized list
+  const Row = ({
+    index,
+    style,
+  }: {
+    index: number;
+    style: React.CSSProperties;
+  }) => {
+    const match = filteredMatches[index];
+
+    return (
+      <motion.div
+        key={match.id}
+        variants={itemVariants}
+        transition={{ duration: 0.5 }}
+        onMouseEnter={() => {
+          if (match.latitude && match.longitude) {
+            setHoveredCoords({
+              lat: match.latitude,
+              lng: match.longitude,
+            });
+          }
+        }}
+        onMouseLeave={() => {
+          setHoveredCoords({ lat: null, lng: null });
+        }}
+        style={style}
+      >
+        {/* Existing Card component code */}
+        <Card
+          className={cn(
+            "hover:shadow-lg transition-all duration-300 border-l-4",
+            "will-change-transform h-[95%]", // Add fixed height
+            SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
+          )}
+          onClick={() => handleCardClick(match)}
+        >
+          <CardHeader className="flex flex-row items-center justify-between pb-2 h-1/3">
+            <CardTitle className="flex flex-row items-center space-x-3">
+              <span className="text-2xl">{getSportIcon(match.sport)}</span>
+              <span className="text-xl font-semibold">
+                {match.home_team}
+                <span className="text-muted-foreground mx-2">vs</span>
+                {match.away_team}
+              </span>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="grid grid-cols-2 gap-4 py-4 border-t h-2/3 ml-1">
+            <div className="flex items-center">
+              <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground" />
+              <div className="flex flex-col">
+                <span className="font-medium text-lg">{match.date_string}</span>
+                <span className="text-base">
+                  {match.event_time
+                    ? `${match.event_time.substring(11, 16)} Uhr`
+                    : "Time unavailable"}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center">
+              <MapPin className="h-5 w-5 mr-3 text-muted-foreground" />
+              <div className="flex flex-col">
+                <span className="font-medium">{match.stadium}</span>
+                {userLocation?.lat &&
+                  userLocation?.lng &&
+                  match.latitude &&
+                  match.longitude && (
+                    <span className="flex items-center">
+                      {(
+                        getDistance(
+                          {
+                            latitude: userLocation.lat,
+                            longitude: userLocation.lng,
+                          },
+                          {
+                            latitude: match.latitude,
+                            longitude: match.longitude,
+                          }
+                        ) / 1000
+                      ).toFixed(1)}{" "}
+                      km
+                    </span>
+                  )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  };
+
   if (loading) {
     return <div> </div>;
   }
@@ -158,91 +280,16 @@ export const SearchResults = () => {
         animate="visible"
         exit="hidden"
       >
-        <AnimatePresence>
-          {filteredMatches.map((match) => (
-            <motion.div
-              key={match.id}
-              variants={itemVariants}
-              transition={{ duration: 0.5 }}
-              onMouseEnter={() => {
-                if (match.latitude && match.longitude) {
-                  setHoveredCoords({
-                    lat: match.latitude,
-                    lng: match.longitude,
-                  });
-                }
-              }}
-              onMouseLeave={() => {
-                setHoveredCoords({ lat: null, lng: null });
-              }}
-            >
-              <Card
-                className={cn(
-                  "mb-2 hover:shadow-lg transition-all duration-300 border-l-4 h-[calc(33vh-78px)]  lg:h-[calc(25vh-62px)] cursor-pointer",
-                  "will-change-transform",
-                  SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
-                )}
-                onClick={() => handleCardClick(match)}
-              >
-                <CardHeader className="flex flex-row items-center justify-between pb-2 h-1/3">
-                  <CardTitle className="flex flex-row items-center space-x-3">
-                    <span className="text-2xl">
-                      {getSportIcon(match.sport)}
-                    </span>
-                    <span className="text-xl font-semibold">
-                      {match.home_team}
-                      <span className="text-muted-foreground mx-2">vs</span>
-                      {match.away_team}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent className="grid grid-cols-2 gap-4 py-4 border-t h-2/3 ml-1">
-                  <div className="flex items-center">
-                    <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span className="font-medium text-lg">
-                        {match.date_string}
-                      </span>
-                      <span className="text-base">
-                        {match.event_time
-                          ? `${match.event_time.substring(11, 16)} Uhr`
-                          : "Time unavailable"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <MapPin className="h-5 w-5 mr-3 text-muted-foreground" />
-                    <div className="flex flex-col">
-                      <span className="font-medium">{match.stadium}</span>
-                      {userLocation?.lat &&
-                        userLocation?.lng &&
-                        match.latitude &&
-                        match.longitude && (
-                          <span className="flex items-center">
-                            {(
-                              getDistance(
-                                {
-                                  latitude: userLocation.lat,
-                                  longitude: userLocation.lng,
-                                },
-                                {
-                                  latitude: match.latitude,
-                                  longitude: match.longitude,
-                                }
-                              ) / 1000
-                            ).toFixed(1)}{" "}
-                            km
-                          </span>
-                        )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+        <List
+          height={dimensions.height - 80}
+          itemCount={filteredMatches.length}
+          itemSize={itemHeight}
+          width="100%"
+          overscanCount={1}
+          className="custom-scrollbar-hidden" // Number of items to render above/below viewport
+        >
+          {Row}
+        </List>
       </motion.div>
     </div>
   );

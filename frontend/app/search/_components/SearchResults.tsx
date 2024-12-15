@@ -165,6 +165,10 @@ export const SearchResults = () => {
     );
   }, [matches, selectedLocation]);
 
+  // Add expanded state near other state declarations
+  const [expandedId, setExpandedId] = useState<number | null>(null);
+
+  // Modify handleCardClick to include expansion toggle
   const handleCardClick = (match: Match) => {
     if (!map || !match.latitude || !match.longitude) return;
 
@@ -174,6 +178,7 @@ export const SearchResults = () => {
     };
 
     animateMapToLocation(map, position, () => {});
+    setExpandedId(expandedId === match.id ? null : match.id);
   };
 
   // Row renderer for virtualized list
@@ -185,6 +190,14 @@ export const SearchResults = () => {
     style: React.CSSProperties;
   }) => {
     const match = filteredMatches[index];
+    const isExpanded = expandedId === match.id;
+
+    // Calculate dynamic style based on expansion
+    const dynamicStyle = {
+      ...style,
+      height: isExpanded ? (style.height as number) * 1.05 : style.height,
+      zIndex: isExpanded ? 10 : 1,
+    };
 
     return (
       <motion.div
@@ -202,14 +215,15 @@ export const SearchResults = () => {
         onMouseLeave={() => {
           setHoveredCoords({ lat: null, lng: null });
         }}
-        style={style}
+        style={dynamicStyle}
       >
         {/* Existing Card component code */}
         <Card
           className={cn(
             "hover:shadow-lg transition-all duration-300 border-l-4",
             "will-change-transform h-[95%] rounded-[12px] cursor-pointer",
-            SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300"
+            SPORT_COLORS[match.sport] || "bg-gray-50 border-gray-300",
+            isExpanded && "h-[190%]"
           )}
           onClick={() => handleCardClick(match)}
         >

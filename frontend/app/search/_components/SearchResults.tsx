@@ -1,6 +1,6 @@
 "use client";
 import { VariableSizeList as List } from "react-window";
-import { motion } from "framer-motion";
+import AutoSizer from "react-virtualized-auto-sizer";
 import React, {
   useState,
   useEffect,
@@ -16,24 +16,6 @@ import { useStore } from "@/lib/store";
 import { getDistance } from "geolib";
 import { cn } from "@/lib/utils";
 import { animateMapToLocation } from "@/lib/map-utils";
-
-// Motion variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      delayChildren: 0.1,
-      staggerChildren: 0.05,
-      duration: 0.2,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1 },
-};
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -62,7 +44,6 @@ const getSportIcon = (sport: string): string => {
   return SPORT_ICONS[sport] || "🎯";
 };
 
-// Memoized Row Component
 const Row = React.memo(
   ({
     index,
@@ -84,58 +65,38 @@ const Row = React.memo(
     const isExpanded = expandedId === match.id;
 
     return (
-      <motion.div
-        key={match.id}
-        style={style}
-        variants={itemVariants}
-        transition={{ duration: 0.2, delay: 0.4 }}
-        onMouseEnter={() => {
-          if (match.latitude && match.longitude) {
-            setHoveredCoords({
-              lat: match.latitude,
-              lng: match.longitude,
-            });
-          }
-        }}
-        onMouseLeave={() => {
-          setHoveredCoords({ lat: null, lng: null });
-        }}
-      >
-        <motion.div
-          layout
-          initial={{ scale: 1 }}
-          transition={{
-            layout: {
-              duration: 0.3,
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-            },
+      <div style={style} className="will-change-transform">
+        <Card
+          onMouseEnter={() => {
+            if (match.latitude && match.longitude) {
+              setHoveredCoords({
+                lat: match.latitude,
+                lng: match.longitude,
+              });
+            }
           }}
+          onMouseLeave={() => {
+            setHoveredCoords({ lat: null, lng: null });
+          }}
+          onClick={() => handleCardClick(match, index)}
+          className={cn(
+            "grid grid-rows-[auto,1fr,auto] h-[95%] cursor-pointer border-l-4 rounded-[12px] transition-shadow hover:shadow-lg",
+            SPORT_COLORS[match.sport] || "border-gray-300"
+          )}
         >
-          <Card
-            className={cn(
-              "hover:shadow-lg transition-all duration-300 border-l-4 will-change-transform rounded-[12px] cursor-pointer flex flex-col h-full", // Changed to flex layout
-              SPORT_COLORS[match.sport] || "border-gray-300"
-            )}
-            onClick={() => handleCardClick(match, index)}
-          >
-            <CardHeader className="py-4 px-6 shrink-0">
-              <CardTitle className="flex flex-row items-center space-x-3">
-                <span className="text-2xl">{getSportIcon(match.sport)}</span>
-                <span className="text-xl font-semibold">
-                  {match.home_team}
-                  <span className="text-muted-foreground mx-2">vs</span>
-                  {match.away_team}
-                </span>
-              </CardTitle>
-            </CardHeader>
+          <CardHeader className="py-4 px-6">
+            <CardTitle className="flex flex-row items-center space-x-3">
+              <span className="text-2xl">{getSportIcon(match.sport)}</span>
+              <span className="text-xl font-semibold">
+                {match.home_team}
+                <span className="text-muted-foreground mx-2">vs</span>
+                {match.away_team}
+              </span>
+            </CardTitle>
+          </CardHeader>
 
-            <CardContent
-              className={cn(
-                "grid grid-cols-2 gap-4 py-4 px-6 border-t border-b flex-grow" // Added flex-grow
-              )}
-            >
+          <CardContent className="border-t border-b py-4 px-6 overflow-hidden">
+            <div className="grid grid-cols-2 gap-4">
               <div className="flex items-start ml-1">
                 <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
                 <div className="flex flex-col">
@@ -176,34 +137,20 @@ const Row = React.memo(
                     )}
                 </div>
               </div>
-            </CardContent>
+            </div>
+          </CardContent>
 
-            {/* Expanded Content */}
-            <motion.div
-              layout
-              initial={{ opacity: 0, height: 0 }}
-              animate={{
-                opacity: isExpanded ? 1 : 0,
-                height: isExpanded ? "auto" : 0,
-              }}
-              transition={{
-                duration: 0.3,
-                opacity: { duration: 0.2 },
-                layout: {
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                },
-              }}
-              className="overflow-hidden shrink-0" // Added shrink-0
-            >
-              <div className="p-6 bg-muted/50">
-                <p>Additional match details here...</p>
-              </div>
-            </motion.div>
-          </Card>
-        </motion.div>
-      </motion.div>
+          {/* Expanded content - with proper hiding */}
+          <div
+            className={cn(
+              "h-0 opacity-0 transition-[height,opacity] duration-100 overflow-hidden",
+              isExpanded && "h-auto opacity-100 p-6 bg-muted/50"
+            )}
+          >
+            <p>Additional match details here...</p>
+          </div>
+        </Card>
+      </div>
     );
   }
 );
@@ -225,36 +172,6 @@ export const SearchResults = () => {
     Basketball: "basketball",
     Eishockey: "ice_hockey",
   };
-
-  const [dimensions, setDimensions] = useState({
-    width: typeof window !== "undefined" ? window.innerWidth : 0,
-    height: typeof window !== "undefined" ? window.innerHeight : 0,
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      setDimensions({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const baseItemHeight = useMemo(() => {
-    const viewportHeight = dimensions.height - 210;
-
-    // Define breakpoints for different screen sizes
-    if (dimensions.width >= 2500) {
-      return Math.floor(viewportHeight / 6); // 6 items per column for ultra-wide
-    }
-    if (dimensions.width >= 1920) {
-      return Math.floor(viewportHeight / 4); // 5 items for wide screens
-    }
-    return Math.floor(viewportHeight / 3); // 3 items for smaller screens
-  }, [dimensions.height, dimensions.width]);
 
   useEffect(() => {
     const loadMatches = async () => {
@@ -308,87 +225,83 @@ export const SearchResults = () => {
   }, [matches, selectedLocation]);
 
   const [expandedId, setExpandedId] = useState<number | null>(null);
-
-  // Reference to the List so we can update item sizes on expansion
   const listRef = useRef<List>(null);
-
-  const getItemSize = useCallback(
-    (index: number) => {
-      // If this item is expanded, increase its size
-      const match = filteredMatches[index];
-      if (match && expandedId === match.id) {
-        // Add extra height for expanded content
-        return baseItemHeight * 1.5; // Adjust as needed
-      }
-      return baseItemHeight;
-    },
-    [baseItemHeight, expandedId, filteredMatches]
-  );
 
   const handleCardClick = (match: Match, index: number) => {
     if (!map || !match.latitude || !match.longitude) return;
 
-    const position = { lat: match.latitude, lng: match.longitude };
-    /*  animateMapToLocation(map, position, () => {}); */
-
-    // First reset the list to handle the previous expanded card
+    // If another item was expanded, reset after index 0 to ensure sizing is recalculated
+    animateMapToLocation(
+      map,
+      { lat: match.latitude, lng: match.longitude },
+      () => {}
+    );
     if (expandedId !== null) {
       requestAnimationFrame(() => {
         listRef.current?.resetAfterIndex(0);
       });
     }
 
-    // Then update the expanded state
     setExpandedId(expandedId === match.id ? null : match.id);
 
-    // Finally reset after the clicked index
+    // Recalculate sizes after expansion state change
     requestAnimationFrame(() => {
       listRef.current?.resetAfterIndex(index);
     });
   };
 
-  // Add effect to handle dimension changes
-  useEffect(() => {
-    if (listRef.current) {
-      // Reset all measurements in the List
-      listRef.current.resetAfterIndex(0);
-    }
-  }, [dimensions, baseItemHeight]);
+  // Determine item size
+  const getItemSize = useCallback(
+    (index: number) => {
+      const baseItemHeight = 180;
+      const match = filteredMatches[index];
+
+      // If expanded, return a larger size
+      if (match && expandedId === match.id) {
+        // Adjust as needed if your expanded content is taller
+        return baseItemHeight * 2;
+      }
+      return baseItemHeight;
+    },
+    [expandedId, filteredMatches]
+  );
 
   if (loading) {
-    return <div> </div>;
+    return <div>Loading...</div>;
+  }
+
+  if (filteredMatches.length === 0) {
+    return (
+      <div className="p-4 text-center text-gray-500">No matches found.</div>
+    );
   }
 
   return (
-    <div>
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        exit="hidden"
-      >
-        <List
-          ref={listRef}
-          height={dimensions.height - 80}
-          itemCount={filteredMatches.length}
-          itemSize={getItemSize}
-          width="100%"
-          overscanCount={2}
-          className="custom-scrollbar-hidden"
-          itemKey={(index) => filteredMatches[index].id}
-          itemData={{
-            filteredMatches,
-            expandedId,
-            setHoveredCoords,
-            handleCardClick,
-            userLocation,
-          }}
-          // VariableSizeList requires this for dynamic heights
-          estimatedItemSize={baseItemHeight}
-        >
-          {Row}
-        </List>
-      </motion.div>
+    <div className="w-full h-full flex-1 overflow-hidden">
+      <AutoSizer>
+        {({ height, width }) => (
+          <List
+            ref={listRef}
+            height={height}
+            width={width}
+            itemCount={filteredMatches.length}
+            itemSize={getItemSize}
+            itemData={{
+              filteredMatches,
+              expandedId,
+              setHoveredCoords,
+              handleCardClick,
+              userLocation,
+            }}
+            estimatedItemSize={180}
+            overscanCount={5}
+            className="custom-scrollbar-hidden"
+            itemKey={(index) => filteredMatches[index].id}
+          >
+            {Row}
+          </List>
+        )}
+      </AutoSizer>
     </div>
   );
 };

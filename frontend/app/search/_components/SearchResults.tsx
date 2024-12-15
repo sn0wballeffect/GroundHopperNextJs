@@ -103,16 +103,12 @@ const Row = React.memo(
       >
         <Card
           className={cn(
-            "hover:shadow-lg transition-all duration-300 border-l-4 will-change-transform rounded-[12px] cursor-pointer overflow-hidden h-[95%] flex flex-col",
+            "hover:shadow-lg transition-all duration-300 border-l-4 will-change-transform rounded-[12px] cursor-pointer h-[95%] grid grid-rows-[auto_1fr_auto]", // Changed to grid layout
             SPORT_COLORS[match.sport] || "border-gray-300"
           )}
           onClick={() => handleCardClick(match, index)}
         >
-          <CardHeader
-            className={cn(
-              "flex flex-row items-center justify-between pb-2 h-1/3"
-            )}
-          >
+          <CardHeader className="py-4 px-6">
             <CardTitle className="flex flex-row items-center space-x-3">
               <span className="text-2xl">{getSportIcon(match.sport)}</span>
               <span className="text-xl font-semibold">
@@ -124,10 +120,10 @@ const Row = React.memo(
           </CardHeader>
 
           <CardContent
-            className={cn("grid grid-cols-2 gap-4 py-4 border-t ml-1 h-2/3")}
+            className={cn("grid grid-cols-2 gap-4 py-4 px-6 border-t border-b")}
           >
-            <div className="flex items-center">
-              <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground" />
+            <div className="flex items-start">
+              <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
               <div className="flex flex-col">
                 <span className="font-medium text-lg">{match.date_string}</span>
                 <span className="text-base">
@@ -138,8 +134,8 @@ const Row = React.memo(
               </div>
             </div>
 
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-3 text-muted-foreground" />
+            <div className="flex items-start">
+              <MapPin className="h-5 w-5 mr-3 text-muted-foreground shrink-0" />
               <div className="flex flex-col">
                 <span className="font-medium">{match.stadium}</span>
                 {userLocation?.lat &&
@@ -167,11 +163,20 @@ const Row = React.memo(
           </CardContent>
 
           {/* Expanded Content */}
-          {isExpanded && (
-            <div className="p-4 border-t bg-muted/50">
+          <motion.div
+            layout
+            initial={{ opacity: 0, height: 0 }}
+            animate={{
+              opacity: isExpanded ? 1 : 0,
+              height: isExpanded ? "auto" : 0,
+            }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="p-6 bg-muted/50">
               <p>Additional match details here...</p>
             </div>
-          )}
+          </motion.div>
         </Card>
       </motion.div>
     );

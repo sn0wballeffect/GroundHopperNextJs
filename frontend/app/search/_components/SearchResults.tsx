@@ -88,7 +88,7 @@ const Row = React.memo(
         key={match.id}
         style={style}
         variants={itemVariants}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.2, delay: 0.4 }}
         onMouseEnter={() => {
           if (match.latitude && match.longitude) {
             setHoveredCoords({
@@ -101,83 +101,108 @@ const Row = React.memo(
           setHoveredCoords({ lat: null, lng: null });
         }}
       >
-        <Card
-          className={cn(
-            "hover:shadow-lg transition-all duration-300 border-l-4 will-change-transform rounded-[12px] cursor-pointer h-[95%] grid grid-rows-[auto_1fr_auto]", // Changed to grid layout
-            SPORT_COLORS[match.sport] || "border-gray-300"
-          )}
-          onClick={() => handleCardClick(match, index)}
+        <motion.div
+          layout
+          initial={{ scale: 1 }}
+          transition={{
+            layout: {
+              duration: 0.3,
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+            },
+          }}
         >
-          <CardHeader className="py-4 px-6">
-            <CardTitle className="flex flex-row items-center space-x-3">
-              <span className="text-2xl">{getSportIcon(match.sport)}</span>
-              <span className="text-xl font-semibold">
-                {match.home_team}
-                <span className="text-muted-foreground mx-2">vs</span>
-                {match.away_team}
-              </span>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent
-            className={cn("grid grid-cols-2 gap-4 py-4 px-6 border-t border-b")}
+          <Card
+            className={cn(
+              "hover:shadow-lg transition-all duration-300 border-l-4 will-change-transform rounded-[12px] cursor-pointer flex flex-col h-full", // Changed to flex layout
+              SPORT_COLORS[match.sport] || "border-gray-300"
+            )}
+            onClick={() => handleCardClick(match, index)}
           >
-            <div className="flex items-start">
-              <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
-              <div className="flex flex-col">
-                <span className="font-medium text-lg">{match.date_string}</span>
-                <span className="text-base">
-                  {match.event_time
-                    ? `${match.event_time.substring(11, 16)} Uhr`
-                    : "Time unavailable"}
+            <CardHeader className="py-4 px-6 shrink-0">
+              <CardTitle className="flex flex-row items-center space-x-3">
+                <span className="text-2xl">{getSportIcon(match.sport)}</span>
+                <span className="text-xl font-semibold">
+                  {match.home_team}
+                  <span className="text-muted-foreground mx-2">vs</span>
+                  {match.away_team}
                 </span>
-              </div>
-            </div>
+              </CardTitle>
+            </CardHeader>
 
-            <div className="flex items-start">
-              <MapPin className="h-5 w-5 mr-3 text-muted-foreground shrink-0" />
-              <div className="flex flex-col">
-                <span className="font-medium">{match.stadium}</span>
-                {userLocation?.lat &&
-                  userLocation?.lng &&
-                  match.latitude &&
-                  match.longitude && (
-                    <span className="flex items-center">
-                      {(
-                        getDistance(
-                          {
-                            latitude: userLocation.lat,
-                            longitude: userLocation.lng,
-                          },
-                          {
-                            latitude: match.latitude,
-                            longitude: match.longitude,
-                          }
-                        ) / 1000
-                      ).toFixed(1)}{" "}
-                      km
-                    </span>
-                  )}
+            <CardContent
+              className={cn(
+                "grid grid-cols-2 gap-4 py-4 px-6 border-t border-b flex-grow" // Added flex-grow
+              )}
+            >
+              <div className="flex items-start">
+                <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
+                <div className="flex flex-col">
+                  <span className="font-medium text-lg">
+                    {match.date_string}
+                  </span>
+                  <span className="text-base">
+                    {match.event_time
+                      ? `${match.event_time.substring(11, 16)} Uhr`
+                      : "Time unavailable"}
+                  </span>
+                </div>
               </div>
-            </div>
-          </CardContent>
 
-          {/* Expanded Content */}
-          <motion.div
-            layout
-            initial={{ opacity: 0, height: 0 }}
-            animate={{
-              opacity: isExpanded ? 1 : 0,
-              height: isExpanded ? "auto" : 0,
-            }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
-          >
-            <div className="p-6 bg-muted/50">
-              <p>Additional match details here...</p>
-            </div>
-          </motion.div>
-        </Card>
+              <div className="flex items-start">
+                <MapPin className="h-5 w-5 mr-3 text-muted-foreground shrink-0" />
+                <div className="flex flex-col">
+                  <span className="font-medium">{match.stadium}</span>
+                  {userLocation?.lat &&
+                    userLocation?.lng &&
+                    match.latitude &&
+                    match.longitude && (
+                      <span className="flex items-center">
+                        {(
+                          getDistance(
+                            {
+                              latitude: userLocation.lat,
+                              longitude: userLocation.lng,
+                            },
+                            {
+                              latitude: match.latitude,
+                              longitude: match.longitude,
+                            }
+                          ) / 1000
+                        ).toFixed(1)}{" "}
+                        km
+                      </span>
+                    )}
+                </div>
+              </div>
+            </CardContent>
+
+            {/* Expanded Content */}
+            <motion.div
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{
+                opacity: isExpanded ? 1 : 0,
+                height: isExpanded ? "auto" : 0,
+              }}
+              transition={{
+                duration: 0.3,
+                opacity: { duration: 0.2 },
+                layout: {
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 30,
+                },
+              }}
+              className="overflow-hidden shrink-0" // Added shrink-0
+            >
+              <div className="p-6 bg-muted/50">
+                <p>Additional match details here...</p>
+              </div>
+            </motion.div>
+          </Card>
+        </motion.div>
       </motion.div>
     );
   }
@@ -304,13 +329,19 @@ export const SearchResults = () => {
     if (!map || !match.latitude || !match.longitude) return;
 
     const position = { lat: match.latitude, lng: match.longitude };
-    animateMapToLocation(map, position, () => {});
+    /*  animateMapToLocation(map, position, () => {}); */
 
-    const newExpandedId = expandedId === match.id ? null : match.id;
-    setExpandedId(newExpandedId);
+    // First reset the list to handle the previous expanded card
+    if (expandedId !== null) {
+      requestAnimationFrame(() => {
+        listRef.current?.resetAfterIndex(0);
+      });
+    }
 
-    // After changing expandedId, update the item size
-    // resetAfterIndex ensures the list recalculates item positions
+    // Then update the expanded state
+    setExpandedId(expandedId === match.id ? null : match.id);
+
+    // Finally reset after the clicked index
     requestAnimationFrame(() => {
       listRef.current?.resetAfterIndex(index);
     });

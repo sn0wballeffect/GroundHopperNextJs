@@ -167,7 +167,9 @@ const Row = React.memo(
           {/* Expanded content - with proper hiding */}
           <div
             className={cn(
-              "transform-gpu overflow-hidden isolate relative bg-gradient-to-b from-background/90 to-background/80 backdrop-blur-sm",
+              "transform-gpu overflow-hidden isolate relative",
+              "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
+              "backdrop-blur-md shadow-inner border-t border-slate-200/20 dark:border-slate-700/20",
               isExpanded
                 ? "transition-[height,opacity,transform] duration-300 h-[190px] opacity-100"
                 : "h-0 opacity-0"
@@ -179,7 +181,7 @@ const Row = React.memo(
               transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <div className="transform-gpu absolute inset-x-0 p-6 ml-2">
+            <div className="transform-gpu absolute inset-x-0 p-6 ml-2 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">
               <div className="grid grid-cols-2 gap-x-8 gap-y-6">
                 <div className="flex items-start space-x-3">
                   <Trophy className="h-5 w-5 text-amber-500 shrink-0" />

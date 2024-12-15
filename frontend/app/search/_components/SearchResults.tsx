@@ -9,13 +9,14 @@ import React, {
   useCallback,
 } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, MapPin, Trophy, Ticket, Map } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
 import { useStore } from "@/lib/store";
 import { getDistance } from "geolib";
 import { cn } from "@/lib/utils";
 import { animateMapToLocation } from "@/lib/map-utils";
+import { Button } from "@/components/ui/button";
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -85,13 +86,38 @@ const Row = React.memo(
           )}
         >
           <CardHeader className="py-4 px-6">
-            <CardTitle className="flex flex-row items-center space-x-3">
-              <span className="text-2xl">{getSportIcon(match.sport)}</span>
-              <span className="text-xl font-semibold">
-                {match.home_team}
-                <span className="text-muted-foreground mx-2">vs</span>
-                {match.away_team}
-              </span>
+            <CardTitle className="flex flex-row items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <span className="text-2xl">{getSportIcon(match.sport)}</span>
+                <span className="text-xl font-semibold">
+                  {match.home_team}
+                  <span className="text-muted-foreground mx-2">vs</span>
+                  {match.away_team}
+                </span>
+              </div>
+              {userLocation?.lat &&
+                userLocation?.lng &&
+                match.latitude &&
+                match.longitude && (
+                  <div className="flex items-center text-muted-foreground">
+                    <Map className="h-4 w-4 mr-2" />
+                    <span className="text-sm">
+                      {(
+                        getDistance(
+                          {
+                            latitude: userLocation.lat,
+                            longitude: userLocation.lng,
+                          },
+                          {
+                            latitude: match.latitude,
+                            longitude: match.longitude,
+                          }
+                        ) / 1000
+                      ).toFixed(1)}{" "}
+                      km
+                    </span>
+                  </div>
+                )}
             </CardTitle>
           </CardHeader>
 
@@ -111,31 +137,17 @@ const Row = React.memo(
                 </div>
               </div>
 
-              <div className="flex items-start">
-                <MapPin className="h-5 w-5 mr-3 text-muted-foreground shrink-0" />
-                <div className="flex flex-col">
-                  <span className="font-medium">{match.stadium}</span>
-                  {userLocation?.lat &&
-                    userLocation?.lng &&
-                    match.latitude &&
-                    match.longitude && (
-                      <span className="flex items-center">
-                        {(
-                          getDistance(
-                            {
-                              latitude: userLocation.lat,
-                              longitude: userLocation.lng,
-                            },
-                            {
-                              latitude: match.latitude,
-                              longitude: match.longitude,
-                            }
-                          ) / 1000
-                        ).toFixed(1)}{" "}
-                        km
-                      </span>
-                    )}
-                </div>
+              <div className="flex items-center justify-end">
+                <Button
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Add navigation/ticket action here
+                  }}
+                >
+                  <Ticket className="h-4 w-4" />
+                  Kaufe Tickets
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -143,11 +155,42 @@ const Row = React.memo(
           {/* Expanded content - with proper hiding */}
           <div
             className={cn(
-              "h-0 opacity-0 transition-[height,opacity] duration-100 overflow-hidden",
-              isExpanded && "h-auto opacity-100 p-6 bg-muted/50"
+              "transform-gpu overflow-hidden isolate relative",
+              isExpanded
+                ? "transition-[height,opacity,transform] duration-300 h-[200px] opacity-100 bg-muted/50"
+                : "h-0 opacity-0"
             )}
+            style={{
+              willChange: "transform, opacity, height",
+              transform: isExpanded ? "translateY(0)" : "translateY(-20px)",
+              transformOrigin: "top",
+              transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+            }}
           >
-            <p>Additional match details here...</p>
+            <div className="transform-gpu absolute inset-x-0 p-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <Trophy className="h-5 w-5 text-muted-foreground" />
+                  <span className="font-medium">
+                    {match.league || "League not specified"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{match.stadium}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-lg">Match Details</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {match.home_team} vs {match.away_team}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
       </div>

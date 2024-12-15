@@ -136,7 +136,7 @@ const Row = React.memo(
                 "grid grid-cols-2 gap-4 py-4 px-6 border-t border-b flex-grow" // Added flex-grow
               )}
             >
-              <div className="flex items-start">
+              <div className="flex items-start ml-1">
                 <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
                 <div className="flex flex-col">
                   <span className="font-medium text-lg">

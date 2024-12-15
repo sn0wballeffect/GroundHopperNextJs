@@ -28,6 +28,7 @@ import { getDistance } from "geolib";
 import { cn } from "@/lib/utils";
 import { animateMapToLocation } from "@/lib/map-utils";
 import { Button } from "@/components/ui/button";
+import { CountdownTimer } from "./CountdownTimer";
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -216,10 +217,13 @@ const Row = React.memo(
                   <Timer className="h-5 w-5 text-purple-500 shrink-0" />
                   <div className="flex flex-col">
                     <span className="text-sm text-muted-foreground">
-                      Gates Open
+                      Spiel startet in:
                     </span>
                     <span className="font-medium">
-                      {"90 minutes before kickoff"}
+                      <CountdownTimer
+                        eventDate={match.date_string || "Date not available"}
+                        eventTime={match.event_time || "Time not available"}
+                      />
                     </span>
                   </div>
                 </div>

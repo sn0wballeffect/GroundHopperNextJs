@@ -9,7 +9,18 @@ import React, {
   useCallback,
 } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, MapPin, Trophy, Ticket, Map } from "lucide-react";
+import {
+  CalendarDays,
+  MapPin,
+  Trophy,
+  Ticket,
+  Map,
+  Users,
+  Info,
+  Building2,
+  Star,
+  Timer,
+} from "lucide-react";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
 import { useStore } from "@/lib/store";
@@ -155,9 +166,9 @@ const Row = React.memo(
           {/* Expanded content - with proper hiding */}
           <div
             className={cn(
-              "transform-gpu overflow-hidden isolate relative",
+              "transform-gpu overflow-hidden isolate relative bg-gradient-to-b from-background/90 to-background/80 backdrop-blur-sm",
               isExpanded
-                ? "transition-[height,opacity,transform] duration-300 h-[200px] opacity-100 bg-muted/50"
+                ? "transition-[height,opacity,transform] duration-300 h-[190px] opacity-100"
                 : "h-0 opacity-0"
             )}
             style={{
@@ -167,27 +178,50 @@ const Row = React.memo(
               transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
             }}
           >
-            <div className="transform-gpu absolute inset-x-0 p-6">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <Trophy className="h-5 w-5 text-muted-foreground" />
-                  <span className="font-medium">
-                    {match.league || "League not specified"}
-                  </span>
+            <div className="transform-gpu absolute inset-x-0 p-6 ml-2">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                <div className="flex items-start space-x-3">
+                  <Trophy className="h-5 w-5 text-amber-500 shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">
+                      Wettbewerb
+                    </span>
+                    <span className="font-medium">
+                      {match.league || "League not specified"}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                <div className="flex items-start space-x-3">
+                  <Building2 className="h-5 w-5 text-blue-500 shrink-0" />
                   <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">
+                      Stadion
+                    </span>
                     <span className="font-medium">{match.stadium}</span>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-lg">Match Details</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {match.home_team} vs {match.away_team}
-                  </p>
+                <div className="flex items-start space-x-3">
+                  <Users className="h-5 w-5 text-green-500 shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">
+                      Kapazität
+                    </span>
+                    <span className="font-medium">50000</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Timer className="h-5 w-5 text-purple-500 shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="text-sm text-muted-foreground">
+                      Gates Open
+                    </span>
+                    <span className="font-medium">
+                      {"90 minutes before kickoff"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -302,7 +336,7 @@ export const SearchResults = () => {
       // If expanded, return a larger size
       if (match && expandedId === match.id) {
         // Adjust as needed if your expanded content is taller
-        return baseItemHeight * 2;
+        return baseItemHeight + 180;
       }
       return baseItemHeight;
     },

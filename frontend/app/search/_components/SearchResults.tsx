@@ -145,7 +145,7 @@ const Row = React.memo(
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="border-t border-b py-2 md:py-4 px-4 md:px-6 overflow-hidden">
+          <CardContent className="border-t py-2 md:py-4 px-4 md:px-6 overflow-hidden">
             <div className="grid grid-cols-2 gap-2 md:gap-4">
               <div className="flex items-start ml-0 md:ml-1">
                 <CalendarDays className="h-5 w-5 md:h-6 md:w-6 mr-2 md:mr-3 text-muted-foreground shrink-0" />
@@ -180,7 +180,7 @@ const Row = React.memo(
             className={cn(
               "transform-gpu overflow-hidden isolate relative",
               "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
-              "backdrop-blur-md shadow-inner border-t border-slate-200/20 dark:border-slate-700/20",
+              "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl", // Modified border and radius
               isExpanded
                 ? "transition-[height,opacity,transform] duration-300 h-[210px] opacity-100"
                 : "h-0 opacity-0"

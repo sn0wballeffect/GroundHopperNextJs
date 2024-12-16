@@ -58,7 +58,7 @@ const getSportIcon = (sport: string): string => {
 const leagueNameMapping: { [key: string]: string } = {
   del: "DEL",
   "del-02": "2.DEL",
-  "1-bundesliga": "1.Bundesliga",
+  bundesliga: "1.Bundesliga",
   "2-bundesliga": "2.Bundesliga",
   "3-bundesliga": "3.Bundesliga",
   bbl: "BBL",

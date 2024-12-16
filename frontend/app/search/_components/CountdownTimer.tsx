@@ -39,6 +39,7 @@ export const CountdownTimer = ({
 
       return new Date(`${isoDate}T${timeMatch[1]}`);
     } catch (error) {
+      console.error("Date parsing error:", error);
       setError("Ungültiges Datum/Zeit");
       return null;
     }

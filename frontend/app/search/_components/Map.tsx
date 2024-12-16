@@ -26,6 +26,12 @@ const DROP_ANIMATION = {
   },
 };
 
+const HOVER_ANIMATION = {
+  transition: "transform 0.2s ease-out, filter 0.2s ease-out",
+  filter: "drop-shadow(0 0 8px rgba(255, 255, 255, 0.7))",
+  transform: "scale(1.8)",
+};
+
 const MapComponent = () => {
   const {
     userLocation,
@@ -205,12 +211,22 @@ const MapComponent = () => {
       const sport = originalMarker.sport as keyof typeof getMarkerColor;
       const pinElement = new google.maps.marker.PinElement({
         background: getMarkerColor(sport),
-        borderColor: "#000000",
-        scale: isHovered ? 1.5 : 1.2,
+        borderColor: isHovered ? "#FFFFFF" : "#000000",
+        scale: 1.2,
         glyph: getGlyphForSport(
           originalMarker.sport as keyof typeof getMarkerColor
         ),
-        glyphColor: "rgba(0, 0, 0, 0.8)",
+        glyphColor: isHovered ? "#FFFFFF" : "rgba(0, 0, 0, 0.8)",
+      });
+
+      // Apply hover effects
+      const element = pinElement.element;
+      Object.assign(element.style, {
+        transition: HOVER_ANIMATION.transition,
+        ...(isHovered && {
+          filter: HOVER_ANIMATION.filter,
+          transform: HOVER_ANIMATION.transform,
+        }),
       });
 
       marker.content = pinElement.element;

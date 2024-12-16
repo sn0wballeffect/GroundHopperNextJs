@@ -110,10 +110,10 @@ const Row = React.memo(
           <CardHeader className="py-2 md:py-4 px-4 md:px-6">
             <CardTitle className="flex flex-row items-center justify-between">
               <div className="flex items-center space-x-2 md:space-x-3">
-                <span className="text-xl md:text-2xl">
+                <span className="text-xl 2xl:text-2xl">
                   {getSportIcon(match.sport)}
                 </span>
-                <span className="text-base md:text-xl font-semibold">
+                <span className="text-base 2xl:text-xl font-semibold">
                   {match.home_team}
                   <span className="text-muted-foreground mx-1 md:mx-2">vs</span>
                   {match.away_team}

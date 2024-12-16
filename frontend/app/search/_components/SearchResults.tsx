@@ -218,10 +218,10 @@ const Row = React.memo(
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              <div className="transform-gpu absolute inset-x-0 p-6 ml-2">
+              <div className="transform-gpu absolute inset-x-0 p-6 ml-2 md:p-0 md:ml:0 lg:ml-2 lg:p-6">
                 {/* Add container div for centering */}
                 <div className="max-w-4xl mx-auto">
-                  <div className="grid grid-cols-[1fr,auto,1fr] gap-x-8 gap-y-6">
+                  <div className="grid grid-cols-[1fr,auto,1fr] lg:gap-x-8 gap-x-8 md:gap-x-0 gap-y-6">
                     {/* Left Column */}
                     <div className="space-y-6">
                       <div className="flex items-start space-x-3">

@@ -152,14 +152,14 @@ const Row = React.memo(
               </div>
               <div className="flex items-center justify-end">
                 <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-3 md:px-4"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     // Add navigation/ticket action here
                   }}
                 >
-                  <Ticket className="h-3 w-3 md:h-4 md:w-4" />
-                  Kaufe Tickets
+                  <Ticket className="h-4 w-4" />
+                  Tickets
                 </Button>
               </div>
             </div>

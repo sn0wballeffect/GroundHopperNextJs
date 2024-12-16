@@ -55,6 +55,19 @@ const getSportIcon = (sport: string): string => {
   return SPORT_ICONS[sport] || "🎯";
 };
 
+const leagueNameMapping: { [key: string]: string } = {
+  del: "DEL",
+  "del-02": "2.DEL",
+  "1-bundesliga": "1.Bundesliga",
+  "2-bundesliga": "2.Bundesliga",
+  "3-bundesliga": "3.Bundesliga",
+  bbl: "BBL",
+};
+const formatLeagueName = (leagueName: string): string => {
+  if (!leagueName) return "League not specified";
+  const normalizedName = leagueName.toLowerCase();
+  return leagueNameMapping[normalizedName] || leagueName;
+};
 // Add interface for Row component data
 interface RowData {
   filteredMatches: Match[];
@@ -218,7 +231,7 @@ const Row = React.memo(
                             Wettbewerb
                           </span>
                           <span className="font-medium">
-                            {match.league || "League not specified"}
+                            {formatLeagueName(match.league || "")}
                           </span>
                         </div>
                       </div>
@@ -272,7 +285,7 @@ const Row = React.memo(
                       <div className="flex items-start justify-end space-x-3">
                         <div className="flex flex-col items-end text-right">
                           <span className="text-sm text-muted-foreground">
-                            Spiel startet in:
+                            Spiel startet in
                           </span>
                           <span className="font-medium">
                             <CountdownTimer

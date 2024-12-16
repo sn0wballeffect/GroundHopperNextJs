@@ -351,8 +351,8 @@ export const SearchResults = () => {
   const BREAKPOINTS = {
     smallMobile: 480,
     mobile: 765,
-    tablet: 1250,
-    laptop: 1400,
+    tablet: 1350,
+    laptop: 1500,
   } as const;
 
   const getItemSize = useCallback(

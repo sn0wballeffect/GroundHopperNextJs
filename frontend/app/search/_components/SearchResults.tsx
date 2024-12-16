@@ -60,7 +60,7 @@ const leagueNameMapping: { [key: string]: string } = {
   "del-02": "2.DEL",
   bundesliga: "1.Bundesliga",
   "2-bundesliga": "2.Bundesliga",
-  "3-bundesliga": "3.Bundesliga",
+  "3-liga": "3.Bundesliga",
   bbl: "BBL",
 };
 const formatLeagueName = (leagueName: string): string => {

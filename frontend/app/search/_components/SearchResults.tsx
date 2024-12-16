@@ -337,7 +337,7 @@ export const SearchResults = () => {
   // Determine item size
   const BREAKPOINTS = {
     smallMobile: 480,
-    mobile: 768,
+    mobile: 765,
     tablet: 1250,
     laptop: 1400,
   } as const;

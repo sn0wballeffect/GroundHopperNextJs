@@ -7,9 +7,13 @@ export default function SearchLayout({
   return (
     <div>
       <div className="flex flex-col h-screen">
-        <NavBar />
+        <div className="hidden xl:block">
+          <NavBar />
+        </div>
         <main className="flex-1 md:overflow-hidden">{children}</main>
-        <Footer />
+        <div className="hidden xl:block">
+          <Footer />
+        </div>
       </div>
     </div>
   );

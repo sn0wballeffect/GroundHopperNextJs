@@ -303,6 +303,7 @@ const MapComponent = () => {
       scale: 1.3,
       glyph: "🏃",
       glyphColor: "#ffffff",
+      borderColor: "#000000",
     });
 
     const userMarker = new google.maps.marker.AdvancedMarkerElement({

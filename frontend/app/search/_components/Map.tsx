@@ -42,6 +42,7 @@ const MapComponent = () => {
     setSearchQuery,
     hoveredCoords,
     setMap,
+    selectedLocation,
   } = useMapStore();
   const [map, setMapState] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
@@ -207,32 +208,36 @@ const MapComponent = () => {
       const isHovered =
         hoveredCoords.lat === originalMarker.position.lat &&
         hoveredCoords.lng === originalMarker.position.lng;
+      const isSelected =
+        selectedLocation.lat === originalMarker.position.lat &&
+        selectedLocation.lng === originalMarker.position.lng;
+      const shouldHighlight = isHovered || isSelected;
 
       const sport = originalMarker.sport as keyof typeof getMarkerColor;
       const pinElement = new google.maps.marker.PinElement({
         background: getMarkerColor(sport),
-        borderColor: isHovered ? "#FFFFFF" : "#000000",
+        borderColor: shouldHighlight ? "#FFFFFF" : "#000000",
         scale: 1.2,
         glyph: getGlyphForSport(
           originalMarker.sport as keyof typeof getMarkerColor
         ),
-        glyphColor: isHovered ? "#FFFFFF" : "rgba(0, 0, 0, 0.8)",
+        glyphColor: shouldHighlight ? "#FFFFFF" : "rgba(0, 0, 0, 0.8)",
       });
 
       // Apply hover effects
       const element = pinElement.element;
       Object.assign(element.style, {
         transition: HOVER_ANIMATION.transition,
-        ...(isHovered && {
+        ...(shouldHighlight && {
           filter: HOVER_ANIMATION.filter,
           transform: HOVER_ANIMATION.transform,
         }),
       });
 
       marker.content = pinElement.element;
-      marker.zIndex = isHovered ? 1000 : 1;
+      marker.zIndex = shouldHighlight ? 1000 : 1;
     });
-  }, [hoveredCoords, markers, map]);
+  }, [hoveredCoords, markers, map, selectedLocation]);
 
   useEffect(() => {
     // Cleanup previous circle

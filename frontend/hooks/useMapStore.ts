@@ -9,6 +9,7 @@ export const useMapStore = () => {
   const setSearchQuery = useStore((state) => state.setSearchQuery);
   const hoveredCoords = useStore((state) => state.hoveredCoords);
   const setMap = useStore((state) => state.setMap);
+  const selectedLocation = useStore((state) => state.selectedLocation);
   const setSelectedLocation = useStore((state) => state.setSelectedLocation);
 
   return {
@@ -21,5 +22,6 @@ export const useMapStore = () => {
     hoveredCoords,
     setMap,
     setSelectedLocation,
+    selectedLocation,
   };
 };

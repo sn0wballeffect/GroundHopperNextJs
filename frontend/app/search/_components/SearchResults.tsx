@@ -172,7 +172,7 @@ const Row = React.memo(
               "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
               "backdrop-blur-md shadow-inner border-t border-slate-200/20 dark:border-slate-700/20",
               isExpanded
-                ? "transition-[height,opacity,transform] duration-300 h-[190px] opacity-100"
+                ? "transition-[height,opacity,transform] duration-300 h-[210px] opacity-100"
                 : "h-0 opacity-0"
             )}
             style={{
@@ -363,13 +363,13 @@ export const SearchResults = () => {
       // Expanded sizes by device
       if (match && expandedId === match.id) {
         if (width <= BREAKPOINTS.smallMobile) {
-          return baseItemHeight + 140;
+          return baseItemHeight + 160;
         } else if (width <= BREAKPOINTS.mobile) {
           return baseItemHeight + 160;
         } else if (width <= BREAKPOINTS.tablet) {
-          return baseItemHeight + 200;
+          return baseItemHeight + 220;
         }
-        return baseItemHeight + 200;
+        return baseItemHeight + 220;
       }
       return baseItemHeight;
     },

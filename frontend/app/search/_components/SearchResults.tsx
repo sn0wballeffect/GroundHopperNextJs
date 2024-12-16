@@ -97,13 +97,15 @@ const Row = React.memo(
             SPORT_COLORS[match.sport] || "border-gray-300"
           )}
         >
-          <CardHeader className="py-4 px-6">
+          <CardHeader className="py-2 md:py-4 px-4 md:px-6">
             <CardTitle className="flex flex-row items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span className="text-2xl">{getSportIcon(match.sport)}</span>
-                <span className="text-xl font-semibold">
+              <div className="flex items-center space-x-2 md:space-x-3">
+                <span className="text-xl md:text-2xl">
+                  {getSportIcon(match.sport)}
+                </span>
+                <span className="text-base md:text-xl font-semibold">
                   {match.home_team}
-                  <span className="text-muted-foreground mx-2">vs</span>
+                  <span className="text-muted-foreground mx-1 md:mx-2">vs</span>
                   {match.away_team}
                 </span>
               </div>
@@ -112,8 +114,8 @@ const Row = React.memo(
                 match.latitude &&
                 match.longitude && (
                   <div className="flex items-center text-muted-foreground">
-                    <Map className="h-4 w-4 mr-2" />
-                    <span className="text-sm">
+                    <Map className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                    <span className="text-xs md:text-sm">
                       {(
                         getDistance(
                           {
@@ -133,31 +135,30 @@ const Row = React.memo(
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="border-t border-b py-4 px-6 overflow-hidden">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-start ml-1">
-                <CalendarDays className="h-6 w-6 mr-3 text-muted-foreground shrink-0" />
+          <CardContent className="border-t border-b py-2 md:py-4 px-4 md:px-6 overflow-hidden">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
+              <div className="flex items-start ml-0 md:ml-1">
+                <CalendarDays className="h-5 w-5 md:h-6 md:w-6 mr-2 md:mr-3 text-muted-foreground shrink-0" />
                 <div className="flex flex-col">
-                  <span className="font-medium text-lg">
+                  <span className="font-medium text-base md:text-lg">
                     {match.date_string}
                   </span>
-                  <span className="text-base">
+                  <span className="text-sm md:text-base">
                     {match.event_time
                       ? `${match.event_time.substring(11, 16)} Uhr`
                       : "Time unavailable"}
                   </span>
                 </div>
               </div>
-
               <div className="flex items-center justify-end">
                 <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-3 md:px-4"
                   onClick={(e) => {
                     e.stopPropagation();
                     // Add navigation/ticket action here
                   }}
                 >
-                  <Ticket className="h-4 w-4" />
+                  <Ticket className="h-3 w-3 md:h-4 md:w-4" />
                   Kaufe Tickets
                 </Button>
               </div>
@@ -334,28 +335,55 @@ export const SearchResults = () => {
   };
 
   // Determine item size
+  const BREAKPOINTS = {
+    smallMobile: 480,
+    mobile: 768,
+    tablet: 1250,
+    laptop: 1400,
+  } as const;
+
   const getItemSize = useCallback(
     (index: number) => {
-      const baseItemHeight = 180;
+      const width = window.innerWidth;
+      let baseItemHeight;
+
+      // Set base height by device size
+      if (width <= BREAKPOINTS.smallMobile) {
+        baseItemHeight = 220; // Small Mobile
+      } else if (width <= BREAKPOINTS.mobile) {
+        baseItemHeight = 160; // Mobile
+      } else if (width <= BREAKPOINTS.tablet) {
+        baseItemHeight = 240; // Tablet
+      } else {
+        baseItemHeight = 180; // Desktop
+      }
+
       const match = filteredMatches[index];
 
-      // If expanded, return a larger size
+      // Expanded sizes by device
       if (match && expandedId === match.id) {
-        // Adjust as needed if your expanded content is taller
-        return baseItemHeight + 180;
+        if (width <= BREAKPOINTS.smallMobile) {
+          return baseItemHeight + 140;
+        } else if (width <= BREAKPOINTS.mobile) {
+          return baseItemHeight + 160;
+        } else if (width <= BREAKPOINTS.tablet) {
+          return baseItemHeight + 200;
+        }
+        return baseItemHeight + 200;
       }
       return baseItemHeight;
     },
     [expandedId, filteredMatches]
   );
-
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-sm md:text-base">Loading...</div>;
   }
 
   if (filteredMatches.length === 0) {
     return (
-      <div className="p-4 text-center text-gray-500">No matches found.</div>
+      <div className="p-2 md:p-4 text-sm md:text-base text-center text-gray-500">
+        No matches found.
+      </div>
     );
   }
 

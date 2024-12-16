@@ -79,3 +79,7 @@ body {
 .custom-scrollbar-hidden::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
+.backface-hidden {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}

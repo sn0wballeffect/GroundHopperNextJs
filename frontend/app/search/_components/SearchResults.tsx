@@ -17,6 +17,7 @@ import {
   Users,
   Building2,
   Timer,
+  RefreshCw,
 } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
@@ -87,163 +88,241 @@ const Row = React.memo(
     const match: Match = filteredMatches[index];
     const isExpanded = expandedId === match.id;
 
+    // Inside Row component, add flipped state
+    const [isFlipped, setIsFlipped] = useState(false);
+
     return (
-      <div style={style} className="will-change-transform">
-        <Card
-          onMouseEnter={() => {
-            if (match.latitude && match.longitude) {
-              setHoveredCoords({
-                lat: match.latitude,
-                lng: match.longitude,
-              });
-            }
-          }}
-          onMouseLeave={() => {
-            setHoveredCoords({ lat: null, lng: null });
-          }}
-          onClick={() => handleCardClick(match, index)}
+      <div style={style} className="will-change-transform [perspective:1000px]">
+        <div
           className={cn(
-            "grid grid-rows-[auto,1fr,auto] h-[95%] cursor-pointer border-l-4 rounded-[12px] transition-shadow hover:shadow-lg",
-            SPORT_COLORS[match.sport] || "border-gray-300"
+            "relative h-[95%] transition-all duration-500 [transform-style:preserve-3d]",
+            isFlipped ? "[transform:rotateY(180deg)]" : ""
           )}
         >
-          <CardHeader className="py-2 md:py-4 px-4 md:px-6">
-            <CardTitle className="flex flex-row items-center justify-between">
-              <div className="flex items-center space-x-2 md:space-x-3">
-                <span className="text-xl 2xl:text-2xl">
-                  {getSportIcon(match.sport)}
-                </span>
-                <span className="text-base 2xl:text-xl font-semibold">
-                  {match.home_team}
-                  <span className="text-muted-foreground mx-1 md:mx-2">vs</span>
-                  {match.away_team}
-                </span>
-              </div>
-              {userLocation?.lat &&
-                userLocation?.lng &&
-                match.latitude &&
-                match.longitude && (
-                  <div className="flex items-center text-muted-foreground">
-                    <Map className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                    <span className="text-xs md:text-sm">
-                      {(
-                        getDistance(
-                          {
-                            latitude: userLocation.lat,
-                            longitude: userLocation.lng,
-                          },
-                          {
-                            latitude: match.latitude,
-                            longitude: match.longitude,
-                          }
-                        ) / 1000
-                      ).toFixed(1)}{" "}
-                      km
-                    </span>
-                  </div>
-                )}
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="border-t py-2 md:py-4 px-4 md:px-6 overflow-hidden">
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
-              <div className="flex items-start ml-0 md:ml-1">
-                <CalendarDays className="h-5 w-5 md:h-6 md:w-6 mr-2 md:mr-3 text-muted-foreground shrink-0" />
-                <div className="flex flex-col">
-                  <span className="font-medium text-base md:text-lg">
-                    {match.date_string}
+          {/* Front Card */}
+          <Card
+            onMouseEnter={() => {
+              if (match.latitude && match.longitude) {
+                setHoveredCoords({
+                  lat: match.latitude,
+                  lng: match.longitude,
+                });
+              }
+            }}
+            onMouseLeave={() => {
+              setHoveredCoords({ lat: null, lng: null });
+            }}
+            onClick={() => handleCardClick(match, index)}
+            className={cn(
+              "absolute inset-0 w-full h-full backface-hidden grid grid-rows-[auto,1fr] cursor-pointer border-l-4 rounded-[12px] transition-shadow hover:shadow-lg",
+              SPORT_COLORS[match.sport] || "border-gray-300"
+            )}
+          >
+            <CardHeader className="py-2 md:py-4 px-4 md:px-6">
+              <CardTitle className="flex flex-row items-center justify-between">
+                <div className="flex items-center space-x-2 md:space-x-3">
+                  <span className="text-xl 2xl:text-2xl">
+                    {getSportIcon(match.sport)}
                   </span>
-                  <span className="text-sm md:text-base">
-                    {match.event_time
-                      ? `${match.event_time.substring(11, 16)} Uhr`
-                      : "Time unavailable"}
+                  <span className="text-base 2xl:text-xl font-semibold">
+                    {match.home_team}
+                    <span className="text-muted-foreground mx-1 md:mx-2">
+                      vs
+                    </span>
+                    {match.away_team}
                   </span>
                 </div>
+                {userLocation?.lat &&
+                  userLocation?.lng &&
+                  match.latitude &&
+                  match.longitude && (
+                    <div className="flex items-center text-muted-foreground">
+                      <Map className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                      <span className="text-xs md:text-sm">
+                        {(
+                          getDistance(
+                            {
+                              latitude: userLocation.lat,
+                              longitude: userLocation.lng,
+                            },
+                            {
+                              latitude: match.latitude,
+                              longitude: match.longitude,
+                            }
+                          ) / 1000
+                        ).toFixed(1)}{" "}
+                        km
+                      </span>
+                    </div>
+                  )}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="border-t py-2 md:py-4 px-4 md:px-6 overflow-hidden">
+              <div className="grid grid-cols-2 gap-2 md:gap-4">
+                <div className="flex items-start ml-0 md:ml-1">
+                  <CalendarDays className="h-5 w-5 md:h-6 md:w-6 mr-2 md:mr-3 text-muted-foreground shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-medium text-base md:text-lg">
+                      {match.date_string}
+                    </span>
+                    <span className="text-sm md:text-base">
+                      {match.event_time
+                        ? `${match.event_time.substring(11, 16)} Uhr`
+                        : "Time unavailable"}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-end">
+                  <Button
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add navigation/ticket action here
+                    }}
+                  >
+                    <Ticket className="h-4 w-4" />
+                    Tickets
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center justify-end">
+            </CardContent>
+
+            {/* Expanded content - with proper hiding */}
+            <div
+              className={cn(
+                "transform-gpu overflow-hidden isolate relative",
+                "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
+                "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl", // Modified border and radius
+                isExpanded
+                  ? "transition-[height,opacity,transform] duration-300 h-[210px] opacity-100"
+                  : "h-0 opacity-0"
+              )}
+              style={{
+                willChange: "transform, opacity, height",
+                transform: isExpanded ? "translateY(0)" : "translateY(-20px)",
+                transformOrigin: "top",
+                transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              <div className="transform-gpu absolute inset-x-0 p-6 ml-2">
+                {/* Add container div for centering */}
+                <div className="max-w-4xl mx-auto">
+                  <div className="grid grid-cols-[1fr,auto,1fr] gap-x-8 gap-y-6">
+                    {/* Left Column */}
+                    <div className="space-y-6">
+                      <div className="flex items-start space-x-3">
+                        <Trophy className="h-5 w-5 text-amber-500 shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-sm text-muted-foreground">
+                            Wettbewerb
+                          </span>
+                          <span className="font-medium">
+                            {match.league || "League not specified"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-start space-x-3">
+                        <Building2 className="h-5 w-5 text-blue-500 shrink-0" />
+                        <div className="flex flex-col">
+                          <span className="text-sm text-muted-foreground">
+                            Stadion
+                          </span>
+                          <span className="font-medium">{match.stadium}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Center Column - Flip Button */}
+                    <div className="flex flex-col items-center justify-center ">
+                      <span className="text-sm text-muted-foreground">
+                        Mehr
+                      </span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="mx-auto"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsFlipped(!isFlipped);
+                        }}
+                      >
+                        <RefreshCw
+                          className={cn(
+                            "h-4 w-4 transition-transform",
+                            isFlipped ? "rotate-180" : ""
+                          )}
+                        />
+                      </Button>
+                    </div>
+
+                    {/* Right Column */}
+                    <div className="space-y-6">
+                      <div className="flex items-start justify-end space-x-3">
+                        <div className="flex flex-col items-end text-right">
+                          <span className="text-sm text-muted-foreground">
+                            Kapazität
+                          </span>
+                          <span className="font-medium">50000</span>
+                        </div>
+                        <Users className="h-5 w-5 text-green-500 shrink-0" />
+                      </div>
+
+                      <div className="flex items-start justify-end space-x-3">
+                        <div className="flex flex-col items-end text-right">
+                          <span className="text-sm text-muted-foreground">
+                            Spiel startet in:
+                          </span>
+                          <span className="font-medium">
+                            <CountdownTimer
+                              eventDate={
+                                match.date_string || "Date not available"
+                              }
+                              eventTime={
+                                match.event_time || "Time not available"
+                              }
+                            />
+                          </span>
+                        </div>
+                        <Timer className="h-5 w-5 text-purple-500 shrink-0" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Back Card */}
+          <Card
+            className={cn(
+              "absolute inset-0 w-full h-full [transform:rotateY(180deg)] backface-hidden",
+              SPORT_COLORS[match.sport] || "border-gray-300"
+            )}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-center justify-center">
                 <Button
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
+                  size="icon"
+                  variant="ghost"
+                  className="mx-auto"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Add navigation/ticket action here
+                    setIsFlipped(!isFlipped);
                   }}
                 >
-                  <Ticket className="h-4 w-4" />
-                  Tickets
+                  <RefreshCw
+                    className={cn(
+                      "h-4 w-4 transition-transform",
+                      isFlipped ? "rotate-180" : ""
+                    )}
+                  />
                 </Button>
               </div>
-            </div>
-          </CardContent>
-
-          {/* Expanded content - with proper hiding */}
-          <div
-            className={cn(
-              "transform-gpu overflow-hidden isolate relative",
-              "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
-              "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl", // Modified border and radius
-              isExpanded
-                ? "transition-[height,opacity,transform] duration-300 h-[210px] opacity-100"
-                : "h-0 opacity-0"
-            )}
-            style={{
-              willChange: "transform, opacity, height",
-              transform: isExpanded ? "translateY(0)" : "translateY(-20px)",
-              transformOrigin: "top",
-              transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
-            }}
-          >
-            <div className="transform-gpu absolute inset-x-0 p-6 ml-2 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 rounded-lg transition-colors">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                <div className="flex items-start space-x-3">
-                  <Trophy className="h-5 w-5 text-amber-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">
-                      Wettbewerb
-                    </span>
-                    <span className="font-medium">
-                      {match.league || "League not specified"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Building2 className="h-5 w-5 text-blue-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">
-                      Stadion
-                    </span>
-                    <span className="font-medium">{match.stadium}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Users className="h-5 w-5 text-green-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">
-                      Kapazität
-                    </span>
-                    <span className="font-medium">50000</span>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3">
-                  <Timer className="h-5 w-5 text-purple-500 shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="text-sm text-muted-foreground">
-                      Spiel startet in:
-                    </span>
-                    <span className="font-medium">
-                      <CountdownTimer
-                        eventDate={match.date_string || "Date not available"}
-                        eventTime={match.event_time || "Time not available"}
-                      />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }

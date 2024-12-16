@@ -7,7 +7,7 @@ import { MapComponent } from "./_components/Map";
 export default function SearchPage() {
   return (
     <div className="flex flex-col h-full">
-      <div className="hidden md:block mt-5 xl:mt-0">
+      <div className="hidden md:block mt-5 2xl:mt-0">
         <SearchComponent />
       </div>
       <div className="block md:hidden mt-5">

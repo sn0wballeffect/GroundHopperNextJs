@@ -11,14 +11,11 @@ import React, {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   CalendarDays,
-  MapPin,
   Trophy,
   Ticket,
   Map,
   Users,
-  Info,
   Building2,
-  Star,
   Timer,
 } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
@@ -57,6 +54,19 @@ const getSportIcon = (sport: string): string => {
   return SPORT_ICONS[sport] || "🎯";
 };
 
+// Add interface for Row component data
+interface RowData {
+  filteredMatches: Match[];
+  expandedId: number | null;
+  setHoveredCoords: (coords: {
+    lat: number | null;
+    lng: number | null;
+  }) => void;
+  handleCardClick: (match: Match, index: number) => void;
+  userLocation: { lat: number; lng: number } | null;
+}
+
+// Update Row component with display name and proper typing
 const Row = React.memo(
   ({
     index,
@@ -65,7 +75,7 @@ const Row = React.memo(
   }: {
     index: number;
     style: React.CSSProperties;
-    data: any;
+    data: RowData;
   }) => {
     const {
       filteredMatches,
@@ -239,6 +249,9 @@ const Row = React.memo(
   }
 );
 
+// Add display name
+Row.displayName = "Row";
+
 export const SearchResults = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
@@ -402,7 +415,10 @@ export const SearchResults = () => {
               expandedId,
               setHoveredCoords,
               handleCardClick,
-              userLocation,
+              userLocation:
+                userLocation?.lat !== null && userLocation?.lng !== null
+                  ? { lat: userLocation.lat, lng: userLocation.lng }
+                  : null,
             }}
             estimatedItemSize={180}
             overscanCount={5}

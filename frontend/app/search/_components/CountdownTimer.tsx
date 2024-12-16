@@ -75,7 +75,11 @@ export const CountdownTimer = ({
 
   return (
     <span>
-      {`${timeLeft.days}d ${timeLeft.hours}h ${timeLeft.minutes}m ${timeLeft.seconds}s`}
+      {timeLeft.days > 0
+        ? `${timeLeft.days} Tage`
+        : `${timeLeft.hours}:${timeLeft.minutes
+            .toString()
+            .padStart(2, "0")}:${timeLeft.seconds.toString().padStart(2, "0")}`}
     </span>
   );
 };

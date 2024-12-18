@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, addDays, subDays } from "date-fns";
 import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
 import React, { useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
@@ -17,6 +17,7 @@ import { searchCities } from "@/lib/api";
 import { City } from "@/lib/types";
 import { Command, CommandList, CommandItem } from "./ui/command";
 import { debounce } from "lodash";
+import { DateRange } from "react-day-picker";
 
 export const SearchComponent = () => {
   const pathname = usePathname();
@@ -122,6 +123,15 @@ export const SearchComponent = () => {
     []
   );
 
+  const [localDate, setLocalDate] = useState(date);
+
+  const debouncedSetDate = useCallback(
+    debounce((newDate: DateRange | undefined) => {
+      setDate(newDate);
+    }, 500),
+    []
+  );
+
   return (
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
@@ -199,7 +209,7 @@ export const SearchComponent = () => {
               <MapPin className="h-4 w-4" />
               <div>
                 <div
-                  className="text-sm font-medium hover:cursor-ns-resize"
+                  className="text-sm font-medium"
                   title="Scroll to adjust radius"
                 >
                   Umkreis
@@ -233,14 +243,35 @@ export const SearchComponent = () => {
               variant="ghost"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
-                !date && "text-muted-foreground"
+                !localDate && "text-muted-foreground"
               )}
+              onWheel={(e) => {
+                e.preventDefault();
+                if (!localDate?.from) return;
+
+                const newFrom =
+                  e.deltaY < 0
+                    ? addDays(localDate.from, 1)
+                    : subDays(localDate.from, 1);
+
+                // Only update if new date doesn't exceed 'to' date
+                if (localDate.to && newFrom > localDate.to) return;
+
+                const newDate = { ...localDate, from: newFrom };
+                setLocalDate(newDate);
+                debouncedSetDate(newDate);
+              }}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>
-                <div className="text-sm font-medium ">Von</div>
-                {date?.from ? (
-                  format(date.from, "dd.MM.yyyy")
+                <div
+                  className="text-sm font-medium"
+                  title="Scroll to adjust date"
+                >
+                  Von
+                </div>
+                {localDate?.from ? (
+                  format(localDate.from, "dd.MM.yyyy")
                 ) : (
                   <span className="text-sm">Datum hinzufügen</span>
                 )}
@@ -265,16 +296,37 @@ export const SearchComponent = () => {
               variant="ghost"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
-                !date && "text-muted-foreground"
+                !localDate && "text-muted-foreground"
               )}
+              onWheel={(e) => {
+                e.preventDefault();
+                if (!localDate?.to) return;
+
+                const newTo =
+                  e.deltaY < 0
+                    ? addDays(localDate.to, 1)
+                    : subDays(localDate.to, 1);
+
+                // Only update if new date doesn't precede 'from' date
+                if (localDate.from && newTo < localDate.from) return;
+
+                const newDate = { ...localDate, to: newTo };
+                setLocalDate(newDate);
+                debouncedSetDate(newDate);
+              }}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>
-                <div className="text-sm font-medium">Bis</div>
-                {date?.to ? (
-                  format(date.to, "dd.MM.yyyy")
+                <div
+                  className="text-sm font-medium"
+                  title="Scroll to adjust date"
+                >
+                  Bis
+                </div>
+                {localDate?.to ? (
+                  format(localDate.to, "dd.MM.yyyy")
                 ) : (
-                  <span className="text-sm ">Datum hinzufügen</span>
+                  <span className="text-sm">Datum hinzufügen</span>
                 )}
               </div>
             </Button>

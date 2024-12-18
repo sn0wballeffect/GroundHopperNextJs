@@ -4,18 +4,25 @@ const { PrismaClient } = require("@prisma/client");
 
 const app = express();
 const prisma = new PrismaClient();
+const router = express.Router();
 
+// CORS configuration
 const cors = require("cors");
 app.use(
   cors({
-    origin: ["https://hoply.de", , "http://localhost:3000"], // Allow your domain
+    origin: [
+      "https://hoply.de",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 
 app.use(bodyParser.json());
 
-// Add Haversine distance helper function
+// Haversine distance helper function
 function haversineDistance(lat1, lon1, lat2, lon2) {
   const R = 6371; // Earth's radius in kilometers
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -30,8 +37,8 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-// Routes
-app.get("/matches", async (req, res) => {
+// Routes with /api prefix
+router.get("/matches", async (req, res) => {
   try {
     const {
       sport,
@@ -127,7 +134,7 @@ app.get("/matches", async (req, res) => {
   }
 });
 
-app.get("/cities", async (req, res) => {
+router.get("/cities", async (req, res) => {
   try {
     const { search } = req.query;
 
@@ -171,8 +178,23 @@ app.get("/cities", async (req, res) => {
   }
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something went wrong!" });
+});
+
+// Mount router with /api prefix
+app.use("/api", router);
+
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+// Graceful shutdown
+process.on("SIGTERM", () => {
+  prisma.$disconnect();
+  process.exit(0);
 });

@@ -1,6 +1,6 @@
 import { Match, City } from "./types";
 
-const BASE_URL = `http://${process.env.NEXT_PUBLIC_API_URL}`;
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://hoply.de/api";
 
 interface FilterParams {
   sport?: string;

@@ -1,5 +1,6 @@
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "../../components/Footer";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function SearchLayout({
   children,
@@ -10,7 +11,9 @@ export default function SearchLayout({
         <div className="hidden 2xl:block">
           <NavBar />
         </div>
-        <main className="flex-1 md:overflow-hidden">{children}</main>
+        <SidebarProvider>
+          <main className="flex-1 md:overflow-hidden">{children}</main>
+        </SidebarProvider>
         <div className="hidden 2xl:block">
           <Footer />
         </div>

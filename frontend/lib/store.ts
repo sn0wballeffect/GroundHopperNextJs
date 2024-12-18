@@ -23,6 +23,10 @@ interface Store {
   distance: number;
   setDistance: (distance: number) => void;
 
+  // Local Distance for instant updates
+  localDistance: number;
+  setLocalDistance: (distance: number) => void;
+
   // Sport Type
   sportTyp: string;
   setSportTyp: (sport: string) => void;
@@ -67,6 +71,10 @@ export const useStore = create<Store>((set) => ({
   // Distance
   distance: 25,
   setDistance: (distance) => set({ distance }),
+
+  // Local Distance
+  localDistance: 25,
+  setLocalDistance: (distance) => set({ localDistance: distance }),
 
   // Sport Type
   sportTyp: "Alle",

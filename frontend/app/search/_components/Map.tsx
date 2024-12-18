@@ -3,7 +3,6 @@
 import { useStore } from "@/lib/store";
 import { GoogleMap } from "@react-google-maps/api";
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
-import { useMapStore } from "@/hooks/useMapStore";
 import {
   MAP_CONTAINER_STYLE,
   MAP_CENTER,
@@ -43,7 +42,10 @@ const MapComponent = () => {
     hoveredCoords,
     setMap,
     selectedLocation,
-  } = useMapStore();
+    localDistance,
+    setLocalDistance, // Destructure setLocalDistance
+  } = useStore();
+
   const [map, setMapState] = useState<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
   const circleRef = useRef<google.maps.Circle | null>(null);
@@ -197,7 +199,7 @@ const MapComponent = () => {
       markersRef.current.forEach((marker) => (marker.map = null));
       animationTimeoutRef.current.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [map, markers, handleMarkerClick]);
+  }, [map, markers, distance, handleMarkerClick]);
 
   // Second effect to handle hover state changes
   useEffect(() => {
@@ -251,7 +253,7 @@ const MapComponent = () => {
       const circle = new google.maps.Circle({
         map,
         center: markerPosition,
-        radius: distance * 1000,
+        radius: localDistance * 1000,
         ...circleOptions,
       });
 
@@ -260,6 +262,7 @@ const MapComponent = () => {
         const newRadius = circle.getRadius();
         const newDistanceKm = Math.round(newRadius / 1000);
         setDistance(newDistanceKm);
+        setLocalDistance(newDistanceKm); // Update localDistance
       });
 
       // Add center change listener
@@ -285,13 +288,14 @@ const MapComponent = () => {
       }
     };
   }, [
-    distance,
+    localDistance,
     markerPosition,
     map,
     setDistance,
     setUserLocation,
     setSearchQuery,
     circleOptions,
+    setLocalDistance, // Add to dependencies if necessary
   ]);
 
   // Initial user marker creation

@@ -114,21 +114,27 @@ export const SearchComponent = () => {
     }
   };
 
-  const [localDistance, setLocalDistance] = useState(distance);
+  const localDistance = useStore((state) => state.localDistance);
+  const setLocalDistance = useStore((state) => state.setLocalDistance);
 
   const debouncedSetDistance = useCallback(
     debounce((value: number) => {
       setDistance(value);
-    }, 500),
-    []
+    }, 300),
+    [setDistance]
   );
+
+  const handleDistanceChange = (value: number) => {
+    setLocalDistance(value);
+    debouncedSetDistance(value);
+  };
 
   const [localDate, setLocalDate] = useState(date);
 
   const debouncedSetDate = useCallback(
     debounce((newDate: DateRange | undefined) => {
       setDate(newDate);
-    }, 500),
+    }, 300),
     []
   );
 
@@ -203,8 +209,7 @@ export const SearchComponent = () => {
                   newDistance = Math.max(minDistance, localDistance - step);
                 }
 
-                setLocalDistance(newDistance);
-                debouncedSetDistance(newDistance);
+                handleDistanceChange(newDistance);
               }}
             >
               <MapPin className="h-4 w-4" />
@@ -222,8 +227,7 @@ export const SearchComponent = () => {
                   variant={localDistance === km ? "default" : "ghost"}
                   className="justify-start"
                   onClick={() => {
-                    setLocalDistance(km);
-                    debouncedSetDistance(km);
+                    handleDistanceChange(km);
                   }}
                 >
                   {km} km

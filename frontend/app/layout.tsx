@@ -3,6 +3,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import SupabaseProvider from "./providers/supabase-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/App-Sidebar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,9 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" className={inter.variable}>
-      <body className="flex min-h-screen w-full flex-col bg-background font-inter antialiased">
+      <body className="h-screen overflow-hidden bg-background font-inter antialiased">
         <SidebarProvider>
-          <SupabaseProvider>{children}</SupabaseProvider>
+          <div className="h-full w-full">
+            <main className="h-full w-full overflow-y-auto">
+              <SupabaseProvider>{children}</SupabaseProvider>
+            </main>
+            <AppSidebar />
+          </div>
         </SidebarProvider>
       </body>
     </html>

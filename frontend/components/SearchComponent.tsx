@@ -27,7 +27,6 @@ export const SearchComponent = () => {
   // Replace local state with global store
   const date = useStore((state) => state.date);
   const setDate = useStore((state) => state.setDate);
-  const distance = useStore((state) => state.distance);
   const setDistance = useStore((state) => state.setDistance);
   const sportTyp = useStore((state) => state.sportTyp);
   const setSportTyp = useStore((state) => state.setSportTyp);

@@ -65,7 +65,7 @@ export const useStore = create<Store>((set) => ({
   setDate: (date) => set({ date }),
 
   // Distance
-  distance: 10,
+  distance: 25,
   setDistance: (distance) => set({ distance }),
 
   // Sport Type

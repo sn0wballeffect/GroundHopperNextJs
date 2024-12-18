@@ -113,6 +113,15 @@ export const SearchComponent = () => {
     }
   };
 
+  const [localDistance, setLocalDistance] = useState(distance);
+
+  const debouncedSetDistance = useCallback(
+    debounce((value: number) => {
+      setDistance(value);
+    }, 500),
+    []
+  );
+
   return (
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
@@ -168,22 +177,48 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className="justify-start text-left font-normal px-4 flex-[0.5]"
+              onWheel={(e) => {
+                e.preventDefault();
+                const step = 5;
+                const minDistance = 5;
+                const maxDistance = 2000;
+
+                let newDistance;
+                if (e.deltaY < 0) {
+                  // Scrolling up - increase radius
+                  newDistance = Math.min(maxDistance, localDistance + step);
+                } else {
+                  // Scrolling down - decrease radius
+                  newDistance = Math.max(minDistance, localDistance - step);
+                }
+
+                setLocalDistance(newDistance);
+                debouncedSetDistance(newDistance);
+              }}
             >
               <MapPin className="h-4 w-4" />
               <div>
-                <div className="text-sm font-medium">Umkreis</div>
-                <span className="text-sm">{distance} km</span>
+                <div
+                  className="text-sm font-medium hover:cursor-ns-resize"
+                  title="Scroll to adjust radius"
+                >
+                  Umkreis
+                </div>
+                <span className="text-sm">{localDistance} km</span>
               </div>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-40 p-2" align="start">
             <div className="flex flex-col gap-2">
-              {[5, 10, 25, 50].map((km) => (
+              {[10, 25, 50, 200].map((km) => (
                 <Button
                   key={km}
-                  variant={distance === km ? "default" : "ghost"}
+                  variant={localDistance === km ? "default" : "ghost"}
                   className="justify-start"
-                  onClick={() => setDistance(km)}
+                  onClick={() => {
+                    setLocalDistance(km);
+                    debouncedSetDistance(km);
+                  }}
                 >
                   {km} km
                 </Button>

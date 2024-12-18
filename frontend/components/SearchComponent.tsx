@@ -187,6 +187,7 @@ export const SearchComponent = () => {
             <Button
               variant="ghost"
               className="justify-start text-left font-normal px-4 flex-[0.5]"
+              title="Scrollen um Radius anzupassen"
               onWheel={(e) => {
                 e.preventDefault();
                 const step = 5;
@@ -208,12 +209,7 @@ export const SearchComponent = () => {
             >
               <MapPin className="h-4 w-4" />
               <div>
-                <div
-                  className="text-sm font-medium"
-                  title="Scroll to adjust radius"
-                >
-                  Umkreis
-                </div>
+                <div className="text-sm font-medium">Umkreis</div>
                 <span className="text-sm">{localDistance} km</span>
               </div>
             </Button>
@@ -241,6 +237,7 @@ export const SearchComponent = () => {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
+              title="Scrollen um Datum anzupassen"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !localDate && "text-muted-foreground"
@@ -264,12 +261,7 @@ export const SearchComponent = () => {
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>
-                <div
-                  className="text-sm font-medium"
-                  title="Scroll to adjust date"
-                >
-                  Von
-                </div>
+                <div className="text-sm font-medium">Von</div>
                 {localDate?.from ? (
                   format(localDate.from, "dd.MM.yyyy")
                 ) : (
@@ -294,6 +286,7 @@ export const SearchComponent = () => {
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
+              title="Scrollen um Datum anzupassen"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !localDate && "text-muted-foreground"
@@ -317,12 +310,7 @@ export const SearchComponent = () => {
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>
-                <div
-                  className="text-sm font-medium"
-                  title="Scroll to adjust date"
-                >
-                  Bis
-                </div>
+                <div className="text-sm font-medium">Bis</div>
                 {localDate?.to ? (
                   format(localDate.to, "dd.MM.yyyy")
                 ) : (

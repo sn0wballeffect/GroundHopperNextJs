@@ -6,7 +6,12 @@ const app = express();
 const prisma = new PrismaClient();
 
 const cors = require("cors");
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://hoply.de", // Allow your domain
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.use(bodyParser.json());
 

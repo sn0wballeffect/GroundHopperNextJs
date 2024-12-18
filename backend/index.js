@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 const cors = require("cors");
 app.use(
   cors({
-    origin: "https://hoply.de", // Allow your domain
+    origin: ["https://hoply.de", , "http://localhost:3000"], // Allow your domain
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );

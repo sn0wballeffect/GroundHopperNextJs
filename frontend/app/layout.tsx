@@ -2,16 +2,23 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import SupabaseProvider from "./providers/supabase-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
-const inter_init = Inter({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["100", "400", "700", "500"],
+  weight: ["100", "400", "500", "700"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: "Hoply",
   description: "Finde Sportevents in deiner Nähe",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
@@ -20,17 +27,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de">
-      <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
-        />
-      </head>
-      <body
-        className={`${inter_init.variable} antialiased font-inter bg-background`}
-      >
-        <SupabaseProvider>{children}</SupabaseProvider>
+    <html lang="de" className={inter.variable}>
+      <body className="flex min-h-screen w-full flex-col bg-background font-inter antialiased">
+        <SidebarProvider>
+          <SupabaseProvider>{children}</SupabaseProvider>
+        </SidebarProvider>
       </body>
     </html>
   );

@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="de" className={inter.variable}>
       <body className="h-screen overflow-hidden bg-background font-inter antialiased">
-        <SidebarProvider>
+        <SidebarProvider defaultOpen={false}>
           <div className="h-full w-full">
             <main className="h-full w-full overflow-y-auto">
               <SupabaseProvider>{children}</SupabaseProvider>

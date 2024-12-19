@@ -191,7 +191,7 @@ const Row = React.memo(
                     className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
                     onClick={(e) => {
                       e.stopPropagation();
-                      // Add navigation/ticket action here
+                      useStore.getState().addSavedMatch(match);
                     }}
                   >
                     <Ticket className="h-4 w-4" />

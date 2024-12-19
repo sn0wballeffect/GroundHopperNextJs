@@ -1,21 +1,19 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
-import grasshopper from "../assets/GrasshopperR.png";
 import { useState } from "react";
 import { AuthDialog } from "./auth/AuthDialog";
 import { useAuth } from "@/hooks/useAuth";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export function NavBar() {
   const { user, signOut } = useAuth();
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
+  const { open, setOpen } = useSidebar();
 
   return (
     <header className="flex items-center justify-between p-3 bg-transparent w-full">
-      <SidebarTrigger className="rotate-180" />
+      <SidebarTrigger className="rotate-180" onClick={() => setOpen(!open)} />
       <nav className="flex items-center gap-4 ml-auto">
         {user ? (
           <>

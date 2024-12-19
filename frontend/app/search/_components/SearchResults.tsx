@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { CountdownTimer } from "./CountdownTimer";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -109,9 +110,11 @@ const Row = React.memo(
 
     // Add saved matches subscription
     const { open, setOpen } = useSidebar();
-    const savedMatches = useStore((state) => state.savedMatches);
-    const addSavedMatch = useStore((state) => state.addSavedMatch);
-    const removeSavedMatch = useStore((state) => state.removeSavedMatch);
+    const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
+    const addSavedMatch = useSavedMatchesStore((state) => state.addSavedMatch);
+    const removeSavedMatch = useSavedMatchesStore(
+      (state) => state.removeSavedMatch
+    );
 
     const handleTicketClick = (e: React.MouseEvent, match: Match) => {
       e.stopPropagation();

@@ -59,11 +59,6 @@ interface Store {
   }) => void;
   map: google.maps.Map | null;
   setMap: (map: google.maps.Map | null) => void;
-
-  // Saved Matches
-  savedMatches: Match[];
-  addSavedMatch: (match: Match) => void;
-  removeSavedMatch: (matchId: number) => void;
 }
 
 export const useStore = create<Store>((set) => ({
@@ -124,17 +119,4 @@ export const useStore = create<Store>((set) => ({
 
   map: null,
   setMap: (map) => set({ map }),
-
-  // Saved Matches
-  savedMatches: [],
-  addSavedMatch: (match) =>
-    set((state) => ({
-      savedMatches: state.savedMatches.some((m) => m.id === match.id)
-        ? state.savedMatches
-        : [...state.savedMatches, match],
-    })),
-  removeSavedMatch: (matchId) =>
-    set((state) => ({
-      savedMatches: state.savedMatches.filter((m) => m.id !== matchId),
-    })),
 }));

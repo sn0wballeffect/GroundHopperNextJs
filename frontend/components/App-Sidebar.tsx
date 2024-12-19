@@ -13,7 +13,7 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebarUser";
-import { useStore } from "@/lib/store";
+import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Trash2, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -21,8 +21,10 @@ import Link from "next/link";
 
 export function AppSidebar() {
   const { setOpen } = useSidebar(); // Add open state
-  const savedMatches = useStore((state) => state.savedMatches);
-  const removeSavedMatch = useStore((state) => state.removeSavedMatch);
+  const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
+  const removeSavedMatch = useSavedMatchesStore(
+    (state) => state.removeSavedMatch
+  );
 
   // Track previous match count
   const [prevMatchCount, setPrevMatchCount] = useState(savedMatches.length);

@@ -1,4 +1,8 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
+import { useSidebar } from "@/components/ui/sidebar";
+import { Match } from "@/lib/types";
 import {
   Sidebar,
   SidebarContent,
@@ -13,29 +17,32 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import { NavUser } from "./sidebarUser";
-import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Trash2, Ticket } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
 
 export function AppSidebar() {
-  const { setOpen } = useSidebar(); // Add open state
+  const { setOpen } = useSidebar();
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const removeSavedMatch = useSavedMatchesStore(
     (state) => state.removeSavedMatch
   );
 
-  // Track previous match count
-  const [prevMatchCount, setPrevMatchCount] = useState(savedMatches.length);
+  // Initialize state with empty array to match server-side render
+  const [mounted, setMounted] = useState(false);
+  const [prevMatchCount, setPrevMatchCount] = useState(0);
 
-  // Only open when new matches are added
+  // Only run client-side effects after mount
   useEffect(() => {
-    if (savedMatches.length > prevMatchCount) {
+    setMounted(true);
+  }, []);
+
+  // Track previous match count
+  useEffect(() => {
+    if (mounted && savedMatches.length > prevMatchCount) {
       setOpen(true);
     }
     setPrevMatchCount(savedMatches.length);
-  }, [savedMatches.length, setOpen]);
+  }, [mounted, savedMatches.length, setOpen]);
 
   const user = {
     name: "Mosen",

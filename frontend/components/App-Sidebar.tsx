@@ -12,7 +12,6 @@ export function AppSidebar() {
     <Sidebar side="right">
       <SidebarHeader />
       <SidebarContent>
-        <SidebarTrigger className="rotate-180" />
         <SidebarGroup />
         <SidebarGroup />
       </SidebarContent>

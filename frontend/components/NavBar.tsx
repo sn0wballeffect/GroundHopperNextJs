@@ -5,26 +5,19 @@ import Image from "next/image";
 import grasshopper from "../assets/GrasshopperR.png";
 import { useState } from "react";
 import { AuthDialog } from "./auth/AuthDialog";
-/* import { useAuth } from "@/hooks/useAuth"; */
+import { useAuth } from "@/hooks/useAuth";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export function NavBar() {
-  /* const { user, signOut } = useAuth(); */
+  const { user, signOut } = useAuth();
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
 
   return (
-    <header className="flex items-center justify-between px-4 p-1 bg-transparent w-full">
-      <Link href="/">
-        <Image
-          src={grasshopper}
-          alt="Grasshopper Logo"
-          width={50}
-          height={50}
-        />
-      </Link>
+    <header className="flex items-center justify-between p-3 bg-transparent w-full">
+      <SidebarTrigger className="rotate-180" />
       <nav className="flex items-center gap-4 ml-auto">
-        {/* {user ? (
+        {user ? (
           <>
             <span className="text-sm text-muted-foreground">{user.email}</span>
             <Button variant="ghost" onClick={signOut}>
@@ -34,12 +27,11 @@ export function NavBar() {
         ) : (
           <>
             <Button variant="ghost" onClick={() => setShowSignIn(true)}>
-              Login
+              Anmelden
             </Button>
-            <Button onClick={() => setShowSignUp(true)}>Join Now</Button>
+            <Button onClick={() => setShowSignUp(true)}>Registrieren</Button>
           </>
-        )} */}
-        <SidebarTrigger className="rotate-180" />
+        )}
       </nav>
 
       <AuthDialog

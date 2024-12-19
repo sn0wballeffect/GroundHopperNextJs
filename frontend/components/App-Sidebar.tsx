@@ -17,9 +17,10 @@ import { useStore } from "@/lib/store";
 import { Trash2, Ticket } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSidebar } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 export function AppSidebar() {
-  const { setOpen, open } = useSidebar(); // Add open state
+  const { setOpen } = useSidebar(); // Add open state
   const savedMatches = useStore((state) => state.savedMatches);
   const removeSavedMatch = useStore((state) => state.removeSavedMatch);
 
@@ -59,7 +60,10 @@ export function AppSidebar() {
                           {match.home_team} vs {match.away_team}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {match.date_string}
+                          {match.date_string} -
+                          {match.event_time
+                            ? match.event_time.split("T")[1].substring(0, 5)
+                            : ""}
                         </div>
                       </div>
                       <span
@@ -96,7 +100,17 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter className="p-4 border-t border-sidebar-border">
+        {savedMatches.length > 0 && (
+          <Link
+            href="/checkout"
+            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
+          >
+            <Ticket className="h-4 w-4" />
+            Tickets bestellen
+          </Link>
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }

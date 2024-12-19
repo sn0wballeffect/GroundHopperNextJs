@@ -14,7 +14,7 @@ export function NavBar() {
   const [showSignUp, setShowSignUp] = useState(false);
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 bg-transparent w-full">
+    <header className="flex items-center justify-between px-4 p-1 bg-transparent w-full">
       <Link href="/">
         <Image
           src={grasshopper}
@@ -39,7 +39,7 @@ export function NavBar() {
             <Button onClick={() => setShowSignUp(true)}>Join Now</Button>
           </>
         )} */}
-        <SidebarTrigger />
+        <SidebarTrigger className="rotate-180" />
       </nav>
 
       <AuthDialog

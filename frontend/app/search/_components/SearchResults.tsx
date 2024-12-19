@@ -29,6 +29,7 @@ import { animateMapToLocation } from "@/lib/map-utils";
 import { Button } from "@/components/ui/button";
 import { CountdownTimer } from "./CountdownTimer";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSidebar } from "@/components/ui/sidebar";
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -107,8 +108,25 @@ const Row = React.memo(
     const [isFlipped, setIsFlipped] = useState(false);
 
     // Add saved matches subscription
+    const { open, setOpen } = useSidebar();
     const savedMatches = useStore((state) => state.savedMatches);
     const addSavedMatch = useStore((state) => state.addSavedMatch);
+    const removeSavedMatch = useStore((state) => state.removeSavedMatch);
+
+    const handleTicketClick = (e: React.MouseEvent, match: Match) => {
+      e.stopPropagation();
+
+      const isMatchSaved = savedMatches.some((m) => m.id === match.id);
+      if (isMatchSaved) {
+        removeSavedMatch(match.id);
+        if (savedMatches.length <= 1) {
+          setOpen(false);
+        }
+      } else {
+        addSavedMatch(match);
+        setOpen(true);
+      }
+    };
 
     return (
       <div style={style} className="will-change-transform [perspective:1000px]">
@@ -195,10 +213,7 @@ const Row = React.memo(
                 <div className="flex items-center justify-end">
                   <Button
                     className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addSavedMatch(match);
-                    }}
+                    onClick={(e) => handleTicketClick(e, match)}
                   >
                     <div className="relative w-4 h-4">
                       <AnimatePresence initial={false}>

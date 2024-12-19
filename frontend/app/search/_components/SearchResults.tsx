@@ -18,6 +18,7 @@ import {
   Building2,
   Timer,
   RefreshCw,
+  Check,
 } from "lucide-react";
 import { fetchMatches } from "@/lib/api";
 import { Match } from "@/lib/types";
@@ -27,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { animateMapToLocation } from "@/lib/map-utils";
 import { Button } from "@/components/ui/button";
 import { CountdownTimer } from "./CountdownTimer";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Sport icons
 const SPORT_ICONS: Record<string, string> = {
@@ -103,6 +105,10 @@ const Row = React.memo(
 
     // Inside Row component, add flipped state
     const [isFlipped, setIsFlipped] = useState(false);
+
+    // Add saved matches subscription
+    const savedMatches = useStore((state) => state.savedMatches);
+    const addSavedMatch = useStore((state) => state.addSavedMatch);
 
     return (
       <div style={style} className="will-change-transform [perspective:1000px]">
@@ -191,10 +197,36 @@ const Row = React.memo(
                     className="bg-primary text-primary-foreground hover:bg-primary/90 text-sm md:text-base px-1 md:px-2"
                     onClick={(e) => {
                       e.stopPropagation();
-                      useStore.getState().addSavedMatch(match);
+                      addSavedMatch(match);
                     }}
                   >
-                    <Ticket className="h-4 w-4" />
+                    <div className="relative w-4 h-4">
+                      <AnimatePresence initial={false}>
+                        {savedMatches.some((m) => m.id === match.id) ? (
+                          <motion.div
+                            key="check"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="absolute inset-0"
+                          >
+                            <Check className="h-4 w-4" />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            key="ticket"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            className="absolute inset-0"
+                          >
+                            <Ticket className="h-4 w-4" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                     Tickets
                   </Button>
                 </div>

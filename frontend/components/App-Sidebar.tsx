@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { useSidebar } from "@/components/ui/sidebar";
-import { Match } from "@/lib/types";
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +15,6 @@ import {
   SidebarMenuButton,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import { NavUser } from "./sidebarUser";
 import { Trash2, Ticket } from "lucide-react";
 import Link from "next/link";
 
@@ -43,12 +41,6 @@ export function AppSidebar() {
     }
     setPrevMatchCount(savedMatches.length);
   }, [mounted, savedMatches.length, setOpen]);
-
-  const user = {
-    name: "Mosen",
-    email: "ulrichfischer@max-planck.de",
-    avatar: "/path/to/avatar.jpg",
-  };
 
   return (
     <Sidebar side="right">

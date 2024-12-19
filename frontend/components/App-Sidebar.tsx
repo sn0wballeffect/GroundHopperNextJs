@@ -36,8 +36,8 @@ export function AppSidebar() {
   }, [savedMatches.length, setOpen]);
 
   const user = {
-    name: "John Doe",
-    email: "john@example.com",
+    name: "Mosen",
+    email: "ulrichfischer@max-planck.de",
     avatar: "/path/to/avatar.jpg",
   };
 

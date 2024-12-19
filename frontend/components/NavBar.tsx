@@ -4,18 +4,16 @@ import { useState } from "react";
 import { AuthDialog } from "./auth/AuthDialog";
 /* import { useAuth } from "@/hooks/useAuth"; */
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
 
 export function NavBar() {
   /* const { user, signOut } = useAuth(); */
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
+
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   return (
     <header className="flex items-center justify-between p-3 bg-transparent w-full">
       <nav className="flex items-center gap-4 ml-auto">
-        {!isHomePage && <SidebarTrigger className="rotate-180" />}
+        <SidebarTrigger className="rotate-180" />
 
         {/*  {user ? (
           <>

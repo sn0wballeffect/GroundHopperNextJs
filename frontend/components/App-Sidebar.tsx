@@ -43,8 +43,8 @@ export function AppSidebar() {
 
   return (
     <Sidebar side="right">
-      <SidebarHeader className="h-16 border-b border-sidebar-border">
-        <NavUser user={user} />
+      <SidebarHeader className="mt-1">
+        <SidebarTrigger />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

@@ -3,19 +3,19 @@
 import { useState } from "react";
 import { AuthDialog } from "./auth/AuthDialog";
 /* import { useAuth } from "@/hooks/useAuth"; */
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ChevronRight } from "lucide-react"; // Add this import at the top
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 
 export function NavBar() {
   /* const { user, signOut } = useAuth(); */
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   const [showSignIn, setShowSignIn] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
-  const { open, setOpen } = useSidebar();
-
   return (
     <header className="flex items-center justify-between p-3 bg-transparent w-full">
       <nav className="flex items-center gap-4 ml-auto">
-        <SidebarTrigger className="rotate-180" />
+        {!isHomePage && <SidebarTrigger className="rotate-180" />}
 
         {/*  {user ? (
           <>

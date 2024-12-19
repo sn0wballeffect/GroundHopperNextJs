@@ -46,7 +46,7 @@ export function AppSidebar() {
       <SidebarHeader className="mt-1">
         <SidebarTrigger />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="custom-scrollbar-hidden">
         <SidebarGroup>
           <SidebarGroupLabel>Spiele</SidebarGroupLabel>
           <SidebarGroupContent>

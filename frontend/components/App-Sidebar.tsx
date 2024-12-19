@@ -54,21 +54,23 @@ export function AppSidebar() {
               {savedMatches.map((match, index) => (
                 <div key={match.id}>
                   <SidebarMenuItem>
-                    <SidebarMenuButton className="flex items-center justify-between w-full">
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">
+                    <SidebarMenuButton className="flex items-center justify-between w-full py-8">
+                      <div className="flex-1 min-w-0 mr-2">
+                        <div className="font-medium truncate mb-1">
                           {match.home_team} vs {match.away_team}
                         </div>
-                        <div className="text-xs text-muted-foreground">
-                          {match.date_string} -
-                          {match.event_time
-                            ? match.event_time.split("T")[1].substring(0, 5)
-                            : ""}
+                        <div className="flex flex-col text-xs text-muted-foreground space-y-0.5">
+                          <div className="truncate">{match.date_string}</div>
+                          <div className="truncate">
+                            {match.event_time
+                              ? match.event_time.split("T")[1].substring(0, 5)
+                              : ""}
+                          </div>
                         </div>
                       </div>
                       <span
                         role="button"
-                        className="ml-2 text-muted-foreground hover:text-destructive cursor-pointer"
+                        className="flex-shrink-0 text-muted-foreground hover:text-destructive cursor-pointer"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeSavedMatch(match.id);

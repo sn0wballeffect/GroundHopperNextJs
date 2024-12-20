@@ -118,7 +118,7 @@ const dotVariants = {
   },
 };
 
-export default function CheckoutPage() {
+export default function CheckoutPageClient() {
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const completedSections = useSavedMatchesStore(
     (state) => state.completedSections
@@ -134,11 +134,6 @@ export default function CheckoutPage() {
     (state) => state.removeSavedMatch
   );
   const [isAutoDeselecting, setIsAutoDeselecting] = React.useState(false);
-  const [isHydrated, setIsHydrated] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsHydrated(true);
-  }, []);
 
   React.useEffect(() => {
     // Reset collapsible states and show tickets when match changes

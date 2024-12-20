@@ -109,7 +109,7 @@ const Row = React.memo(
     const [isFlipped, setIsFlipped] = useState(false);
 
     // Add saved matches subscription
-    const { setOpen, toggleSidebar } = useSidebar();
+    const { setOpen } = useSidebar();
     const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
     const addSavedMatch = useSavedMatchesStore((state) => state.addSavedMatch);
     const removeSavedMatch = useSavedMatchesStore(

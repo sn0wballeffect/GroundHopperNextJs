@@ -35,7 +35,7 @@ const defaultCompletedSections = {
 
 // Update the card variants for smoother animations
 const cardVariants = {
-  initial: { scale: 0.96, opacity: 0, y: 20 },
+  initial: { scale: 0.96, opacity: 0, y: 5 },
   animate: {
     scale: 1,
     opacity: 1,
@@ -46,7 +46,7 @@ const cardVariants = {
     },
   },
   hover: {
-    scale: 1.02,
+    scale: 1.01,
     boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
     transition: { duration: 0.3 },
   },
@@ -58,14 +58,14 @@ const cardVariants = {
 };
 
 const cardContentVariants = {
-  initial: { y: 20, opacity: 0 },
+  initial: { y: 5, opacity: 0 },
   animate: {
     y: 0,
     opacity: 1,
     transition: { duration: 0.3 },
   },
   exit: {
-    y: -20,
+    y: -5,
     opacity: 0,
     transition: { duration: 0.2 },
   },

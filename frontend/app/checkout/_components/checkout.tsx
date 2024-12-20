@@ -111,7 +111,6 @@ export default function CheckoutPageClient() {
   const removeSavedMatch = useSavedMatchesStore(
     (state) => state.removeSavedMatch
   );
-  const [isAutoDeselecting, setIsAutoDeselecting] = React.useState(false);
 
   React.useEffect(() => {
     // Reset collapsible states and show tickets when match changes
@@ -153,7 +152,6 @@ export default function CheckoutPageClient() {
         setShowAccommodation(false);
         // Check if all sections are now complete
         if (Object.values(updatedSections).every((value) => value)) {
-          setIsAutoDeselecting(true);
           setSelectedMatch(null);
         }
         break;
@@ -284,7 +282,6 @@ export default function CheckoutPageClient() {
                               : "border-l-red-500"
                           }`}
                         onClick={() => {
-                          setIsAutoDeselecting(false);
                           setSelectedMatch(match);
                         }}
                       >
@@ -827,7 +824,6 @@ export default function CheckoutPageClient() {
                       onClick={() => {
                         handleMarkAllComplete(selectedMatch.id);
                         closeAllCollapsibles();
-                        setIsAutoDeselecting(true);
                         setSelectedMatch(null);
                       }}
                       className="w-full mt-4 transition-colors duration-200 hover:opacity-90 hover:scale-[1.02]"

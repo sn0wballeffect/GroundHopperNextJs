@@ -8,12 +8,7 @@ const Breadcrumb = React.forwardRef<
   HTMLElement,
   React.HTMLAttributes<HTMLElement>
 >(({ className, ...props }, ref) => (
-  <nav
-    ref={ref}
-    className={cn("", className)} // Add className using cn utility
-    aria-label="breadcrumb"
-    {...props}
-  />
+  <nav ref={ref} aria-label="breadcrumb" {...props} />
 ));
 Breadcrumb.displayName = "Breadcrumb";
 

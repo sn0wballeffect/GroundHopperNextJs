@@ -11,38 +11,11 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-
-interface Match {
-  id: string;
-  homeTeam: string;
-  awayTeam: string;
-  date: string;
-  time: string;
-  location: string;
-}
-
-// Sample data - replace with your actual data
-const matches: Match[] = [
-  {
-    id: "1",
-    homeTeam: "SV Elversberg",
-    awayTeam: "FC Schalke 04",
-    date: "20.12.2024",
-    time: "18:30",
-    location: "Elversberg",
-  },
-  {
-    id: "2",
-    homeTeam: "Fortuna Düsseldorf",
-    awayTeam: "1. FC Magdeburg",
-    date: "20.12.2024",
-    time: "18:30",
-    location: "Düsseldorf",
-  },
-  // Add more matches as needed
-];
+import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
+import { Match } from "@/lib/types";
 
 export default function CheckoutPage() {
+  const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const [selectedMatch, setSelectedMatch] = React.useState<Match | null>(null);
   const [showTravel, setShowTravel] = React.useState(false);
   const [showAccommodation, setShowAccommodation] = React.useState(false);
@@ -54,7 +27,7 @@ export default function CheckoutPage() {
         <div className="flex-1 border-r p-6">
           <h1 className="text-2xl font-bold mb-6">Ausgewählte Spiele</h1>
           <div className="grid gap-4">
-            {matches.map((match) => (
+            {savedMatches.map((match) => (
               <Card
                 key={match.id}
                 className={`cursor-pointer transition-colors hover:bg-accent ${
@@ -66,17 +39,19 @@ export default function CheckoutPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold">
-                        {match.homeTeam} vs {match.awayTeam}
+                        {match.home_team} vs {match.away_team}
                       </p>
                       <div className="flex items-center text-sm text-muted-foreground mt-1">
                         <MapPin className="mr-1 h-4 w-4" />
-                        {match.location}
+                        {match.stadium}
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">{match.date}</p>
+                      <p className="font-medium">{match.date_string}</p>
                       <p className="text-sm text-muted-foreground">
-                        {match.time}
+                        {match.event_time
+                          ? match.event_time.split("T")[1].substring(0, 5)
+                          : ""}
                       </p>
                     </div>
                   </div>

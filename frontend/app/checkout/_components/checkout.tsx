@@ -24,40 +24,64 @@ import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Match } from "@/lib/types";
 import Link from "next/link";
 
+const defaultCompletedSections = {
+  tickets: false,
+  travel: false,
+  accommodation: false,
+};
+
 export default function CheckoutPage() {
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
+  const completedSections = useSavedMatchesStore(
+    (state) => state.completedSections
+  );
+  const updateCompletedSections = useSavedMatchesStore(
+    (state) => state.updateCompletedSections
+  );
   const [selectedMatch, setSelectedMatch] = React.useState<Match | null>(null);
   const [showTravel, setShowTravel] = React.useState(false);
   const [showAccommodation, setShowAccommodation] = React.useState(false);
-  const [showTickets, setShowTickets] = React.useState(true); // Add this line
-  const [completedSections, setCompletedSections] = React.useState<{
-    tickets: boolean;
-    travel: boolean;
-    accommodation: boolean;
-  }>({
-    tickets: false,
-    travel: false,
-    accommodation: false,
-  });
+  const [showTickets, setShowTickets] = React.useState(true);
 
-  const handleLinkClick = (section: keyof typeof completedSections) => {
-    setCompletedSections((prev) => ({
-      ...prev,
+  const handleLinkClick = (section: keyof typeof defaultCompletedSections) => {
+    if (!selectedMatch) return;
+
+    const currentSections = completedSections[selectedMatch.id] || {
+      tickets: false,
+      travel: false,
+      accommodation: false,
+    };
+
+    updateCompletedSections(selectedMatch.id, {
+      ...currentSections,
       [section]: true,
-    }));
+    });
   };
 
-  // Add these functions inside the component
-  const hasAnyCompleted = () => {
-    return Object.values(completedSections).some((value) => value === true);
+  const hasAnyCompleted = (matchId: number) => {
+    const sections = completedSections[matchId];
+    return sections
+      ? Object.values(sections).some((value) => value === true)
+      : false;
   };
 
-  const handleMarkAllComplete = () => {
-    setCompletedSections({
+  const handleMarkAllComplete = (matchId: number) => {
+    updateCompletedSections(matchId, {
       tickets: true,
       travel: true,
       accommodation: true,
     });
+  };
+
+  // Update the Card components to use the per-match completion status:
+  const getMatchCompletedSections = (matchId: number) => {
+    return (
+      completedSections[matchId] || {
+        tickets: false,
+        travel: false,
+        accommodation: false,
+      }
+    );
   };
 
   // Sort matches by date and time
@@ -90,8 +114,8 @@ export default function CheckoutPage() {
                 {sortedMatches.map((match, index) => (
                   <React.Fragment key={match.id}>
                     <Card
-                      className={`cursor-pointer transition-colors hover:bg-accent ${
-                        selectedMatch?.id === match.id ? "border-primary" : ""
+                      className={`cursor-pointer transition-colors  hover:bg-accent hover:shadow-lg ${
+                        selectedMatch?.id === match.id ? "bg-accent" : ""
                       }`}
                       onClick={() => setSelectedMatch(match)}
                     >
@@ -142,13 +166,16 @@ export default function CheckoutPage() {
                 <Collapsible open={showTickets} onOpenChange={setShowTickets}>
                   <Card
                     className={`${
-                      completedSections.tickets ? "border-green-600" : ""
+                      getMatchCompletedSections(selectedMatch.id).tickets
+                        ? "border-green-600"
+                        : ""
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
                       <CardHeader>
                         <CardTitle className="flex items-center">
-                          {completedSections.tickets ? (
+                          {getMatchCompletedSections(selectedMatch.id)
+                            .tickets ? (
                             <Check className="mr-2 h-5 w-5 text-green-600" />
                           ) : (
                             <Ticket className="mr-2 h-5 w-5" />
@@ -172,7 +199,8 @@ export default function CheckoutPage() {
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center space-x-4">
-                                  {completedSections.tickets ? (
+                                  {getMatchCompletedSections(selectedMatch.id)
+                                    .tickets ? (
                                     <Check className="h-8 w-8" />
                                   ) : (
                                     <Ticket className="h-8 w-8" />
@@ -197,13 +225,16 @@ export default function CheckoutPage() {
                 <Collapsible open={showTravel} onOpenChange={setShowTravel}>
                   <Card
                     className={`${
-                      completedSections.travel ? "border-green-600" : ""
+                      getMatchCompletedSections(selectedMatch.id).travel
+                        ? "border-green-600"
+                        : ""
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
                       <CardHeader>
                         <CardTitle className="flex items-center">
-                          {completedSections.travel ? (
+                          {getMatchCompletedSections(selectedMatch.id)
+                            .travel ? (
                             <Check className="mr-2 h-5 w-5 text-green-600" />
                           ) : (
                             <Train className="mr-2 h-5 w-5" />
@@ -227,7 +258,8 @@ export default function CheckoutPage() {
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center space-x-4">
-                                  {completedSections.travel ? (
+                                  {getMatchCompletedSections(selectedMatch.id)
+                                    .travel ? (
                                     <Check className="h-8 w-8" />
                                   ) : (
                                     <Train className="h-8 w-8" />
@@ -255,7 +287,8 @@ export default function CheckoutPage() {
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center space-x-4">
-                                  {completedSections.travel ? (
+                                  {getMatchCompletedSections(selectedMatch.id)
+                                    .travel ? (
                                     <Check className="h-8 w-8" />
                                   ) : (
                                     <Bus className="h-8 w-8" />
@@ -283,13 +316,16 @@ export default function CheckoutPage() {
                 >
                   <Card
                     className={`${
-                      completedSections.accommodation ? "border-green-600" : ""
+                      getMatchCompletedSections(selectedMatch.id).accommodation
+                        ? "border-green-600"
+                        : ""
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
                       <CardHeader>
                         <CardTitle className="flex items-center">
-                          {completedSections.accommodation ? (
+                          {getMatchCompletedSections(selectedMatch.id)
+                            .accommodation ? (
                             <Check className="mr-2 h-5 w-5 text-green-600" />
                           ) : (
                             <Hotel className="mr-2 h-5 w-5" />
@@ -313,7 +349,8 @@ export default function CheckoutPage() {
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center space-x-4">
-                                  {completedSections.accommodation ? (
+                                  {getMatchCompletedSections(selectedMatch.id)
+                                    .accommodation ? (
                                     <Check className="h-8 w-8" />
                                   ) : (
                                     <Hotel className="h-8 w-8" />
@@ -339,7 +376,8 @@ export default function CheckoutPage() {
                             >
                               <div className="flex items-center justify-between w-full">
                                 <div className="flex items-center space-x-4">
-                                  {completedSections.accommodation ? (
+                                  {getMatchCompletedSections(selectedMatch.id)
+                                    .accommodation ? (
                                     <Check className="h-8 w-8" />
                                   ) : (
                                     <Home className="h-8 w-8" />
@@ -363,9 +401,9 @@ export default function CheckoutPage() {
                 </Collapsible>
 
                 {/* Add this after the last Collapsible section (Accommodation) */}
-                {hasAnyCompleted() && (
+                {selectedMatch && hasAnyCompleted(selectedMatch.id) && (
                   <Button
-                    onClick={handleMarkAllComplete}
+                    onClick={() => handleMarkAllComplete(selectedMatch.id)}
                     className="w-full mt-4"
                   >
                     Fertig

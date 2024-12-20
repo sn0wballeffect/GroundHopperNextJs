@@ -25,37 +25,47 @@ export default function CheckoutPage() {
         {/* Left column - Matches list */}
         <div className="flex-1 border-r p-6">
           <h1 className="text-2xl font-bold mb-6">Ausgewählte Spiele</h1>
-          <div className="grid gap-4">
-            {savedMatches.map((match) => (
-              <Card
-                key={match.id}
-                className={`cursor-pointer transition-colors hover:bg-accent ${
-                  selectedMatch?.id === match.id ? "border-primary" : ""
-                }`}
-                onClick={() => setSelectedMatch(match)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold">
-                        {match.home_team} vs {match.away_team}
-                      </p>
-                      <div className="flex items-center text-sm text-muted-foreground mt-1">
-                        <MapPin className="mr-1 h-4 w-4" />
-                        {match.stadium}
+          <div className="grid gap-2">
+            {savedMatches.map((match, index) => (
+              <React.Fragment key={match.id}>
+                <Card
+                  className={`cursor-pointer transition-colors hover:bg-accent ${
+                    selectedMatch?.id === match.id ? "border-primary" : ""
+                  }`}
+                  onClick={() => setSelectedMatch(match)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold">
+                          {match.home_team} vs {match.away_team}
+                        </p>
+                        <div className="flex items-center text-sm text-muted-foreground mt-1">
+                          <MapPin className="mr-1 h-4 w-4" />
+                          {match.stadium}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{match.date_string}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {match.event_time
+                            ? match.event_time.split("T")[1].substring(0, 5)
+                            : ""}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-medium">{match.date_string}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {match.event_time
-                          ? match.event_time.split("T")[1].substring(0, 5)
-                          : ""}
-                      </p>
+                  </CardContent>
+                </Card>
+                {index < savedMatches.length - 1 && (
+                  <div className="flex justify-center py-2">
+                    <div className="flex flex-col gap-1">
+                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                )}
+              </React.Fragment>
             ))}
           </div>
         </div>

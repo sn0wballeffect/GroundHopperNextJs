@@ -33,23 +33,26 @@ const defaultCompletedSections = {
   accommodation: false,
 };
 
-// Update existing animation variants
+// Update the card variants for smoother animations
 const cardVariants = {
-  initial: { scale: 0.98, opacity: 0 },
+  initial: { scale: 0.96, opacity: 0, y: 20 },
   animate: {
     scale: 1,
     opacity: 1,
+    y: 0,
     transition: {
-      duration: 0.4,
-      ease: "easeOut",
-      when: "beforeChildren",
-      staggerChildren: 0.1,
+      duration: 0.5,
+      ease: [0.4, 0, 0.2, 1],
     },
   },
-  exit: { scale: 0.98, opacity: 0 },
   hover: {
     scale: 1.02,
-    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+    transition: { duration: 0.3 },
+  },
+  exit: {
+    scale: 0.96,
+    opacity: 0,
     transition: { duration: 0.2 },
   },
 };
@@ -236,8 +239,15 @@ export default function CheckoutPage() {
 
   return (
     // Main container adjustments
-    <div className="flex justify-center max-h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-gradient-to-br from-background via-background to-accent/20 px-6 pb-5">
-      <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card/80 backdrop-blur-sm overflow-hidden my-5 shadow-xl">
+    <div
+      className="flex justify-center max-h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] 
+      bg-gradient-to-br from-background via-background to-primary/5 px-6 pb-5"
+    >
+      <div
+        className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-2xl 
+        border bg-card/95 backdrop-blur-md overflow-hidden my-5 
+        shadow-[0_20px_70px_-15px_rgba(0,0,0,0.3)]"
+      >
         {/* Left column - Make it full height */}
         <div className="flex-1 border-r h-full flex flex-col bg-gradient-to-b from-background to-card">
           {" "}
@@ -256,29 +266,30 @@ export default function CheckoutPage() {
                       variants={cardVariants}
                       initial="initial"
                       animate="animate"
-                      exit="exit"
                       whileHover="hover"
+                      exit="exit"
                       layout
                     >
                       <Card
-                        className={`cursor-pointer transition-all duration-300 hover:bg-accent/10 
+                        className={`cursor-pointer transition-all duration-300
+                          border-l-[6px] rounded-xl
+                          hover:bg-accent/30 
                           ${
                             selectedMatch?.id === match.id
-                              ? "bg-accent/20 shadow-md"
+                              ? "bg-accent/40 shadow-lg"
                               : ""
                           }
                           ${
                             isMatchFullyCompleted(match.id)
-                              ? "border-green-600/50 shadow-[0_0_15px_rgba(22,163,74,0.2)]"
-                              : ""
-                          }
-                        `}
+                              ? "border-l-primary"
+                              : "border-l-muted"
+                          }`}
                         onClick={() => setSelectedMatch(match)}
                       >
                         <motion.div variants={cardContentVariants}>
-                          <CardContent className="p-4">
+                          <CardContent className="py-2 md:py-4 px-4 md:px-6">
                             <div className="flex items-center justify-between">
-                              <div>
+                              <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <AnimatePresence>
                                     {isMatchFullyCompleted(match.id) && (
@@ -292,40 +303,45 @@ export default function CheckoutPage() {
                                       </motion.div>
                                     )}
                                   </AnimatePresence>
-                                  <p className="font-semibold">
-                                    {match.home_team} vs {match.away_team}
+                                  <p className="font-semibold text-base md:text-lg">
+                                    {match.home_team}
+                                    <span className="text-muted-foreground mx-1 md:mx-2">
+                                      vs
+                                    </span>
+                                    {match.away_team}
                                   </p>
-                                  {/* Add delete button */}
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      removeSavedMatch(match.id);
-                                      if (selectedMatch?.id === match.id) {
-                                        setSelectedMatch(null);
-                                      }
-                                    }}
-                                    className="ml-2 p-1.5 rounded-full hover:bg-accent/80 text-muted-foreground hover:text-destructive transition-colors"
-                                    aria-label="Remove match"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </button>
                                 </div>
-                                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                                  <MapPin className="mr-1 h-4 w-4" />
-                                  {match.stadium}
+                                <div className="flex items-center text-sm text-muted-foreground">
+                                  <MapPin className="h-4 w-4 mr-2" />
+                                  <span>{match.stadium}</span>
                                 </div>
                               </div>
-                              <div className="text-right">
-                                <p className="font-medium">
-                                  {match.date_string}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {match.event_time
-                                    ? match.event_time
-                                        .split("T")[1]
-                                        .substring(0, 5)
-                                    : ""}
-                                </p>
+                              <div className="text-right flex items-start gap-2">
+                                <div>
+                                  <p className="font-medium text-base md:text-lg">
+                                    {match.date_string}
+                                  </p>
+                                  <p className="text-sm md:text-base text-muted-foreground">
+                                    {match.event_time
+                                      ? `${match.event_time
+                                          .split("T")[1]
+                                          .substring(0, 5)} Uhr`
+                                      : ""}
+                                  </p>
+                                </div>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeSavedMatch(match.id);
+                                    if (selectedMatch?.id === match.id) {
+                                      setSelectedMatch(null);
+                                    }
+                                  }}
+                                  className="p-1.5 rounded-full hover:bg-accent/80 text-muted-foreground hover:text-destructive transition-colors"
+                                  aria-label="Remove match"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </button>
                               </div>
                             </div>
                           </CardContent>
@@ -339,10 +355,10 @@ export default function CheckoutPage() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: index * 0.1 }}
                       >
-                        <div className="flex flex-col gap-1">
-                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/30"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/10"></div>
                         </div>
                       </motion.div>
                     )}
@@ -362,12 +378,13 @@ export default function CheckoutPage() {
                           setSelectedMatch(null); // Clear selected match
                           closeAllCollapsibles();
                         }}
-                        className="px-6 py-3 text-base font-medium
-                          bg-gradient-to-r from-emerald-500 to-emerald-600
-                          hover:from-emerald-600 hover:to-emerald-700
-                          text-white shadow-md
-                          rounded-md transition-all duration-300 
-                          hover:scale-105 hover:shadow-lg"
+                        className="px-8 py-4 text-base font-medium
+                          bg-gradient-to-r from-primary to-primary/90
+                          hover:from-primary/90 hover:to-primary
+                          text-primary-foreground
+                          shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                          rounded-xl transition-all duration-300 
+                          hover:scale-105 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]"
                       >
                         🎉 Großartige Auswahl!
                       </Button>
@@ -379,7 +396,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Right column - Make it full height */}
-        <div className="w-[400px] h-full flex flex-col">
+        <div className="w-[400px] h-full flex flex-col ">
           {" "}
           {/* Added h-full and flex flex-col */}
           {selectedMatch ? (
@@ -390,11 +407,12 @@ export default function CheckoutPage() {
                 {/* Ticket Section */}
                 <Collapsible open={showTickets} onOpenChange={setShowTickets}>
                   <Card
-                    className={
-                      getMatchCompletedSections(selectedMatch.id).tickets
-                        ? "border-green-600"
-                        : ""
-                    }
+                    className={`transition-all duration-300
+                      ${
+                        getMatchCompletedSections(selectedMatch.id).tickets
+                          ? "border-primary"
+                          : "hover:border-primary/50"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
@@ -444,9 +462,14 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
-                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
-                                      backdrop-blur-sm"
+                                    className="w-full h-auto p-4 
+                                      bg-gradient-to-r from-primary to-primary/90
+                                      hover:from-primary/90 hover:to-primary
+                                      text-primary-foreground
+                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                                      transition-all duration-300 
+                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -459,7 +482,7 @@ export default function CheckoutPage() {
                                         )}
                                         <div className="text-left">
                                           <p className="font-semibold">
-                                            Official Ticketshop
+                                            Offizieller Ticketshop
                                           </p>
                                         </div>
                                       </div>
@@ -479,11 +502,12 @@ export default function CheckoutPage() {
                 {/* Travel Section */}
                 <Collapsible open={showTravel} onOpenChange={setShowTravel}>
                   <Card
-                    className={
-                      getMatchCompletedSections(selectedMatch.id).travel
-                        ? "border-green-600"
-                        : ""
-                    }
+                    className={`transition-all duration-300
+                      ${
+                        getMatchCompletedSections(selectedMatch.id).travel
+                          ? "border-primary"
+                          : "hover:border-primary/50"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
@@ -495,7 +519,7 @@ export default function CheckoutPage() {
                             ) : (
                               <Train className="mr-2 h-5 w-5" />
                             )}
-                            Travel Options
+                            Reiseoptionen
                           </CardTitle>
                         </CardHeader>
                       </CollapsibleTrigger>
@@ -533,9 +557,14 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
-                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
-                                      backdrop-blur-sm"
+                                    className="w-full h-auto p-4 
+                                      bg-gradient-to-r from-primary to-primary/90
+                                      hover:from-primary/90 hover:to-primary
+                                      text-primary-foreground
+                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                                      transition-all duration-300 
+                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -565,9 +594,14 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
-                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
-                                      backdrop-blur-sm"
+                                    className="w-full h-auto p-4 
+                                      bg-gradient-to-r from-primary to-primary/90
+                                      hover:from-primary/90 hover:to-primary
+                                      text-primary-foreground
+                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                                      transition-all duration-300 
+                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -605,11 +639,13 @@ export default function CheckoutPage() {
                   onOpenChange={setShowAccommodation}
                 >
                   <Card
-                    className={
-                      getMatchCompletedSections(selectedMatch.id).accommodation
-                        ? "border-green-600"
-                        : ""
-                    }
+                    className={`transition-all duration-300
+                      ${
+                        getMatchCompletedSections(selectedMatch.id)
+                          .accommodation
+                          ? "border-primary"
+                          : "hover:border-primary/50"
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
@@ -665,9 +701,14 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
-                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
-                                      backdrop-blur-sm"
+                                    className="w-full h-auto p-4 
+                                      bg-gradient-to-r from-primary to-primary/90
+                                      hover:from-primary/90 hover:to-primary
+                                      text-primary-foreground
+                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                                      transition-all duration-300 
+                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -699,9 +740,14 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
-                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
-                                      backdrop-blur-sm"
+                                    className="w-full h-auto p-4 
+                                      bg-gradient-to-r from-primary to-primary/90
+                                      hover:from-primary/90 hover:to-primary
+                                      text-primary-foreground
+                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
+                                      transition-all duration-300 
+                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -755,9 +801,9 @@ export default function CheckoutPage() {
               </div>
             </ScrollArea>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground p-6 bg-accent/5">
+            <div className="flex-1 flex items-center justify-center text-muted-foreground p-6">
               <div className="text-center space-y-4">
-                <div className="mx-auto w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center">
+                <div className="mx-auto w-16 h-16 rounded-full flex items-center justify-center">
                   <MapPin className="h-8 w-8 text-accent-foreground/60" />
                 </div>
                 <p className="text-lg font-medium">

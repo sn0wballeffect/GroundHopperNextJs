@@ -10,7 +10,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Match } from "@/lib/types";
 

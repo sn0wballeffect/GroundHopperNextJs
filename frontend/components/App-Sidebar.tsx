@@ -1,7 +1,9 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { useSidebar } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -19,33 +21,41 @@ import { Trash2, Ticket } from "lucide-react";
 import Link from "next/link";
 
 export function AppSidebar() {
-  const { setOpen } = useSidebar();
+  const [isClient, setIsClient] = useState(false);
+  const pathname = usePathname();
+  const { toggleSidebar, state } = useSidebar();
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const removeSavedMatch = useSavedMatchesStore(
     (state) => state.removeSavedMatch
   );
 
-  // Initialize state with empty array to match server-side render
-  const [mounted, setMounted] = useState(false);
-  const [prevMatchCount, setPrevMatchCount] = useState(0);
-
-  // Only run client-side effects after mount
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
   }, []);
 
-  // Track previous match count
   useEffect(() => {
-    if (mounted && savedMatches.length > prevMatchCount) {
-      setOpen(true);
+    if (pathname !== "/search" && state?.toString() === "expanded") {
+      toggleSidebar();
     }
-    setPrevMatchCount(savedMatches.length);
-  }, [mounted, savedMatches.length, setOpen]);
+  }, [pathname, toggleSidebar, state]);
+
+  if (!isClient) {
+    return null; // Return null on server-side render
+  }
 
   return (
     <Sidebar side="right">
-      <SidebarHeader className="mt-1">
-        <SidebarTrigger />
+      <SidebarTrigger className="my-3" />
+      <SidebarHeader>
+        {savedMatches.length > 0 && (
+          <Link
+            href="/checkout"
+            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
+          >
+            <Ticket className="h-4 w-4" />
+            Tickets bestellen
+          </Link>
+        )}
       </SidebarHeader>
       <SidebarContent className="custom-scrollbar-hidden">
         <SidebarGroup>
@@ -103,17 +113,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="p-4 border-t border-sidebar-border">
-        {savedMatches.length > 0 && (
-          <Link
-            href="/checkout"
-            className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md font-medium transition-colors"
-          >
-            <Ticket className="h-4 w-4" />
-            Tickets bestellen
-          </Link>
-        )}
-      </SidebarFooter>
+      <SidebarFooter className="p-4 border-t border-sidebar-border"></SidebarFooter>
     </Sidebar>
   );
 }

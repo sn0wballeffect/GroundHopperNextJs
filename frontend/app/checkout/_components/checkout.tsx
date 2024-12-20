@@ -396,7 +396,7 @@ export default function CheckoutPage() {
                       >
                         <AnimatePresence mode="wait">
                           <div className="flex flex-col gap-1.5">
-                            {[1, 2, 3].map((dot, i) => (
+                            {[1, 2, 3].map((i) => (
                               <motion.div
                                 key={i}
                                 className="w-1.5 h-1.5 rounded-full"

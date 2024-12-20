@@ -10,7 +10,9 @@ import {
   Bus,
   Badge,
   Home,
-  Check, // Add Check import
+  Check,
+  X,
+  Trash2, // Add this import
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -103,6 +105,9 @@ export default function CheckoutPage() {
   const [showTravel, setShowTravel] = React.useState(false);
   const [showAccommodation, setShowAccommodation] = React.useState(false);
   const [showTickets, setShowTickets] = React.useState(true);
+  const removeSavedMatch = useSavedMatchesStore(
+    (state) => state.removeSavedMatch
+  );
 
   React.useEffect(() => {
     // Reset collapsible states and show tickets when match changes
@@ -290,6 +295,20 @@ export default function CheckoutPage() {
                                   <p className="font-semibold">
                                     {match.home_team} vs {match.away_team}
                                   </p>
+                                  {/* Add delete button */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeSavedMatch(match.id);
+                                      if (selectedMatch?.id === match.id) {
+                                        setSelectedMatch(null);
+                                      }
+                                    }}
+                                    className="ml-2 p-1.5 rounded-full hover:bg-accent/80 text-muted-foreground hover:text-destructive transition-colors"
+                                    aria-label="Remove match"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </button>
                                 </div>
                                 <div className="flex items-center text-sm text-muted-foreground mt-1">
                                   <MapPin className="mr-1 h-4 w-4" />

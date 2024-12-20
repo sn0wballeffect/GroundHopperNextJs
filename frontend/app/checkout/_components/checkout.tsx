@@ -43,6 +43,25 @@ export default function CheckoutPage() {
   const [showAccommodation, setShowAccommodation] = React.useState(false);
   const [showTickets, setShowTickets] = React.useState(true);
 
+  React.useEffect(() => {
+    // Reset collapsible states and show tickets when match changes
+    if (selectedMatch) {
+      setShowTickets(true);
+      setShowTravel(false);
+      setShowAccommodation(false);
+    }
+  }, [selectedMatch]);
+
+  // Add this function to determine the next section
+  const getNextSection = (
+    currentSection: keyof typeof defaultCompletedSections
+  ) => {
+    const sections = ["tickets", "travel", "accommodation"] as const;
+    const currentIndex = sections.indexOf(currentSection);
+    return sections[currentIndex + 1];
+  };
+
+  // Update the handleLinkClick function
   const handleLinkClick = (section: keyof typeof defaultCompletedSections) => {
     if (!selectedMatch) return;
 
@@ -56,6 +75,21 @@ export default function CheckoutPage() {
       ...currentSections,
       [section]: true,
     });
+
+    // Close current section and open next section
+    switch (section) {
+      case "tickets":
+        setShowTickets(false);
+        setShowTravel(true);
+        break;
+      case "travel":
+        setShowTravel(false);
+        setShowAccommodation(true);
+        break;
+      case "accommodation":
+        setShowAccommodation(false);
+        break;
+    }
   };
 
   const handleMarkAllComplete = (matchId: number) => {

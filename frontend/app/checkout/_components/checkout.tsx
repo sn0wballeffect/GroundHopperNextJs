@@ -23,11 +23,67 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Match } from "@/lib/types";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 
 const defaultCompletedSections = {
   tickets: false,
   travel: false,
   accommodation: false,
+};
+
+// Update existing animation variants
+const cardVariants = {
+  initial: { scale: 0.96, opacity: 0 },
+  animate: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.3,
+      when: "beforeChildren",
+      staggerChildren: 0.1,
+    },
+  },
+  exit: { scale: 0.96, opacity: 0 },
+  hover: { scale: 1.02 },
+};
+
+const cardContentVariants = {
+  initial: { y: 20, opacity: 0 },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: { duration: 0.3 },
+  },
+  exit: {
+    y: -20,
+    opacity: 0,
+    transition: { duration: 0.2 },
+  },
+};
+
+const checkmarkVariants = {
+  initial: { scale: 0, opacity: 0 },
+  animate: { scale: 1, opacity: 1, rotate: 360 },
+  exit: { scale: 0, opacity: 0 },
+};
+
+const sectionVariants = {
+  closed: {
+    height: 0,
+    opacity: 0,
+    transition: {
+      height: { duration: 0.3 },
+      opacity: { duration: 0.2 },
+    },
+  },
+  open: {
+    height: "auto",
+    opacity: 1,
+    transition: {
+      height: { duration: 0.3 },
+      opacity: { duration: 0.3, delay: 0.1 },
+    },
+  },
 };
 
 export default function CheckoutPage() {
@@ -169,61 +225,95 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="flex justify-center min-h-[calc(100vh-5rem)] bg-background px-6 pb-5">
-      <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card overflow-hidden">
-        {/* Left column - Matches list */}
-        <div className="flex-1 border-r py-6">
-          <h1 className="text-2xl font-bold mb-6 ml-6">Ausgewählte Spiele</h1>
-          <ScrollArea className="h-[calc(100vh-16rem)]">
-            <div className="w-[90%] mx-auto">
+    // Main container adjustments
+    <div className="flex justify-center max-h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-background px-6 pb-5">
+      <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card overflow-hidden my-5">
+        {/* Left column - Make it full height */}
+        <div className="flex-1 border-r h-full flex flex-col">
+          {" "}
+          {/* Added h-full and flex flex-col */}
+          <h1 className="text-2xl font-bold py-6 px-6">Ausgewählte Spiele</h1>
+          <ScrollArea className="flex-1">
+            {" "}
+            {/* Changed to flex-1 */}
+            <div className="w-[90%] mx-auto my-2">
               <div className="grid gap-2">
                 {sortedMatches.map((match, index) => (
                   <React.Fragment key={match.id}>
-                    <Card
-                      className={`cursor-pointer transition-colors hover:bg-accent hover:shadow-lg ${
-                        selectedMatch?.id === match.id ? "bg-accent" : ""
-                      } ${
-                        isMatchFullyCompleted(match.id)
-                          ? "border-green-600"
-                          : ""
-                      }`}
-                      onClick={() => setSelectedMatch(match)}
+                    <motion.div
+                      variants={cardVariants}
+                      initial="initial"
+                      animate="animate"
+                      exit="exit"
+                      whileHover="hover"
+                      layout
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              {isMatchFullyCompleted(match.id) && (
-                                <Check className="h-4 w-4 text-green-600" />
-                              )}
-                              <p className="font-semibold">
-                                {match.home_team} vs {match.away_team}
-                              </p>
+                      <Card
+                        className={`cursor-pointer transition-colors hover:bg-accent hover:shadow-lg ${
+                          selectedMatch?.id === match.id ? "bg-accent" : ""
+                        } ${
+                          isMatchFullyCompleted(match.id)
+                            ? "border-green-600"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedMatch(match)}
+                      >
+                        <motion.div variants={cardContentVariants}>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <AnimatePresence>
+                                    {isMatchFullyCompleted(match.id) && (
+                                      <motion.div
+                                        variants={checkmarkVariants}
+                                        initial="initial"
+                                        animate="animate"
+                                        exit="exit"
+                                      >
+                                        <Check className="h-4 w-4 text-green-600" />
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
+                                  <p className="font-semibold">
+                                    {match.home_team} vs {match.away_team}
+                                  </p>
+                                </div>
+                                <div className="flex items-center text-sm text-muted-foreground mt-1">
+                                  <MapPin className="mr-1 h-4 w-4" />
+                                  {match.stadium}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="font-medium">
+                                  {match.date_string}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {match.event_time
+                                    ? match.event_time
+                                        .split("T")[1]
+                                        .substring(0, 5)
+                                    : ""}
+                                </p>
+                              </div>
                             </div>
-                            <div className="flex items-center text-sm text-muted-foreground mt-1">
-                              <MapPin className="mr-1 h-4 w-4" />
-                              {match.stadium}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-medium">{match.date_string}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {match.event_time
-                                ? match.event_time.split("T")[1].substring(0, 5)
-                                : ""}
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                          </CardContent>
+                        </motion.div>
+                      </Card>
+                    </motion.div>
                     {index < sortedMatches.length - 1 && (
-                      <div className="flex justify-center py-2">
+                      <motion.div
+                        className="flex justify-center py-2"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
                         <div className="flex flex-col gap-1">
                           <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
                           <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
                           <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                   </React.Fragment>
                 ))}
@@ -256,10 +346,14 @@ export default function CheckoutPage() {
           </ScrollArea>
         </div>
 
-        {/* Right column - Ticket options and additional services */}
-        <div className="w-[400px] p-6">
+        {/* Right column - Make it full height */}
+        <div className="w-[400px] h-full flex flex-col">
+          {" "}
+          {/* Added h-full and flex flex-col */}
           {selectedMatch ? (
-            <ScrollArea className="h-[calc(100vh-16rem)]">
+            <ScrollArea className="flex-1 p-6">
+              {" "}
+              {/* Changed to flex-1 and added padding */}
               <div className="w-[90%] mx-auto space-y-6">
                 {/* Ticket Section */}
                 <Collapsible open={showTickets} onOpenChange={setShowTickets}>
@@ -298,40 +392,52 @@ export default function CheckoutPage() {
                         </CardTitle>
                       </CardHeader>
                     </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent>
-                        <div className="space-y-4">
-                          <Link
-                            href="https://www.google.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => handleLinkClick("tickets")}
-                          >
-                            <Button
-                              variant="default"
-                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center space-x-4">
-                                  {getMatchCompletedSections(selectedMatch.id)
-                                    .tickets ? (
-                                    <Check className="h-8 w-8" />
-                                  ) : (
-                                    <Ticket className="h-8 w-8" />
-                                  )}
-                                  <div className="text-left">
-                                    <p className="font-semibold">
-                                      Official Ticketshop
-                                    </p>
-                                  </div>
-                                </div>
-                                <ExternalLink className="h-4 w-4" />
+                    <AnimatePresence mode="wait">
+                      {showTickets && (
+                        <motion.div
+                          variants={sectionVariants}
+                          initial="closed"
+                          animate="open"
+                          exit="closed"
+                        >
+                          <CollapsibleContent>
+                            <CardContent>
+                              <div className="space-y-4">
+                                <Link
+                                  href="https://www.google.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => handleLinkClick("tickets")}
+                                >
+                                  <Button
+                                    variant="default"
+                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center space-x-4">
+                                        {getMatchCompletedSections(
+                                          selectedMatch.id
+                                        ).tickets ? (
+                                          <Check className="h-8 w-8" />
+                                        ) : (
+                                          <Ticket className="h-8 w-8" />
+                                        )}
+                                        <div className="text-left">
+                                          <p className="font-semibold">
+                                            Official Ticketshop
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <ExternalLink className="h-4 w-4" />
+                                    </div>
+                                  </Button>
+                                </Link>
                               </div>
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
+                            </CardContent>
+                          </CollapsibleContent>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </Card>
                 </Collapsible>
 
@@ -372,69 +478,84 @@ export default function CheckoutPage() {
                         </CardTitle>
                       </CardHeader>
                     </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent>
-                        <div className="space-y-4">
-                          <Link
-                            href="https://www.bahn.de"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => handleLinkClick("travel")}
-                          >
-                            <Button
-                              variant="default"
-                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center space-x-4">
-                                  {getMatchCompletedSections(selectedMatch.id)
-                                    .travel ? (
-                                    <Check className="h-8 w-8" />
-                                  ) : (
-                                    <Train className="h-8 w-8" />
-                                  )}
-                                  <div className="text-left">
-                                    <p className="font-semibold">
-                                      Deutsche Bahn
-                                    </p>
-                                  </div>
-                                </div>
-                                <ExternalLink className="h-4 w-4" />
+                    <AnimatePresence mode="wait">
+                      {showTravel && (
+                        <motion.div
+                          variants={sectionVariants}
+                          initial="closed"
+                          animate="open"
+                          exit="closed"
+                        >
+                          <CollapsibleContent>
+                            <CardContent>
+                              <div className="space-y-4">
+                                <Link
+                                  href="https://www.bahn.de"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => handleLinkClick("travel")}
+                                >
+                                  <Button
+                                    variant="default"
+                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center space-x-4">
+                                        {getMatchCompletedSections(
+                                          selectedMatch.id
+                                        ).travel ? (
+                                          <Check className="h-8 w-8" />
+                                        ) : (
+                                          <Train className="h-8 w-8" />
+                                        )}
+                                        <div className="text-left">
+                                          <p className="font-semibold">
+                                            Deutsche Bahn
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <ExternalLink className="h-4 w-4" />
+                                    </div>
+                                  </Button>
+                                </Link>
+                                <div className="my-2"></div>
+                                <Link
+                                  href="https://www.flixbus.de"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() => handleLinkClick("travel")}
+                                >
+                                  <Button
+                                    variant="default"
+                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center space-x-4">
+                                        {getMatchCompletedSections(
+                                          selectedMatch.id
+                                        ).travel ? (
+                                          <Check className="h-8 w-8" />
+                                        ) : (
+                                          <Bus className="h-8 w-8" />
+                                        )}
+                                        <div className="text-left">
+                                          <p className="font-semibold">
+                                            FlixBus
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <ExternalLink className="h-4 w-4" />
+                                      </div>
+                                    </div>
+                                  </Button>
+                                </Link>
                               </div>
-                            </Button>
-                          </Link>
-                          <div className="my-2"></div>
-                          <Link
-                            href="https://www.flixbus.de"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => handleLinkClick("travel")}
-                          >
-                            <Button
-                              variant="default"
-                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center space-x-4">
-                                  {getMatchCompletedSections(selectedMatch.id)
-                                    .travel ? (
-                                    <Check className="h-8 w-8" />
-                                  ) : (
-                                    <Bus className="h-8 w-8" />
-                                  )}
-                                  <div className="text-left">
-                                    <p className="font-semibold">FlixBus</p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <ExternalLink className="h-4 w-4" />
-                                </div>
-                              </div>
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
+                            </CardContent>
+                          </CollapsibleContent>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </Card>
                 </Collapsible>
 
@@ -478,88 +599,114 @@ export default function CheckoutPage() {
                         </CardTitle>
                       </CardHeader>
                     </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <CardContent>
-                        <div className="space-y-4">
-                          <Link
-                            href="https://www.booking.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => handleLinkClick("accommodation")}
-                          >
-                            <Button
-                              variant="default"
-                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center space-x-4">
-                                  {getMatchCompletedSections(selectedMatch.id)
-                                    .accommodation ? (
-                                    <Check className="h-8 w-8" />
-                                  ) : (
-                                    <Hotel className="h-8 w-8" />
-                                  )}
-                                  <div className="text-left">
-                                    <p className="font-semibold">Hotels</p>
-                                  </div>
-                                </div>
-                                <ExternalLink className="h-4 w-4" />
+                    <AnimatePresence mode="wait">
+                      {showAccommodation && (
+                        <motion.div
+                          variants={sectionVariants}
+                          initial="closed"
+                          animate="open"
+                          exit="closed"
+                        >
+                          <CollapsibleContent>
+                            <CardContent>
+                              <div className="space-y-4">
+                                <Link
+                                  href="https://www.booking.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() =>
+                                    handleLinkClick("accommodation")
+                                  }
+                                >
+                                  <Button
+                                    variant="default"
+                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center space-x-4">
+                                        {getMatchCompletedSections(
+                                          selectedMatch.id
+                                        ).accommodation ? (
+                                          <Check className="h-8 w-8" />
+                                        ) : (
+                                          <Hotel className="h-8 w-8" />
+                                        )}
+                                        <div className="text-left">
+                                          <p className="font-semibold">
+                                            Hotels
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <ExternalLink className="h-4 w-4" />
+                                    </div>
+                                  </Button>
+                                </Link>
+                                <div className="border-t border-border"></div>
+                                <Link
+                                  href="https://www.airbnb.com"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={() =>
+                                    handleLinkClick("accommodation")
+                                  }
+                                >
+                                  <Button
+                                    variant="default"
+                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <div className="flex items-center space-x-4">
+                                        {getMatchCompletedSections(
+                                          selectedMatch.id
+                                        ).accommodation ? (
+                                          <Check className="h-8 w-8" />
+                                        ) : (
+                                          <Home className="h-8 w-8" />
+                                        )}
+                                        <div className="text-left">
+                                          <p className="font-semibold">
+                                            Ferienwohnungen
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <ExternalLink className="h-4 w-4" />
+                                      </div>
+                                    </div>
+                                  </Button>
+                                </Link>
                               </div>
-                            </Button>
-                          </Link>
-                          <div className="border-t border-border"></div>
-                          <Link
-                            href="https://www.airbnb.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={() => handleLinkClick("accommodation")}
-                          >
-                            <Button
-                              variant="default"
-                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex items-center space-x-4">
-                                  {getMatchCompletedSections(selectedMatch.id)
-                                    .accommodation ? (
-                                    <Check className="h-8 w-8" />
-                                  ) : (
-                                    <Home className="h-8 w-8" />
-                                  )}
-                                  <div className="text-left">
-                                    <p className="font-semibold">
-                                      Ferienwohnungen
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <ExternalLink className="h-4 w-4" />
-                                </div>
-                              </div>
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </CollapsibleContent>
+                            </CardContent>
+                          </CollapsibleContent>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </Card>
                 </Collapsible>
 
                 {/* Add this after the last Collapsible section (Accommodation) */}
                 {selectedMatch && (
-                  <Button
-                    onClick={() => {
-                      handleMarkAllComplete(selectedMatch.id);
-                      closeAllCollapsibles();
-                    }}
-                    className="w-full mt-4"
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    Fertig
-                  </Button>
+                    <Button
+                      onClick={() => {
+                        handleMarkAllComplete(selectedMatch.id);
+                        closeAllCollapsibles();
+                      }}
+                      className="w-full mt-4"
+                    >
+                      Fertig
+                    </Button>
+                  </motion.div>
                 )}
               </div>
             </ScrollArea>
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground">
+            <div className="flex-1 flex items-center justify-center text-muted-foreground p-6">
               Wähle ein Spiel aus, um Tickets zu kaufen
             </div>
           )}

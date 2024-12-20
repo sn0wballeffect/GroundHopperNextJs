@@ -19,62 +19,84 @@ export default function CheckoutPage() {
   const [showTravel, setShowTravel] = React.useState(false);
   const [showAccommodation, setShowAccommodation] = React.useState(false);
 
+  // Sort matches by date and time
+  const sortedMatches = React.useMemo(() => {
+    return [...savedMatches].sort((a, b) => {
+      // Compare dates first
+      const dateA = a.event_date ? new Date(a.event_date) : new Date(0);
+      const dateB = b.event_date ? new Date(b.event_date) : new Date(0);
+
+      if (dateA.getTime() !== dateB.getTime()) {
+        return dateA.getTime() - dateB.getTime();
+      }
+
+      // If dates are equal, compare times
+      const timeA = a.event_time || "";
+      const timeB = b.event_time || "";
+      return timeA.localeCompare(timeB);
+    });
+  }, [savedMatches]);
+
   return (
-    <div className="flex justify-center min-h-screen bg-background">
+    <div className="flex justify-center min-h-[calc(100vh-8rem)] bg-background px-6">
       <div className="w-full max-w-[1200px] flex rounded-xl border bg-card overflow-hidden">
         {/* Left column - Matches list */}
-        <div className="flex-1 border-r p-6">
-          <h1 className="text-2xl font-bold mb-6">Ausgewählte Spiele</h1>
-          <div className="grid gap-2">
-            {savedMatches.map((match, index) => (
-              <React.Fragment key={match.id}>
-                <Card
-                  className={`cursor-pointer transition-colors hover:bg-accent ${
-                    selectedMatch?.id === match.id ? "border-primary" : ""
-                  }`}
-                  onClick={() => setSelectedMatch(match)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold">
-                          {match.home_team} vs {match.away_team}
-                        </p>
-                        <div className="flex items-center text-sm text-muted-foreground mt-1">
-                          <MapPin className="mr-1 h-4 w-4" />
-                          {match.stadium}
+        <div className="flex-1 border-r py-6">
+          <h1 className="text-2xl font-bold mb-6 ml-6">Ausgewählte Spiele</h1>
+          <ScrollArea className="h-[calc(100vh-16rem)]">
+            <div className="w-[90%] mx-auto">
+              <div className="grid gap-2">
+                {sortedMatches.map((match, index) => (
+                  <React.Fragment key={match.id}>
+                    <Card
+                      className={`cursor-pointer transition-colors hover:bg-accent ${
+                        selectedMatch?.id === match.id ? "border-primary" : ""
+                      }`}
+                      onClick={() => setSelectedMatch(match)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-semibold">
+                              {match.home_team} vs {match.away_team}
+                            </p>
+                            <div className="flex items-center text-sm text-muted-foreground mt-1">
+                              <MapPin className="mr-1 h-4 w-4" />
+                              {match.stadium}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">{match.date_string}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {match.event_time
+                                ? match.event_time.split("T")[1].substring(0, 5)
+                                : ""}
+                            </p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    {index < sortedMatches.length - 1 && (
+                      <div className="flex justify-center py-2">
+                        <div className="flex flex-col gap-1">
+                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
+                          <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className="font-medium">{match.date_string}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {match.event_time
-                            ? match.event_time.split("T")[1].substring(0, 5)
-                            : ""}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                {index < savedMatches.length - 1 && (
-                  <div className="flex justify-center py-2">
-                    <div className="flex flex-col gap-1">
-                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                      <div className="w-1 h-1 rounded-full bg-muted-foreground"></div>
-                    </div>
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </ScrollArea>
         </div>
 
         {/* Right column - Ticket options and additional services */}
         <div className="w-[400px] p-6">
           {selectedMatch ? (
-            <ScrollArea className="h-[calc(100vh-2rem)]">
-              <div className="space-y-6">
+            <ScrollArea className="h-[calc(100vh-16rem)]">
+              <div className="w-[90%] mx-auto space-y-6">
                 {/* Ticket Section */}
                 <Card>
                   <CardHeader>

@@ -33,18 +33,23 @@ const defaultCompletedSections = {
 
 // Update existing animation variants
 const cardVariants = {
-  initial: { scale: 0.96, opacity: 0 },
+  initial: { scale: 0.98, opacity: 0 },
   animate: {
     scale: 1,
     opacity: 1,
     transition: {
-      duration: 0.3,
+      duration: 0.4,
+      ease: "easeOut",
       when: "beforeChildren",
       staggerChildren: 0.1,
     },
   },
-  exit: { scale: 0.96, opacity: 0 },
-  hover: { scale: 1.02 },
+  exit: { scale: 0.98, opacity: 0 },
+  hover: {
+    scale: 1.02,
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    transition: { duration: 0.2 },
+  },
 };
 
 const cardContentVariants = {
@@ -226,13 +231,15 @@ export default function CheckoutPage() {
 
   return (
     // Main container adjustments
-    <div className="flex justify-center max-h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-background px-6 pb-5">
-      <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card overflow-hidden my-5">
+    <div className="flex justify-center max-h-[calc(100vh-5rem)] min-h-[calc(100vh-5rem)] bg-gradient-to-br from-background via-background to-accent/20 px-6 pb-5">
+      <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card/80 backdrop-blur-sm overflow-hidden my-5 shadow-xl">
         {/* Left column - Make it full height */}
-        <div className="flex-1 border-r h-full flex flex-col">
+        <div className="flex-1 border-r h-full flex flex-col bg-gradient-to-b from-background to-card">
           {" "}
           {/* Added h-full and flex flex-col */}
-          <h1 className="text-2xl font-bold py-6 px-6">Ausgewählte Spiele</h1>
+          <h1 className="text-2xl font-bold py-6 px-6 border-b bg-background/50">
+            Ausgewählte Spiele
+          </h1>
           <ScrollArea className="flex-1">
             {" "}
             {/* Changed to flex-1 */}
@@ -249,13 +256,18 @@ export default function CheckoutPage() {
                       layout
                     >
                       <Card
-                        className={`cursor-pointer transition-colors hover:bg-accent hover:shadow-lg ${
-                          selectedMatch?.id === match.id ? "bg-accent" : ""
-                        } ${
-                          isMatchFullyCompleted(match.id)
-                            ? "border-green-600"
-                            : ""
-                        }`}
+                        className={`cursor-pointer transition-all duration-300 hover:bg-accent/10 
+                          ${
+                            selectedMatch?.id === match.id
+                              ? "bg-accent/20 shadow-md"
+                              : ""
+                          }
+                          ${
+                            isMatchFullyCompleted(match.id)
+                              ? "border-green-600/50 shadow-[0_0_15px_rgba(22,163,74,0.2)]"
+                              : ""
+                          }
+                        `}
                         onClick={() => setSelectedMatch(match)}
                       >
                         <motion.div variants={cardContentVariants}>
@@ -331,11 +343,12 @@ export default function CheckoutPage() {
                           setSelectedMatch(null); // Clear selected match
                           closeAllCollapsibles();
                         }}
-                        className="px-4 py-3 text-base font-medium
-                          bg-emerald-50 hover:bg-emerald-100
-                          text-emerald-700 
-                          border border-emerald-200 rounded-md
-                          transition-all duration-300 hover:scale-105"
+                        className="px-6 py-3 text-base font-medium
+                          bg-gradient-to-r from-emerald-500 to-emerald-600
+                          hover:from-emerald-600 hover:to-emerald-700
+                          text-white shadow-md
+                          rounded-md transition-all duration-300 
+                          hover:scale-105 hover:shadow-lg"
                       >
                         🎉 Großartige Auswahl!
                       </Button>
@@ -358,40 +371,41 @@ export default function CheckoutPage() {
                 {/* Ticket Section */}
                 <Collapsible open={showTickets} onOpenChange={setShowTickets}>
                   <Card
-                    className={`${
+                    className={
                       getMatchCompletedSections(selectedMatch.id).tickets
                         ? "border-green-600"
                         : ""
-                    }`}
+                    }
                   >
-                    <CollapsibleTrigger className="w-full">
-                      <CardHeader className="relative">
-                        <CardTitle className="flex items-center">
-                          {getMatchCompletedSections(selectedMatch.id)
-                            .tickets ? (
-                            <>
+                    <div className="flex items-center justify-between">
+                      <CollapsibleTrigger className="flex-1">
+                        <CardHeader>
+                          <CardTitle className="flex items-center">
+                            {getMatchCompletedSections(selectedMatch.id)
+                              .tickets ? (
                               <Check className="mr-2 h-5 w-5 text-green-600" />
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleUnmarkSection(
-                                    selectedMatch.id,
-                                    "tickets"
-                                  );
-                                }}
-                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
-                                aria-label="Unmark tickets section"
-                              >
-                                ✕
-                              </button>
-                            </>
-                          ) : (
-                            <Ticket className="mr-2 h-5 w-5" />
-                          )}
-                          Tickets
-                        </CardTitle>
-                      </CardHeader>
-                    </CollapsibleTrigger>
+                            ) : (
+                              <Ticket className="mr-2 h-5 w-5" />
+                            )}
+                            Tickets
+                          </CardTitle>
+                        </CardHeader>
+                      </CollapsibleTrigger>
+                      {getMatchCompletedSections(selectedMatch.id).tickets && (
+                        <div className="pr-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnmarkSection(selectedMatch.id, "tickets");
+                            }}
+                            className="p-1 rounded-full hover:bg-accent text-muted-foreground"
+                            aria-label="Unmark tickets section"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <AnimatePresence mode="wait">
                       {showTickets && (
                         <motion.div
@@ -411,7 +425,9 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
+                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
+                                      backdrop-blur-sm"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -444,40 +460,41 @@ export default function CheckoutPage() {
                 {/* Travel Section */}
                 <Collapsible open={showTravel} onOpenChange={setShowTravel}>
                   <Card
-                    className={`${
+                    className={
                       getMatchCompletedSections(selectedMatch.id).travel
                         ? "border-green-600"
                         : ""
-                    }`}
+                    }
                   >
-                    <CollapsibleTrigger className="w-full">
-                      <CardHeader className="relative">
-                        <CardTitle className="flex items-center">
-                          {getMatchCompletedSections(selectedMatch.id)
-                            .travel ? (
-                            <>
+                    <div className="flex items-center justify-between">
+                      <CollapsibleTrigger className="flex-1">
+                        <CardHeader>
+                          <CardTitle className="flex items-center">
+                            {getMatchCompletedSections(selectedMatch.id)
+                              .travel ? (
                               <Check className="mr-2 h-5 w-5 text-green-600" />
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleUnmarkSection(
-                                    selectedMatch.id,
-                                    "travel"
-                                  );
-                                }}
-                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
-                                aria-label="Unmark travel section"
-                              >
-                                ✕
-                              </button>
-                            </>
-                          ) : (
-                            <Train className="mr-2 h-5 w-5" />
-                          )}
-                          Travel Options
-                        </CardTitle>
-                      </CardHeader>
-                    </CollapsibleTrigger>
+                            ) : (
+                              <Train className="mr-2 h-5 w-5" />
+                            )}
+                            Travel Options
+                          </CardTitle>
+                        </CardHeader>
+                      </CollapsibleTrigger>
+                      {getMatchCompletedSections(selectedMatch.id).travel && (
+                        <div className="pr-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnmarkSection(selectedMatch.id, "travel");
+                            }}
+                            className="p-1 rounded-full hover:bg-accent text-muted-foreground"
+                            aria-label="Unmark travel section"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <AnimatePresence mode="wait">
                       {showTravel && (
                         <motion.div
@@ -497,7 +514,9 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
+                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
+                                      backdrop-blur-sm"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -527,7 +546,9 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
+                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
+                                      backdrop-blur-sm"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -565,40 +586,45 @@ export default function CheckoutPage() {
                   onOpenChange={setShowAccommodation}
                 >
                   <Card
-                    className={`${
+                    className={
                       getMatchCompletedSections(selectedMatch.id).accommodation
                         ? "border-green-600"
                         : ""
-                    }`}
+                    }
                   >
-                    <CollapsibleTrigger className="w-full">
-                      <CardHeader className="relative">
-                        <CardTitle className="flex items-center">
-                          {getMatchCompletedSections(selectedMatch.id)
-                            .accommodation ? (
-                            <>
+                    <div className="flex items-center justify-between">
+                      <CollapsibleTrigger className="flex-1">
+                        <CardHeader>
+                          <CardTitle className="flex items-center">
+                            {getMatchCompletedSections(selectedMatch.id)
+                              .accommodation ? (
                               <Check className="mr-2 h-5 w-5 text-green-600" />
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleUnmarkSection(
-                                    selectedMatch.id,
-                                    "accommodation"
-                                  );
-                                }}
-                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
-                                aria-label="Unmark accommodation section"
-                              >
-                                ✕
-                              </button>
-                            </>
-                          ) : (
-                            <Hotel className="mr-2 h-5 w-5" />
-                          )}
-                          Unterkunft
-                        </CardTitle>
-                      </CardHeader>
-                    </CollapsibleTrigger>
+                            ) : (
+                              <Hotel className="mr-2 h-5 w-5" />
+                            )}
+                            Unterkunft
+                          </CardTitle>
+                        </CardHeader>
+                      </CollapsibleTrigger>
+                      {getMatchCompletedSections(selectedMatch.id)
+                        .accommodation && (
+                        <div className="pr-4">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnmarkSection(
+                                selectedMatch.id,
+                                "accommodation"
+                              );
+                            }}
+                            className="p-1 rounded-full hover:bg-accent text-muted-foreground"
+                            aria-label="Unmark accommodation section"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <AnimatePresence mode="wait">
                       {showAccommodation && (
                         <motion.div
@@ -620,7 +646,9 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
+                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
+                                      backdrop-blur-sm"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -652,7 +680,9 @@ export default function CheckoutPage() {
                                 >
                                   <Button
                                     variant="default"
-                                    className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                                    className="w-full h-auto p-4 bg-primary/90 hover:bg-primary text-white 
+                                      transition-all duration-300 hover:translate-y-[-2px] hover:shadow-lg
+                                      backdrop-blur-sm"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <div className="flex items-center space-x-4">
@@ -706,8 +736,18 @@ export default function CheckoutPage() {
               </div>
             </ScrollArea>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-muted-foreground p-6">
-              Wähle ein Spiel aus, um Tickets zu kaufen
+            <div className="flex-1 flex items-center justify-center text-muted-foreground p-6 bg-accent/5">
+              <div className="text-center space-y-4">
+                <div className="mx-auto w-16 h-16 rounded-full bg-accent/10 flex items-center justify-center">
+                  <MapPin className="h-8 w-8 text-accent-foreground/60" />
+                </div>
+                <p className="text-lg font-medium">
+                  Wähle ein Spiel aus, um Tickets zu kaufen
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Plane deine perfekte Reise zum Spiel
+                </p>
+              </div>
             </div>
           )}
         </div>

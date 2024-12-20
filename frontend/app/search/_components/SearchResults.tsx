@@ -109,7 +109,7 @@ const Row = React.memo(
     const [isFlipped, setIsFlipped] = useState(false);
 
     // Add saved matches subscription
-    const { setOpen } = useSidebar();
+    const { toggleSidebar, state } = useSidebar();
     const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
     const addSavedMatch = useSavedMatchesStore((state) => state.addSavedMatch);
     const removeSavedMatch = useSavedMatchesStore(
@@ -124,11 +124,14 @@ const Row = React.memo(
         removeSavedMatch(match.id);
         // Close sidebar if no matches remain after removal
         if (savedMatches.length <= 1) {
-          setOpen(false);
+          toggleSidebar();
         }
       } else {
         addSavedMatch(match);
-        setOpen(true);
+        // Only open sidebar if it's not already expanded
+        if (state === "collapsed") {
+          toggleSidebar();
+        }
       }
     };
 

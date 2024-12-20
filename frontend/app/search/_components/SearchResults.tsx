@@ -122,8 +122,8 @@ const Row = React.memo(
       const isMatchSaved = savedMatches.some((m) => m.id === match.id);
       if (isMatchSaved) {
         removeSavedMatch(match.id);
-        // Close sidebar if no matches remain after removal
-        if (savedMatches.length <= 1) {
+        // Close sidebar if no matches remain after removal and sidebar is open
+        if (savedMatches.length <= 1 && state === "expanded") {
           toggleSidebar();
         }
       } else {

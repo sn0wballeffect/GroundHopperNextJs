@@ -8,10 +8,8 @@ import {
   Hotel,
   ExternalLink,
   Bus,
-  Badge,
   Home,
   Check,
-  X,
   Trash2, // Add this import
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -97,26 +95,6 @@ const sectionVariants = {
 };
 
 // First add these animation variants near your other variants at the top
-const dotVariants = {
-  incomplete: {
-    backgroundColor: "rgb(239, 68, 68)", // red-500
-    scale: 1,
-    opacity: 0.5,
-    transition: {
-      backgroundColor: { duration: 0.4 },
-      scale: { duration: 0.3 },
-    },
-  },
-  complete: {
-    backgroundColor: "hsl(var(--primary))", // primary color
-    scale: [1, 1.2, 1],
-    opacity: 0.5,
-    transition: {
-      backgroundColor: { duration: 0.4 },
-      scale: { duration: 0.6 },
-    },
-  },
-};
 
 export default function CheckoutPageClient() {
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
@@ -143,15 +121,6 @@ export default function CheckoutPageClient() {
       setShowAccommodation(false);
     }
   }, [selectedMatch]);
-
-  // Add this function to determine the next section
-  const getNextSection = (
-    currentSection: keyof typeof defaultCompletedSections
-  ) => {
-    const sections = ["tickets", "travel", "accommodation"] as const;
-    const currentIndex = sections.indexOf(currentSection);
-    return sections[currentIndex + 1];
-  };
 
   // Update the handleLinkClick function
   const handleLinkClick = (section: keyof typeof defaultCompletedSections) => {

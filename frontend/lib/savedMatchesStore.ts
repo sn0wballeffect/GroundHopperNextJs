@@ -48,7 +48,7 @@ export const useSavedMatchesStore = create<SavedMatchesState>()(
           },
         })),
       resetMatches: () =>
-        set((state) => ({
+        set(() => ({
           savedMatches: [],
           completedSections: {},
         })),

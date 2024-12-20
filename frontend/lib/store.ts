@@ -2,7 +2,6 @@
 import { create } from "zustand";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
-import { Match } from "./types";
 
 interface UserLocation {
   lat: number | null;

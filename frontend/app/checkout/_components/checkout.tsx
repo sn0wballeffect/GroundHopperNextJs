@@ -38,7 +38,7 @@ export default function CheckoutPage() {
   }, [savedMatches]);
 
   return (
-    <div className="flex justify-center min-h-[calc(100vh-8rem)] bg-background px-6">
+    <div className="flex justify-center min-h-[calc(100vh-5rem)] bg-background px-6 pb-5">
       <div className="w-full max-w-[1200px] flex rounded-xl border bg-card overflow-hidden">
         {/* Left column - Matches list */}
         <div className="flex-1 border-r py-6">

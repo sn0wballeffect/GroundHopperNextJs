@@ -1,3 +1,9 @@
-export default function CheckoutPage() {
-  return <div></div>;
+import CheckoutPageComponent from "./_components/checkout";
+
+export default function Page() {
+  return (
+    <div>
+      <CheckoutPageComponent />
+    </div>
+  );
 }

@@ -111,6 +111,7 @@ export default function CheckoutPage() {
   const removeSavedMatch = useSavedMatchesStore(
     (state) => state.removeSavedMatch
   );
+  const [isAutoDeselecting, setIsAutoDeselecting] = React.useState(false);
 
   React.useEffect(() => {
     // Reset collapsible states and show tickets when match changes
@@ -140,10 +141,12 @@ export default function CheckoutPage() {
       accommodation: false,
     };
 
-    updateCompletedSections(selectedMatch.id, {
+    const updatedSections = {
       ...currentSections,
       [section]: true,
-    });
+    };
+
+    updateCompletedSections(selectedMatch.id, updatedSections);
 
     // Close current section and open next section
     switch (section) {
@@ -157,6 +160,11 @@ export default function CheckoutPage() {
         break;
       case "accommodation":
         setShowAccommodation(false);
+        // Check if all sections are now complete
+        if (Object.values(updatedSections).every((value) => value)) {
+          setIsAutoDeselecting(true);
+          setSelectedMatch(null);
+        }
         break;
     }
   };
@@ -284,7 +292,10 @@ export default function CheckoutPage() {
                               ? "border-l-primary"
                               : "border-l-muted"
                           }`}
-                        onClick={() => setSelectedMatch(match)}
+                        onClick={() => {
+                          setIsAutoDeselecting(false);
+                          setSelectedMatch(match);
+                        }}
                       >
                         <motion.div variants={cardContentVariants}>
                           <CardContent className="py-2 md:py-4 px-4 md:px-6">
@@ -792,6 +803,8 @@ export default function CheckoutPage() {
                       onClick={() => {
                         handleMarkAllComplete(selectedMatch.id);
                         closeAllCollapsibles();
+                        setIsAutoDeselecting(true);
+                        setSelectedMatch(null);
                       }}
                       className="w-full mt-4 transition-colors duration-200 hover:opacity-90 hover:scale-[1.02]"
                     >

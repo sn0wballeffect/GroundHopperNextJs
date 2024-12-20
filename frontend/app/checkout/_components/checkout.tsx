@@ -357,8 +357,8 @@ export default function CheckoutPage() {
                       >
                         <div className="flex flex-col gap-1.5">
                           <div className="w-1.5 h-1.5 rounded-full bg-primary/30"></div>
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/20"></div>
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/10"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary/50"></div>
                         </div>
                       </motion.div>
                     )}
@@ -466,9 +466,9 @@ export default function CheckoutPage() {
                                       bg-gradient-to-r from-primary to-primary/90
                                       hover:from-primary/90 hover:to-primary
                                       text-primary-foreground
-                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
-                                      transition-all duration-300 
-                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      transition-all duration-200 
+                                      hover:scale-[1.02]
+                                      hover:opacity-90
                                       rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
@@ -561,9 +561,9 @@ export default function CheckoutPage() {
                                       bg-gradient-to-r from-primary to-primary/90
                                       hover:from-primary/90 hover:to-primary
                                       text-primary-foreground
-                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
-                                      transition-all duration-300 
-                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      transition-all duration-200 
+                                      hover:scale-[1.02]
+                                      hover:opacity-90
                                       rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
@@ -598,9 +598,9 @@ export default function CheckoutPage() {
                                       bg-gradient-to-r from-primary to-primary/90
                                       hover:from-primary/90 hover:to-primary
                                       text-primary-foreground
-                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
-                                      transition-all duration-300 
-                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      transition-all duration-200 
+                                      hover:scale-[1.02]
+                                      hover:opacity-90
                                       rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
@@ -705,9 +705,10 @@ export default function CheckoutPage() {
                                       bg-gradient-to-r from-primary to-primary/90
                                       hover:from-primary/90 hover:to-primary
                                       text-primary-foreground
-                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
-                                      transition-all duration-300 
-                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      transition-all duration-200 
+                                      hover:opacity-90
+                                      hover:scale-[1.02]
+
                                       rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
@@ -744,9 +745,9 @@ export default function CheckoutPage() {
                                       bg-gradient-to-r from-primary to-primary/90
                                       hover:from-primary/90 hover:to-primary
                                       text-primary-foreground
-                                      shadow-[0_10px_40px_-10px_rgba(0,0,0,0.3)]
-                                      transition-all duration-300 
-                                      hover:translate-y-[-2px] hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]
+                                      transition-all duration-200 
+                                      hover:scale-[1.02]
+                                      hover:opacity-90
                                       rounded-xl"
                                   >
                                     <div className="flex items-center justify-between w-full">
@@ -792,7 +793,7 @@ export default function CheckoutPage() {
                         handleMarkAllComplete(selectedMatch.id);
                         closeAllCollapsibles();
                       }}
-                      className="w-full mt-4"
+                      className="w-full mt-4 transition-colors duration-200 hover:opacity-90 hover:scale-[1.02]"
                     >
                       Fertig
                     </Button>

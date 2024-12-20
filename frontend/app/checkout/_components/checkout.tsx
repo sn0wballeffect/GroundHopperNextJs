@@ -96,6 +96,28 @@ const sectionVariants = {
   },
 };
 
+// First add these animation variants near your other variants at the top
+const dotVariants = {
+  incomplete: {
+    backgroundColor: "rgb(239, 68, 68)", // red-500
+    scale: 1,
+    opacity: 0.5,
+    transition: {
+      backgroundColor: { duration: 0.4 },
+      scale: { duration: 0.3 },
+    },
+  },
+  complete: {
+    backgroundColor: "hsl(var(--primary))", // primary color
+    scale: [1, 1.2, 1],
+    opacity: 0.5,
+    transition: {
+      backgroundColor: { duration: 0.4 },
+      scale: { duration: 0.6 },
+    },
+  },
+};
+
 export default function CheckoutPage() {
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const completedSections = useSavedMatchesStore(
@@ -290,7 +312,7 @@ export default function CheckoutPage() {
                           ${
                             isMatchFullyCompleted(match.id)
                               ? "border-l-primary"
-                              : "border-l-muted"
+                              : "border-l-red-500"
                           }`}
                         onClick={() => {
                           setIsAutoDeselecting(false);
@@ -359,18 +381,51 @@ export default function CheckoutPage() {
                         </motion.div>
                       </Card>
                     </motion.div>
+
                     {index < sortedMatches.length - 1 && (
                       <motion.div
                         className="flex justify-center py-2"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: index * 0.1 }}
+                        transition={{ duration: 0.3 }}
                       >
-                        <div className="flex flex-col gap-1.5">
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/30"></div>
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/40"></div>
-                          <div className="w-1.5 h-1.5 rounded-full bg-primary/50"></div>
-                        </div>
+                        <AnimatePresence mode="wait">
+                          <div className="flex flex-col gap-1.5">
+                            {[1, 2, 3].map((dot, i) => (
+                              <motion.div
+                                key={i}
+                                className="w-1.5 h-1.5 rounded-full"
+                                initial={{
+                                  scale: 0,
+                                  opacity: 0.2 + i * 0.2,
+                                  backgroundColor: "rgb(239, 68, 68)",
+                                }}
+                                animate={{
+                                  scale: 1,
+                                  opacity: 0.4 + i * 0.2,
+                                  backgroundColor: isMatchFullyCompleted(
+                                    match.id
+                                  )
+                                    ? "hsl(var(--primary))"
+                                    : "rgb(239, 68, 68)",
+                                }}
+                                transition={{
+                                  delay: i * 0.2,
+                                  duration: 0.4,
+                                  backgroundColor: {
+                                    delay: i * 0.2,
+                                    duration: 0.4,
+                                  },
+                                  scale: {
+                                    type: "spring",
+                                    stiffness: 200,
+                                    damping: 15,
+                                  },
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </AnimatePresence>
                       </motion.div>
                     )}
                   </React.Fragment>
@@ -397,7 +452,7 @@ export default function CheckoutPage() {
                           rounded-xl transition-all duration-300 
                           hover:scale-105 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.4)]"
                       >
-                        🎉 Großartige Auswahl!
+                        🎉 Gutes Hoppen!
                       </Button>
                     </div>
                   )}

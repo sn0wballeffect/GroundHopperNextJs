@@ -58,18 +58,42 @@ export default function CheckoutPage() {
     });
   };
 
-  const hasAnyCompleted = (matchId: number) => {
-    const sections = completedSections[matchId];
-    return sections
-      ? Object.values(sections).some((value) => value === true)
-      : false;
-  };
-
   const handleMarkAllComplete = (matchId: number) => {
     updateCompletedSections(matchId, {
       tickets: true,
       travel: true,
       accommodation: true,
+    });
+  };
+
+  const closeAllCollapsibles = () => {
+    setShowTickets(false);
+    setShowTravel(false);
+    setShowAccommodation(false);
+  };
+
+  // Add this helper function at the top of the component
+  const isMatchFullyCompleted = (matchId: number) => {
+    const sections = completedSections[matchId];
+    return sections
+      ? Object.values(sections).every((value) => value === true)
+      : false;
+  };
+
+  // Add this new handler function after handleLinkClick
+  const handleUnmarkSection = (
+    matchId: number,
+    section: keyof typeof defaultCompletedSections
+  ) => {
+    const currentSections = completedSections[matchId] || {
+      tickets: false,
+      travel: false,
+      accommodation: false,
+    };
+
+    updateCompletedSections(matchId, {
+      ...currentSections,
+      [section]: false,
     });
   };
 
@@ -102,6 +126,14 @@ export default function CheckoutPage() {
     });
   }, [savedMatches]);
 
+  // Add near other state management functions:
+  const resetAllMatches = useSavedMatchesStore((state) => state.resetMatches); // Add this to your store if not exists
+
+  // Add this helper function after other helper functions
+  const areAllMatchesCompleted = (matches: Match[]) => {
+    return matches.every((match) => isMatchFullyCompleted(match.id));
+  };
+
   return (
     <div className="flex justify-center min-h-[calc(100vh-5rem)] bg-background px-6 pb-5">
       <div className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-xl border bg-card overflow-hidden">
@@ -114,17 +146,26 @@ export default function CheckoutPage() {
                 {sortedMatches.map((match, index) => (
                   <React.Fragment key={match.id}>
                     <Card
-                      className={`cursor-pointer transition-colors  hover:bg-accent hover:shadow-lg ${
+                      className={`cursor-pointer transition-colors hover:bg-accent hover:shadow-lg ${
                         selectedMatch?.id === match.id ? "bg-accent" : ""
+                      } ${
+                        isMatchFullyCompleted(match.id)
+                          ? "border-green-600"
+                          : ""
                       }`}
                       onClick={() => setSelectedMatch(match)}
                     >
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-semibold">
-                              {match.home_team} vs {match.away_team}
-                            </p>
+                            <div className="flex items-center gap-2">
+                              {isMatchFullyCompleted(match.id) && (
+                                <Check className="h-4 w-4 text-green-600" />
+                              )}
+                              <p className="font-semibold">
+                                {match.home_team} vs {match.away_team}
+                              </p>
+                            </div>
                             <div className="flex items-center text-sm text-muted-foreground mt-1">
                               <MapPin className="mr-1 h-4 w-4" />
                               {match.stadium}
@@ -152,6 +193,30 @@ export default function CheckoutPage() {
                     )}
                   </React.Fragment>
                 ))}
+
+                {/* Add completion button here */}
+                {savedMatches.length > 0 &&
+                  areAllMatchesCompleted(savedMatches) && (
+                    <div className="flex justify-center mt-8 mb-4">
+                      <Button
+                        variant="default"
+                        size="lg"
+                        onClick={() => {
+                          resetAllMatches();
+                          updateCompletedSections(0, defaultCompletedSections);
+                          setSelectedMatch(null); // Clear selected match
+                          closeAllCollapsibles();
+                        }}
+                        className="px-4 py-3 text-base font-medium
+                          bg-emerald-50 hover:bg-emerald-100
+                          text-emerald-700 
+                          border border-emerald-200 rounded-md
+                          transition-all duration-300 hover:scale-105"
+                      >
+                        🎉 Großartige Auswahl!
+                      </Button>
+                    </div>
+                  )}
               </div>
             </div>
           </ScrollArea>
@@ -172,11 +237,26 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader>
+                      <CardHeader className="relative">
                         <CardTitle className="flex items-center">
                           {getMatchCompletedSections(selectedMatch.id)
                             .tickets ? (
-                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                            <>
+                              <Check className="mr-2 h-5 w-5 text-green-600" />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUnmarkSection(
+                                    selectedMatch.id,
+                                    "tickets"
+                                  );
+                                }}
+                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
+                                aria-label="Unmark tickets section"
+                              >
+                                ✕
+                              </button>
+                            </>
                           ) : (
                             <Ticket className="mr-2 h-5 w-5" />
                           )}
@@ -231,11 +311,26 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader>
+                      <CardHeader className="relative">
                         <CardTitle className="flex items-center">
                           {getMatchCompletedSections(selectedMatch.id)
                             .travel ? (
-                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                            <>
+                              <Check className="mr-2 h-5 w-5 text-green-600" />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUnmarkSection(
+                                    selectedMatch.id,
+                                    "travel"
+                                  );
+                                }}
+                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
+                                aria-label="Unmark travel section"
+                              >
+                                ✕
+                              </button>
+                            </>
                           ) : (
                             <Train className="mr-2 h-5 w-5" />
                           )}
@@ -322,11 +417,26 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <CollapsibleTrigger className="w-full">
-                      <CardHeader>
+                      <CardHeader className="relative">
                         <CardTitle className="flex items-center">
                           {getMatchCompletedSections(selectedMatch.id)
                             .accommodation ? (
-                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                            <>
+                              <Check className="mr-2 h-5 w-5 text-green-600" />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleUnmarkSection(
+                                    selectedMatch.id,
+                                    "accommodation"
+                                  );
+                                }}
+                                className="absolute right-4 top-4 p-1 rounded-full hover:bg-accent text-muted-foreground"
+                                aria-label="Unmark accommodation section"
+                              >
+                                ✕
+                              </button>
+                            </>
                           ) : (
                             <Hotel className="mr-2 h-5 w-5" />
                           )}
@@ -401,9 +511,12 @@ export default function CheckoutPage() {
                 </Collapsible>
 
                 {/* Add this after the last Collapsible section (Accommodation) */}
-                {selectedMatch && hasAnyCompleted(selectedMatch.id) && (
+                {selectedMatch && (
                   <Button
-                    onClick={() => handleMarkAllComplete(selectedMatch.id)}
+                    onClick={() => {
+                      handleMarkAllComplete(selectedMatch.id);
+                      closeAllCollapsibles();
+                    }}
                     className="w-full mt-4"
                   >
                     Fertig

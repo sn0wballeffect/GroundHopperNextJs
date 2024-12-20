@@ -17,6 +17,7 @@ interface SavedMatchesState {
     matchId: number,
     sections: CompletedSections
   ) => void;
+  resetMatches: () => void;
 }
 
 export const useSavedMatchesStore = create<SavedMatchesState>()(
@@ -45,6 +46,11 @@ export const useSavedMatchesStore = create<SavedMatchesState>()(
             ...state.completedSections,
             [matchId]: sections,
           },
+        })),
+      resetMatches: () =>
+        set((state) => ({
+          savedMatches: [],
+          completedSections: {},
         })),
     }),
     {

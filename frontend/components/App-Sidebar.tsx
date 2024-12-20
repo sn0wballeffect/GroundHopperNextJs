@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
@@ -28,16 +28,31 @@ export function AppSidebar() {
   const removeSavedMatch = useSavedMatchesStore(
     (state) => state.removeSavedMatch
   );
+  const prevPathnameRef = useRef(pathname);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
   useEffect(() => {
+    // Handle navigation from search page
+    if (
+      prevPathnameRef.current === "/search" &&
+      pathname !== "/search" &&
+      state?.toString() === "expanded"
+    ) {
+      toggleSidebar();
+    }
+    prevPathnameRef.current = pathname;
+  }, [pathname, toggleSidebar, state]);
+
+  // Initial state effect
+  useEffect(() => {
+    // Start closed on non-search pages
     if (pathname !== "/search" && state?.toString() === "expanded") {
       toggleSidebar();
     }
-  }, [pathname, toggleSidebar, state]);
+  }, []); // Run once on mount
 
   if (!isClient) {
     return null; // Return null on server-side render

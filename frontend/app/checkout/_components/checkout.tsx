@@ -1,7 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { ChevronRight, MapPin, Ticket, Train, Hotel } from "lucide-react";
+import {
+  MapPin,
+  Ticket,
+  Train,
+  Hotel,
+  ExternalLink,
+  Bus,
+  Badge,
+  Home,
+  Check, // Add Check import
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,12 +22,43 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSavedMatchesStore } from "@/lib/savedMatchesStore";
 import { Match } from "@/lib/types";
+import Link from "next/link";
 
 export default function CheckoutPage() {
   const savedMatches = useSavedMatchesStore((state) => state.savedMatches);
   const [selectedMatch, setSelectedMatch] = React.useState<Match | null>(null);
   const [showTravel, setShowTravel] = React.useState(false);
   const [showAccommodation, setShowAccommodation] = React.useState(false);
+  const [showTickets, setShowTickets] = React.useState(true); // Add this line
+  const [completedSections, setCompletedSections] = React.useState<{
+    tickets: boolean;
+    travel: boolean;
+    accommodation: boolean;
+  }>({
+    tickets: false,
+    travel: false,
+    accommodation: false,
+  });
+
+  const handleLinkClick = (section: keyof typeof completedSections) => {
+    setCompletedSections((prev) => ({
+      ...prev,
+      [section]: true,
+    }));
+  };
+
+  // Add these functions inside the component
+  const hasAnyCompleted = () => {
+    return Object.values(completedSections).some((value) => value === true);
+  };
+
+  const handleMarkAllComplete = () => {
+    setCompletedSections({
+      tickets: true,
+      travel: true,
+      accommodation: true,
+    });
+  };
 
   // Sort matches by date and time
   const sortedMatches = React.useMemo(() => {
@@ -98,59 +139,137 @@ export default function CheckoutPage() {
             <ScrollArea className="h-[calc(100vh-16rem)]">
               <div className="w-[90%] mx-auto space-y-6">
                 {/* Ticket Section */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Ticket className="mr-2 h-5 w-5" />
-                      Tickets
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <Button className="w-full justify-between">
-                        Haupttribüne
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      <Button className="w-full justify-between">
-                        Gegentribüne
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                      <Button className="w-full justify-between">
-                        Kurve
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Travel Section */}
-                <Collapsible open={showTravel} onOpenChange={setShowTravel}>
-                  <Card>
-                    <CardHeader>
-                      <CollapsibleTrigger className="w-full">
+                <Collapsible open={showTickets} onOpenChange={setShowTickets}>
+                  <Card
+                    className={`${
+                      completedSections.tickets ? "border-green-600" : ""
+                    }`}
+                  >
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader>
                         <CardTitle className="flex items-center">
-                          <Train className="mr-2 h-5 w-5" />
-                          Anreise
+                          {completedSections.tickets ? (
+                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                          ) : (
+                            <Ticket className="mr-2 h-5 w-5" />
+                          )}
+                          Tickets
                         </CardTitle>
-                      </CollapsibleTrigger>
-                    </CardHeader>
+                      </CardHeader>
+                    </CollapsibleTrigger>
                     <CollapsibleContent>
                       <CardContent>
                         <div className="space-y-4">
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
+                          <Link
+                            href="https://www.google.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleLinkClick("tickets")}
                           >
-                            Bahn
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
+                            <Button
+                              variant="default"
+                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-4">
+                                  {completedSections.tickets ? (
+                                    <Check className="h-8 w-8" />
+                                  ) : (
+                                    <Ticket className="h-8 w-8" />
+                                  )}
+                                  <div className="text-left">
+                                    <p className="font-semibold">
+                                      Official Ticketshop
+                                    </p>
+                                  </div>
+                                </div>
+                                <ExternalLink className="h-4 w-4" />
+                              </div>
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </CollapsibleContent>
+                  </Card>
+                </Collapsible>
+
+                {/* Travel Section */}
+                <Collapsible open={showTravel} onOpenChange={setShowTravel}>
+                  <Card
+                    className={`${
+                      completedSections.travel ? "border-green-600" : ""
+                    }`}
+                  >
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          {completedSections.travel ? (
+                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                          ) : (
+                            <Train className="mr-2 h-5 w-5" />
+                          )}
+                          Travel Options
+                        </CardTitle>
+                      </CardHeader>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <Link
+                            href="https://www.bahn.de"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleLinkClick("travel")}
                           >
-                            Bus
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
+                            <Button
+                              variant="default"
+                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-4">
+                                  {completedSections.travel ? (
+                                    <Check className="h-8 w-8" />
+                                  ) : (
+                                    <Train className="h-8 w-8" />
+                                  )}
+                                  <div className="text-left">
+                                    <p className="font-semibold">
+                                      Deutsche Bahn
+                                    </p>
+                                  </div>
+                                </div>
+                                <ExternalLink className="h-4 w-4" />
+                              </div>
+                            </Button>
+                          </Link>
+                          <div className="my-2"></div>
+                          <Link
+                            href="https://www.flixbus.de"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleLinkClick("travel")}
+                          >
+                            <Button
+                              variant="default"
+                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-4">
+                                  {completedSections.travel ? (
+                                    <Check className="h-8 w-8" />
+                                  ) : (
+                                    <Bus className="h-8 w-8" />
+                                  )}
+                                  <div className="text-left">
+                                    <p className="font-semibold">FlixBus</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <ExternalLink className="h-4 w-4" />
+                                </div>
+                              </div>
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </CollapsibleContent>
@@ -162,37 +281,96 @@ export default function CheckoutPage() {
                   open={showAccommodation}
                   onOpenChange={setShowAccommodation}
                 >
-                  <Card>
-                    <CardHeader>
-                      <CollapsibleTrigger className="w-full">
+                  <Card
+                    className={`${
+                      completedSections.accommodation ? "border-green-600" : ""
+                    }`}
+                  >
+                    <CollapsibleTrigger className="w-full">
+                      <CardHeader>
                         <CardTitle className="flex items-center">
-                          <Hotel className="mr-2 h-5 w-5" />
+                          {completedSections.accommodation ? (
+                            <Check className="mr-2 h-5 w-5 text-green-600" />
+                          ) : (
+                            <Hotel className="mr-2 h-5 w-5" />
+                          )}
                           Unterkunft
                         </CardTitle>
-                      </CollapsibleTrigger>
-                    </CardHeader>
+                      </CardHeader>
+                    </CollapsibleTrigger>
                     <CollapsibleContent>
                       <CardContent>
                         <div className="space-y-4">
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
+                          <Link
+                            href="https://www.booking.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleLinkClick("accommodation")}
                           >
-                            Hotels
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="w-full justify-between"
+                            <Button
+                              variant="default"
+                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-4">
+                                  {completedSections.accommodation ? (
+                                    <Check className="h-8 w-8" />
+                                  ) : (
+                                    <Hotel className="h-8 w-8" />
+                                  )}
+                                  <div className="text-left">
+                                    <p className="font-semibold">Hotels</p>
+                                  </div>
+                                </div>
+                                <ExternalLink className="h-4 w-4" />
+                              </div>
+                            </Button>
+                          </Link>
+                          <div className="border-t border-border"></div>
+                          <Link
+                            href="https://www.airbnb.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => handleLinkClick("accommodation")}
                           >
-                            Ferienwohnungen
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
+                            <Button
+                              variant="default"
+                              className="w-full h-auto p-4 bg-primary hover:bg-primary/90 text-white transition-colors group"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex items-center space-x-4">
+                                  {completedSections.accommodation ? (
+                                    <Check className="h-8 w-8" />
+                                  ) : (
+                                    <Home className="h-8 w-8" />
+                                  )}
+                                  <div className="text-left">
+                                    <p className="font-semibold">
+                                      Ferienwohnungen
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <ExternalLink className="h-4 w-4" />
+                                </div>
+                              </div>
+                            </Button>
+                          </Link>
                         </div>
                       </CardContent>
                     </CollapsibleContent>
                   </Card>
                 </Collapsible>
+
+                {/* Add this after the last Collapsible section (Accommodation) */}
+                {hasAnyCompleted() && (
+                  <Button
+                    onClick={handleMarkAllComplete}
+                    className="w-full mt-4"
+                  >
+                    Fertig
+                  </Button>
+                )}
               </div>
             </ScrollArea>
           ) : (

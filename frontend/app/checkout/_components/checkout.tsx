@@ -134,6 +134,11 @@ export default function CheckoutPage() {
     (state) => state.removeSavedMatch
   );
   const [isAutoDeselecting, setIsAutoDeselecting] = React.useState(false);
+  const [isHydrated, setIsHydrated] = React.useState(false);
+
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   React.useEffect(() => {
     // Reset collapsible states and show tickets when match changes
@@ -398,7 +403,7 @@ export default function CheckoutPage() {
                                 initial={{
                                   scale: 0,
                                   opacity: 0.2 + i * 0.2,
-                                  backgroundColor: "rgb(239, 68, 68)",
+                                  backgroundColor: "rgb(239, 68, 68)", // red
                                 }}
                                 animate={{
                                   scale: 1,
@@ -406,7 +411,7 @@ export default function CheckoutPage() {
                                   backgroundColor: isMatchFullyCompleted(
                                     match.id
                                   )
-                                    ? "hsl(var(--primary))"
+                                    ? "rgb(59, 89, 19)" // Converted from HSL(93, 69%, 35%)
                                     : "rgb(239, 68, 68)",
                                 }}
                                 transition={{

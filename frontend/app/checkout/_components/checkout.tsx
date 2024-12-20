@@ -281,7 +281,7 @@ export default function CheckoutPage() {
       <div
         className="w-full max-w-[1200px] 3xl:max-w-[1400px] flex rounded-2xl 
         border bg-card/95 backdrop-blur-md overflow-hidden my-5 
-        shadow-[0_20px_70px_-15px_rgba(0,0,0,0.3)]"
+        shadow-xl"
       >
         {/* Left column - Make it full height */}
         <div className="flex-1 border-r h-full flex flex-col bg-gradient-to-b from-background to-card">

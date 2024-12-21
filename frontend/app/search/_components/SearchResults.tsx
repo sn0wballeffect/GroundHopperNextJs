@@ -508,7 +508,7 @@ export const SearchResults = () => {
 
       // Set base height by device size
       if (width <= BREAKPOINTS.smallMobile) {
-        baseItemHeight = 220; // Small Mobile
+        baseItemHeight = 150; // Small Mobile
       } else if (width <= BREAKPOINTS.mobile) {
         baseItemHeight = 160; // Mobile
       } else if (width <= BREAKPOINTS.tablet) {
@@ -522,7 +522,7 @@ export const SearchResults = () => {
       // Expanded sizes by device
       if (match && expandedId === match.id) {
         if (width <= BREAKPOINTS.smallMobile) {
-          return baseItemHeight + 160;
+          return baseItemHeight + 220;
         } else if (width <= BREAKPOINTS.mobile) {
           return baseItemHeight + 160;
         } else if (width <= BREAKPOINTS.tablet) {

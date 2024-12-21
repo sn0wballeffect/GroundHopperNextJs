@@ -262,7 +262,7 @@ const Row = React.memo(
                 "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
                 "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl",
                 isExpanded
-                  ? "transition-[height,opacity,transform] duration-300 h-[auto] min-h-[280px] sm:h-[210px] opacity-100"
+                  ? "transition-[height,opacity,transform] duration-300 h-[280px] lg:h-[280px] xl:h-[200px] 2xl:h-[170px] opacity-100"
                   : "h-0 opacity-0"
               )}
               style={{
@@ -272,19 +272,19 @@ const Row = React.memo(
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              <div className="transform-gpu absolute inset-x-0 p-4 sm:p-6">
-                <div className="max-w-4xl mx-auto">
+              <div className="transform-gpu absolute inset-x-0 p-4 xl:p-6">
+                <div className="mx-auto">
                   {/* Change grid to flex column on mobile and add full width for all items */}
-                  <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[1fr,auto,1fr] sm:gap-x-8">
+                  <div className="flex flex-col gap-4 xl:grid xl:grid-cols-[1fr,auto,1fr] xl:gap-x-8">
                     {/* Left Column */}
                     <div className="space-y-4">
                       <div className="flex items-start space-x-3">
                         <Trophy className="h-5 w-5 text-amber-500 shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-xs sm:text-sm text-muted-foreground">
+                          <span className="text-xs xl:text-sm text-muted-foreground">
                             Wettbewerb
                           </span>
-                          <span className="font-medium text-sm sm:text-base">
+                          <span className="font-medium text-sm xl:text-base">
                             {formatLeagueName(match.league || "")}
                           </span>
                         </div>
@@ -293,24 +293,24 @@ const Row = React.memo(
                       <div className="flex items-start space-x-3">
                         <Building2 className="h-5 w-5 text-blue-500 shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-xs sm:text-sm text-muted-foreground">
+                          <span className="text-xs xl:text-sm text-muted-foreground">
                             Stadion
                           </span>
-                          <span className="font-medium text-sm sm:text-base">
+                          <span className="font-medium text-sm xl:text-base">
                             {match.stadium}
                           </span>
                         </div>
                       </div>
 
                       {/* Move capacity and countdown to mobile layout */}
-                      <div className="sm:hidden">
+                      <div className="xl:hidden">
                         <div className="flex items-start space-x-3">
                           <Users className="h-5 w-5 text-green-500 shrink-0" />
                           <div className="flex flex-col">
-                            <span className="text-xs sm:text-sm text-muted-foreground">
+                            <span className="text-xs xl:text-sm text-muted-foreground">
                               Kapazität
                             </span>
-                            <span className="font-medium text-sm sm:text-base">
+                            <span className="font-medium text-sm xl:text-base">
                               50000
                             </span>
                           </div>
@@ -319,10 +319,10 @@ const Row = React.memo(
                         <div className="flex items-start space-x-3 mt-4">
                           <Timer className="h-5 w-5 text-purple-500 shrink-0" />
                           <div className="flex flex-col">
-                            <span className="text-xs sm:text-sm text-muted-foreground">
+                            <span className="text-xs xl:text-sm text-muted-foreground">
                               Spiel startet in
                             </span>
-                            <span className="font-medium text-sm sm:text-base">
+                            <span className="font-medium text-sm xl:text-base">
                               <CountdownTimer
                                 eventDate={
                                   match.date_string || "Date not available"
@@ -338,7 +338,7 @@ const Row = React.memo(
                     </div>
 
                     {/* Center Column - Flip Button (desktop only) */}
-                    <div className="hidden sm:flex sm:flex-col items-center justify-center">
+                    <div className="hidden xl:flex xl:flex-col items-center justify-center">
                       <span className="text-sm text-muted-foreground mb-2">
                         Mehr Details
                       </span>
@@ -361,7 +361,7 @@ const Row = React.memo(
                     </div>
 
                     {/* Right Column (desktop only) */}
-                    <div className="hidden sm:flex sm:flex-col space-y-6">
+                    <div className="hidden xl:flex xl:flex-col space-y-6">
                       <div className="flex items-start justify-end space-x-3">
                         <div className="flex flex-col items-end text-right">
                           <span className="text-sm text-muted-foreground">
@@ -399,7 +399,7 @@ const Row = React.memo(
                         e.stopPropagation();
                         setIsFlipped(!isFlipped);
                       }}
-                      className="sm:hidden w-full flex items-center justify-center gap-2 mt-2 py-2"
+                      className="xl:hidden w-full flex items-center justify-center gap-2 mt-2 py-2"
                     >
                       <span className="text-sm">Mehr Details</span>
                       <RefreshCw
@@ -552,7 +552,7 @@ export const SearchResults = () => {
     extraSmallMobile: 380,
     smallMobile: 480,
     mobile: 765,
-    tablet: 1250,
+    tablet: 1280,
     laptop: 1500,
   } as const;
 
@@ -563,15 +563,17 @@ export const SearchResults = () => {
 
       // Set base height by device size
       if (width <= BREAKPOINTS.extraSmallMobile) {
-        baseItemHeight = 155; // Extra Small Mobile
+        baseItemHeight = 160; // Extra Small Mobile
       } else if (width <= BREAKPOINTS.smallMobile) {
         baseItemHeight = 140; // Small Mobile
       } else if (width <= BREAKPOINTS.mobile) {
-        baseItemHeight = 160; // Mobile
+        baseItemHeight = 140; // Mobile
       } else if (width <= BREAKPOINTS.tablet) {
-        baseItemHeight = 240; // Tablet
+        baseItemHeight = 210; // Tablet
+      } else if (width <= BREAKPOINTS.laptop) {
+        baseItemHeight = 170; // Tablet
       } else {
-        baseItemHeight = 180; // Desktop
+        baseItemHeight = 170; // Desktop
       }
 
       const match = filteredMatches[index];
@@ -579,15 +581,17 @@ export const SearchResults = () => {
       // Expanded sizes by device
       if (match && expandedId === match.id) {
         if (width <= BREAKPOINTS.extraSmallMobile) {
-          return baseItemHeight + 290;
+          return baseItemHeight + 280;
         } else if (width <= BREAKPOINTS.smallMobile) {
-          return baseItemHeight + 290;
+          return baseItemHeight + 280;
         } else if (width <= BREAKPOINTS.mobile) {
-          return baseItemHeight + 160;
+          return baseItemHeight + 280;
         } else if (width <= BREAKPOINTS.tablet) {
-          return baseItemHeight + 220;
+          return baseItemHeight + 280;
+        } else if (width <= BREAKPOINTS.laptop) {
+          return baseItemHeight + 180;
         }
-        return baseItemHeight + 220;
+        return baseItemHeight + 170;
       }
       return baseItemHeight;
     },

@@ -828,7 +828,7 @@ export default function CheckoutPageClient() {
                       }}
                       className="w-full mt-4 transition-colors duration-200 hover:opacity-90 hover:scale-[1.02]"
                     >
-                      Fertig
+                      Alles erledigt!
                     </Button>
                   </motion.div>
                 )}

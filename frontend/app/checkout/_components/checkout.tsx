@@ -11,6 +11,7 @@ import {
   Home,
   Check,
   Trash2, // Add this import
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -92,6 +93,11 @@ const sectionVariants = {
       opacity: { duration: 0.3, delay: 0.1 },
     },
   },
+};
+
+const chevronVariants = {
+  open: { rotate: 180 },
+  closed: { rotate: 0 },
 };
 
 // First add these animation variants near your other variants at the top
@@ -448,7 +454,7 @@ export default function CheckoutPageClient() {
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between">
                           <CardTitle className="flex items-center">
                             {getMatchCompletedSections(selectedMatch.id)
                               .tickets ? (
@@ -458,6 +464,13 @@ export default function CheckoutPageClient() {
                             )}
                             Tickets
                           </CardTitle>
+                          <motion.div
+                            variants={chevronVariants}
+                            animate={showTickets ? "open" : "closed"}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          </motion.div>
                         </CardHeader>
                       </CollapsibleTrigger>
                       {getMatchCompletedSections(selectedMatch.id).tickets && (
@@ -543,7 +556,7 @@ export default function CheckoutPageClient() {
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between">
                           <CardTitle className="flex items-center">
                             {getMatchCompletedSections(selectedMatch.id)
                               .travel ? (
@@ -553,6 +566,13 @@ export default function CheckoutPageClient() {
                             )}
                             Reiseoptionen
                           </CardTitle>
+                          <motion.div
+                            variants={chevronVariants}
+                            animate={showTravel ? "open" : "closed"}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          </motion.div>
                         </CardHeader>
                       </CollapsibleTrigger>
                       {getMatchCompletedSections(selectedMatch.id).travel && (
@@ -681,7 +701,7 @@ export default function CheckoutPageClient() {
                   >
                     <div className="flex items-center justify-between">
                       <CollapsibleTrigger className="flex-1">
-                        <CardHeader>
+                        <CardHeader className="flex flex-row items-center justify-between">
                           <CardTitle className="flex items-center">
                             {getMatchCompletedSections(selectedMatch.id)
                               .accommodation ? (
@@ -691,6 +711,13 @@ export default function CheckoutPageClient() {
                             )}
                             Unterkunft
                           </CardTitle>
+                          <motion.div
+                            variants={chevronVariants}
+                            animate={showAccommodation ? "open" : "closed"}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                          </motion.div>
                         </CardHeader>
                       </CollapsibleTrigger>
                       {getMatchCompletedSections(selectedMatch.id)

@@ -277,9 +277,12 @@ export const SearchComponent = () => {
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
+              defaultMonth={localDate?.from}
+              selected={localDate}
+              onSelect={(newDate) => {
+                setLocalDate(newDate);
+                debouncedSetDate(newDate);
+              }}
               numberOfMonths={2}
             />
           </PopoverContent>
@@ -326,9 +329,12 @@ export const SearchComponent = () => {
             <Calendar
               initialFocus
               mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
+              defaultMonth={localDate?.from}
+              selected={localDate}
+              onSelect={(newDate) => {
+                setLocalDate(newDate);
+                debouncedSetDate(newDate);
+              }}
               numberOfMonths={2}
             />
           </PopoverContent>

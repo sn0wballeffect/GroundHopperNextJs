@@ -581,9 +581,9 @@ export const SearchResults = () => {
       // Expanded sizes by device
       if (match && expandedId === match.id) {
         if (width <= BREAKPOINTS.extraSmallMobile) {
-          return baseItemHeight + 280;
+          return baseItemHeight + 290;
         } else if (width <= BREAKPOINTS.smallMobile) {
-          return baseItemHeight + 280;
+          return baseItemHeight + 290;
         } else if (width <= BREAKPOINTS.mobile) {
           return baseItemHeight + 280;
         } else if (width <= BREAKPOINTS.tablet) {

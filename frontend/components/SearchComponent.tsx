@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { format, addDays, subDays } from "date-fns";
 import { CalendarIcon, Search, LocateFixed, MapPin } from "lucide-react";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useStore } from "@/lib/store";
 import { searchCities } from "@/lib/api";
@@ -137,6 +137,86 @@ export const SearchComponent = () => {
     []
   );
 
+  const distanceButtonRef = useRef<HTMLButtonElement>(null);
+  const dateFromButtonRef = useRef<HTMLButtonElement>(null);
+  const dateToButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleDistanceWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const step = 5;
+      const minDistance = 5;
+      const maxDistance = 2000;
+
+      let newDistance;
+      if (e.deltaY < 0) {
+        newDistance = Math.min(maxDistance, localDistance + step);
+      } else {
+        newDistance = Math.max(minDistance, localDistance - step);
+      }
+
+      handleDistanceChange(newDistance);
+    };
+
+    const handleDateFromWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (!localDate?.from) return;
+
+      const newFrom =
+        e.deltaY < 0 ? addDays(localDate.from, 1) : subDays(localDate.from, 1);
+
+      if (localDate.to && newFrom > localDate.to) return;
+
+      const newDate = { ...localDate, from: newFrom };
+      setLocalDate(newDate);
+      debouncedSetDate(newDate);
+    };
+
+    const handleDateToWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (!localDate?.to) return;
+
+      const newTo =
+        e.deltaY < 0 ? addDays(localDate.to, 1) : subDays(localDate.to, 1);
+
+      if (localDate.from && newTo < localDate.from) return;
+
+      const newDate = { ...localDate, to: newTo };
+      setLocalDate(newDate);
+      debouncedSetDate(newDate);
+    };
+
+    const distanceEl = distanceButtonRef.current;
+    const dateFromEl = dateFromButtonRef.current;
+    const dateToEl = dateToButtonRef.current;
+
+    if (distanceEl) {
+      distanceEl.addEventListener("wheel", handleDistanceWheel, {
+        passive: false,
+      });
+    }
+    if (dateFromEl) {
+      dateFromEl.addEventListener("wheel", handleDateFromWheel, {
+        passive: false,
+      });
+    }
+    if (dateToEl) {
+      dateToEl.addEventListener("wheel", handleDateToWheel, { passive: false });
+    }
+
+    return () => {
+      if (distanceEl) {
+        distanceEl.removeEventListener("wheel", handleDistanceWheel);
+      }
+      if (dateFromEl) {
+        dateFromEl.removeEventListener("wheel", handleDateFromWheel);
+      }
+      if (dateToEl) {
+        dateToEl.removeEventListener("wheel", handleDateToWheel);
+      }
+    };
+  }, [localDate, localDistance, handleDistanceChange, debouncedSetDate]);
+
   return (
     <div className="w-[60%] mb-5 min-w-[750px] mx-auto">
       <div className="flex items-center gap-2 p-3 bg-white rounded-full shadow-lg">
@@ -190,26 +270,10 @@ export const SearchComponent = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
+              ref={distanceButtonRef}
               variant="ghost"
               className="justify-start text-left font-normal px-4 flex-[0.5]"
               title="Scrollen um Radius anzupassen"
-              onWheel={(e) => {
-                e.preventDefault();
-                const step = 5;
-                const minDistance = 5;
-                const maxDistance = 2000;
-
-                let newDistance;
-                if (e.deltaY < 0) {
-                  // Scrolling up - increase radius
-                  newDistance = Math.min(maxDistance, localDistance + step);
-                } else {
-                  // Scrolling down - decrease radius
-                  newDistance = Math.max(minDistance, localDistance - step);
-                }
-
-                handleDistanceChange(newDistance);
-              }}
             >
               <MapPin className="h-4 w-4" />
               <div>
@@ -239,28 +303,13 @@ export const SearchComponent = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
+              ref={dateFromButtonRef}
               variant="ghost"
               title="Scrollen um Datum anzupassen"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !localDate && "text-muted-foreground"
               )}
-              onWheel={(e) => {
-                e.preventDefault();
-                if (!localDate?.from) return;
-
-                const newFrom =
-                  e.deltaY < 0
-                    ? addDays(localDate.from, 1)
-                    : subDays(localDate.from, 1);
-
-                // Only update if new date doesn't exceed 'to' date
-                if (localDate.to && newFrom > localDate.to) return;
-
-                const newDate = { ...localDate, from: newFrom };
-                setLocalDate(newDate);
-                debouncedSetDate(newDate);
-              }}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>
@@ -291,28 +340,13 @@ export const SearchComponent = () => {
         <Popover>
           <PopoverTrigger asChild>
             <Button
+              ref={dateToButtonRef}
               variant="ghost"
               title="Scrollen um Datum anzupassen"
               className={cn(
                 "justify-start text-left font-normal px-4 min-w-[8rem] flex-[0.5]",
                 !localDate && "text-muted-foreground"
               )}
-              onWheel={(e) => {
-                e.preventDefault();
-                if (!localDate?.to) return;
-
-                const newTo =
-                  e.deltaY < 0
-                    ? addDays(localDate.to, 1)
-                    : subDays(localDate.to, 1);
-
-                // Only update if new date doesn't precede 'from' date
-                if (localDate.from && newTo < localDate.from) return;
-
-                const newDate = { ...localDate, to: newTo };
-                setLocalDate(newDate);
-                debouncedSetDate(newDate);
-              }}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
               <div>

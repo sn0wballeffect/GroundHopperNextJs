@@ -260,9 +260,9 @@ const Row = React.memo(
               className={cn(
                 "transform-gpu overflow-hidden isolate relative",
                 "bg-gradient-to-b from-slate-50/95 to-slate-100/90 dark:from-slate-900/95 dark:to-slate-800/90",
-                "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl", // Modified border and radius
+                "backdrop-blur-md border-x border-b border-slate-200 dark:border-slate-700 rounded-b-xl",
                 isExpanded
-                  ? "transition-[height,opacity,transform] duration-300 h-[210px] opacity-100"
+                  ? "transition-[height,opacity,transform] duration-300 h-[auto] min-h-[280px] sm:h-[210px] opacity-100"
                   : "h-0 opacity-0"
               )}
               style={{
@@ -272,19 +272,19 @@ const Row = React.memo(
                 transitionTimingFunction: "cubic-bezier(0.4, 0, 0.2, 1)",
               }}
             >
-              <div className="transform-gpu absolute inset-x-0 p-6 ml-2 md:p-0 md:mr-1 md:ml:0 lg:ml-2 lg:p-6">
-                {/* Add container div for centering */}
+              <div className="transform-gpu absolute inset-x-0 p-4 sm:p-6">
                 <div className="max-w-4xl mx-auto">
-                  <div className="grid grid-cols-[1fr,auto,1fr] lg:gap-x-8 gap-x-8 md:gap-x-0 gap-y-6">
+                  {/* Change grid to flex column on mobile and add full width for all items */}
+                  <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[1fr,auto,1fr] sm:gap-x-8">
                     {/* Left Column */}
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       <div className="flex items-start space-x-3">
                         <Trophy className="h-5 w-5 text-amber-500 shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-xs sm:text-sm text-muted-foreground">
                             Wettbewerb
                           </span>
-                          <span className="font-medium">
+                          <span className="font-medium text-sm sm:text-base">
                             {formatLeagueName(match.league || "")}
                           </span>
                         </div>
@@ -293,23 +293,59 @@ const Row = React.memo(
                       <div className="flex items-start space-x-3">
                         <Building2 className="h-5 w-5 text-blue-500 shrink-0" />
                         <div className="flex flex-col">
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-xs sm:text-sm text-muted-foreground">
                             Stadion
                           </span>
-                          <span className="font-medium">{match.stadium}</span>
+                          <span className="font-medium text-sm sm:text-base">
+                            {match.stadium}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Move capacity and countdown to mobile layout */}
+                      <div className="sm:hidden">
+                        <div className="flex items-start space-x-3">
+                          <Users className="h-5 w-5 text-green-500 shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="text-xs sm:text-sm text-muted-foreground">
+                              Kapazität
+                            </span>
+                            <span className="font-medium text-sm sm:text-base">
+                              50000
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start space-x-3 mt-4">
+                          <Timer className="h-5 w-5 text-purple-500 shrink-0" />
+                          <div className="flex flex-col">
+                            <span className="text-xs sm:text-sm text-muted-foreground">
+                              Spiel startet in
+                            </span>
+                            <span className="font-medium text-sm sm:text-base">
+                              <CountdownTimer
+                                eventDate={
+                                  match.date_string || "Date not available"
+                                }
+                                eventTime={
+                                  match.event_time || "Time not available"
+                                }
+                              />
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Center Column - Flip Button */}
-                    <div className="flex flex-col items-center justify-center ">
-                      <span className="text-sm text-muted-foreground">
-                        Mehr
+                    {/* Center Column - Flip Button (desktop only) */}
+                    <div className="hidden sm:flex sm:flex-col items-center justify-center">
+                      <span className="text-sm text-muted-foreground mb-2">
+                        Mehr Details
                       </span>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="mx-auto"
+                        className="h-10 w-10"
                         onClick={(e) => {
                           e.stopPropagation();
                           setIsFlipped(!isFlipped);
@@ -324,14 +360,14 @@ const Row = React.memo(
                       </Button>
                     </div>
 
-                    {/* Right Column */}
-                    <div className="space-y-6">
+                    {/* Right Column (desktop only) */}
+                    <div className="hidden sm:flex sm:flex-col space-y-6">
                       <div className="flex items-start justify-end space-x-3">
                         <div className="flex flex-col items-end text-right">
                           <span className="text-sm text-muted-foreground">
                             Kapazität
                           </span>
-                          <span className="font-medium">50000</span>
+                          <span className="font-medium text-base">50000</span>
                         </div>
                         <Users className="h-5 w-5 text-green-500 shrink-0" />
                       </div>
@@ -341,7 +377,7 @@ const Row = React.memo(
                           <span className="text-sm text-muted-foreground">
                             Spiel startet in
                           </span>
-                          <span className="font-medium">
+                          <span className="font-medium text-base">
                             <CountdownTimer
                               eventDate={
                                 match.date_string || "Date not available"
@@ -355,6 +391,24 @@ const Row = React.memo(
                         <Timer className="h-5 w-5 text-purple-500 shrink-0" />
                       </div>
                     </div>
+
+                    {/* Mobile Flip Button (full width) */}
+                    <Button
+                      variant="ghost"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsFlipped(!isFlipped);
+                      }}
+                      className="sm:hidden w-full flex items-center justify-center gap-2 mt-2 py-2"
+                    >
+                      <span className="text-sm">Mehr Details</span>
+                      <RefreshCw
+                        className={cn(
+                          "h-4 w-4 transition-transform",
+                          isFlipped ? "rotate-180" : ""
+                        )}
+                      />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -495,6 +549,7 @@ export const SearchResults = () => {
 
   // Determine item size
   const BREAKPOINTS = {
+    extraSmallMobile: 380,
     smallMobile: 480,
     mobile: 765,
     tablet: 1250,
@@ -507,8 +562,10 @@ export const SearchResults = () => {
       let baseItemHeight;
 
       // Set base height by device size
-      if (width <= BREAKPOINTS.smallMobile) {
-        baseItemHeight = 150; // Small Mobile
+      if (width <= BREAKPOINTS.extraSmallMobile) {
+        baseItemHeight = 155; // Extra Small Mobile
+      } else if (width <= BREAKPOINTS.smallMobile) {
+        baseItemHeight = 140; // Small Mobile
       } else if (width <= BREAKPOINTS.mobile) {
         baseItemHeight = 160; // Mobile
       } else if (width <= BREAKPOINTS.tablet) {
@@ -521,8 +578,10 @@ export const SearchResults = () => {
 
       // Expanded sizes by device
       if (match && expandedId === match.id) {
-        if (width <= BREAKPOINTS.smallMobile) {
-          return baseItemHeight + 220;
+        if (width <= BREAKPOINTS.extraSmallMobile) {
+          return baseItemHeight + 290;
+        } else if (width <= BREAKPOINTS.smallMobile) {
+          return baseItemHeight + 290;
         } else if (width <= BREAKPOINTS.mobile) {
           return baseItemHeight + 160;
         } else if (width <= BREAKPOINTS.tablet) {

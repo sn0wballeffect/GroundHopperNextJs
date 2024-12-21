@@ -490,7 +490,7 @@ export default function CheckoutPageClient() {
                                   href="https://www.google.com"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  onClick={() => handleLinkClick("tickets")}
+                                  /*  onClick={() => handleLinkClick("tickets")} */
                                 >
                                   <Button
                                     variant="default"
@@ -585,7 +585,7 @@ export default function CheckoutPageClient() {
                                   href="https://www.bahn.de"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  onClick={() => handleLinkClick("travel")}
+                                  /* onClick={() => handleLinkClick("travel")} */
                                 >
                                   <Button
                                     variant="default"
@@ -622,7 +622,7 @@ export default function CheckoutPageClient() {
                                   href="https://www.flixbus.de"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  onClick={() => handleLinkClick("travel")}
+                                  /* onClick={() => handleLinkClick("travel")} */
                                 >
                                   <Button
                                     variant="default"
@@ -727,9 +727,9 @@ export default function CheckoutPageClient() {
                                   href="https://www.booking.com"
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  onClick={() =>
+                                  /*  onClick={() =>
                                     handleLinkClick("accommodation")
-                                  }
+                                  } */
                                 >
                                   <Button
                                     variant="default"

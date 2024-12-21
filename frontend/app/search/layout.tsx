@@ -7,7 +7,7 @@ export default function SearchLayout({
   return (
     <div className="w-full">
       <div className="flex flex-col h-screen">
-        <div className="hidden 2xl:block">
+        <div className="">
           <NavBar />
         </div>
 
